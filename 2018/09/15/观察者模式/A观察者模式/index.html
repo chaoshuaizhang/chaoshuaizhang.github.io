@@ -79,16 +79,17 @@
 
 
 
-<meta name="description" content="知识体系树">
-<meta property="og:type" content="website">
+<meta name="description" content="观察者模式@(java) [TOC]   java.util中的观察者模式很简单，我理解的核心实现就是：接口回调，异步通知，但是要注意一下notifyObservers方法注释中强调的1)，2). 接下来会分析RxJava   ###基本使用 ####被观察者 1234567891011121314151617181920212223242526272829303132/** * @author">
+<meta property="og:type" content="article">
 <meta property="og:title" content="changePosition">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/09/15/观察者模式/A观察者模式/index.html">
 <meta property="og:site_name" content="changePosition">
-<meta property="og:description" content="知识体系树">
+<meta property="og:description" content="观察者模式@(java) [TOC]   java.util中的观察者模式很简单，我理解的核心实现就是：接口回调，异步通知，但是要注意一下notifyObservers方法注释中强调的1)，2). 接下来会分析RxJava   ###基本使用 ####被观察者 1234567891011121314151617181920212223242526272829303132/** * @author">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-09-14T18:04:28.001Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="changePosition">
-<meta name="twitter:description" content="知识体系树">
+<meta name="twitter:description" content="观察者模式@(java) [TOC]   java.util中的观察者模式很简单，我理解的核心实现就是：接口回调，异步通知，但是要注意一下notifyObservers方法注释中强调的1)，2). 接下来会分析RxJava   ###基本使用 ####被观察者 1234567891011121314151617181920212223242526272829303132/** * @author">
 
 
 
@@ -118,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/09/15/观察者模式/A观察者模式/"/>
 
 
 
 
 
-  <title>changePosition</title>
+  <title> | changePosition</title>
   
 
 
@@ -143,8 +144,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -217,175 +217,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/15/SOA 学习笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="zhangchaoshuai">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/15/SOA 学习笔记/" itemprop="url">Untitled</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-15T02:34:04+08:00">
-                2018-09-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>##SOA 学习笔记<br>@(java)[SOA]</p>
-<blockquote>
-<p>后台学习推荐书籍<br>spring in action 第四版<br>springboot 揭秘  配合博客<br>dubbo 官网<br>《大型网站技术架构：核心原理与案例分析》<br>《大型网站系统与Java中间件实践》<br>大型分布式网站架构设计与实践<br>SOA理解<br>redis<br>redis开发与运维</p>
-</blockquote>
-<p>###<strong>SOA项目搭建篇</strong></p>
-<p><strong>主要目标是：完全清楚为什么要这么搭建，如何体现解耦、复用</strong></p>
-<ol>
-<li>大致的继承关系</li>
-</ol>
-<p><img src="/2018/09/15/SOA 学习笔记/./1534138305704.png" alt="Alt text"></p>
-<ul>
-<li><p>SOATopPom</p>
-<blockquote>
-<p>dependency parent是spring-boot-starter-parent<br>最基础的项目只包含一个pom.xml文件，里边主要是：<br>1、第三方的依赖<br>2、伺服地址配置<br>3、部署构件配置<br>4、对于SP项目来说，spring-boot-starter等aop、web包没有包含在这个pom.xml文件中</p>
-</blockquote>
-</li>
-<li><p>SOAParent</p>
-<blockquote>
-<p>SOAParent是聚合项目（一个prj包含多个module）<br>主项目也只包含一个pom.xml文件，里边是业务层所需的依赖<br>module：<br>  IService - jar：只写具体的接口，不写实现<br>  bean - jar<br>  dao - jar</p>
-</blockquote>
-</li>
-<li><p>SOAProvider</p>
-<blockquote>
-<p>dependency parent为SOAParent，主要作用是实现IService，规范的情况下，provider中只有serviceImpl，并把实现了的service注册到zookeeper</p>
-</blockquote>
-</li>
-<li><p>SOAConsumer</p>
-<blockquote>
-<p>consumer的dependency parent不需要为SOAParent（正常情况下消费者是与后台无关的，除非是一个系统既是consumer，又是provider），它只要引入对应的IService就行。</p>
-</blockquote>
-</li>
-</ul>
-<p>###<strong>Dubbo篇</strong></p>
-<p>###<strong>zookeeper篇</strong></p>
-<ol>
-<li><p>zookeeper默认的三个端口</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//对client端提供服务，在provider和consumer中设置registry时使用</span></span><br><span class="line"><span class="number">2181</span></span><br><span class="line"><span class="comment">//服务器与集群中的 Leader 服务器交换信息的端口</span></span><br><span class="line"><span class="number">2888</span></span><br><span class="line"><span class="comment">//一旦集群中的 Leader 服务器挂了，需要一个端口重新进行选举，选出一个新的 Leader</span></span><br><span class="line"><span class="number">3888</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>application.properties中spring-dubbo的配置</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//应用名称</span></span><br><span class="line">spring.dubbo.application.name=dubbo_consumer</span><br><span class="line"><span class="comment">//注册中心地址</span></span><br><span class="line"><span class="comment">//两台服务器，三个zookeeper注册中心（算是伪集群）</span></span><br><span class="line">spring.dubbo.registry.address=zookeeper:<span class="comment">//172.16.103.146:2281?backup=172.16.103.19:2281,172.16.103.136:2381</span></span><br><span class="line"><span class="comment">//协议名称</span></span><br><span class="line">spring.dubbo.protocol.name=dubbo</span><br><span class="line"><span class="comment">//协议端口</span></span><br><span class="line">spring.dubbo.protocol.port=<span class="number">20800</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line">spring.dubbo.registry.timeout=<span class="number">6000</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>###Dubbo-Admin搭建</p>
-<ol start="2">
-<li>出现的问题<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>. It is probably not running</span><br><span class="line">	删除data下面除myid之外的其它文件</span><br><span class="line">	保证dataDir、dataDirLog的路径是正确的</span><br><span class="line"><span class="number">2</span>. 实验证明，当provider写了版本号后，consumer必须也要写版本号，不然引不到</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
 
   
 
@@ -415,9 +249,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/15/观察者模式/A观察者模式/" itemprop="url">Untitled</a></h1>
+          <h1 class="post-title" itemprop="name headline"></h1>
         
 
         <div class="post-meta">
@@ -467,9 +299,7 @@
       
 
       
-        
-          
-            <h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><p>@(java)</p>
+        <h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><p>@(java)</p>
 <p>[TOC]</p>
 <blockquote>
 <ul>
@@ -499,8 +329,6 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">setChanged</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="comment">//这个方法是由外接observable主动触发的，一般都是在Observable的</span></span><br><span class="line">	<span class="comment">//子类的方法里先setChanged()再notifyObservers</span></span><br><span class="line">    changed = <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">notifyObservers</span><span class="params">(Object arg)</span> </span>&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * a temporary array buffer, used as a snapshot of the state of</span></span><br><span class="line"><span class="comment">     * current Observers.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    Object[] arrLocal;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">        这里直接把英文注释google翻译过来了：</span></span><br><span class="line"><span class="comment">        我们不希望Observer在拥有自己的Monitor时进行任意代码的回调。</span></span><br><span class="line"><span class="comment">        我们从Vector中提取每个Observable并存储Observer状态的代码</span></span><br><span class="line"><span class="comment">        需要同步，但是通知观察者不会（不应该）。这里任何潜在竞争条件</span></span><br><span class="line"><span class="comment">        的最坏结果是：</span></span><br><span class="line"><span class="comment">        1）新添加的观察者将错过正在进行的通知。</span></span><br><span class="line"><span class="comment">        //比如A线程负责通知，B线程负责添加Observer，假如A要通知了，先持有锁，</span></span><br><span class="line"><span class="comment">        //则B只能等A通知后才能持有锁-添加新的observer，那么这个新加的observer肯定接收不到通知。</span></span><br><span class="line"><span class="comment">        2）最近取消注册的观察员在不关心时将被错误地通知。</span></span><br><span class="line"><span class="comment">        //比如A线程负责通知，C线程负责移除Observer，假如A要通知了，先持有锁，</span></span><br><span class="line"><span class="comment">        //则C只能等A通知后才能持有锁-删除Vector中的observer，那么这个本不应该收到通知的Observer</span></span><br><span class="line"><span class="comment">        //会收到不必要的通知！</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="keyword">if</span> (!changed)</span><br><span class="line">	        <span class="comment">//如果数据没发生变化（这个change由外接被观察者自己手动触发）</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        arrLocal = obs.toArray();</span><br><span class="line">        <span class="comment">//清除changed标记</span></span><br><span class="line">        clearChanged();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = arrLocal.length-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--)</span><br><span class="line">	    <span class="comment">//遍历所有的observer，进行通知</span></span><br><span class="line">        ((Observer)arrLocal[i]).update(<span class="keyword">this</span>, arg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-          
-        
       
     </div>
     
@@ -517,140 +345,32 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/14/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="zhangchaoshuai">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/14/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-14T23:15:52+08:00">
-                2018-09-14
-              </time>
+              <a href="/2018/09/14/hello-world/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
+              <a href="/2018/09/15/SOA 学习笔记/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
             
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -660,192 +380,11 @@
   </article>
 
 
-    
-      
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/14/Https加密流程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="zhangchaoshuai">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/14/Https加密流程/" itemprop="url">Https加密流程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-14T23:43:05+08:00">
-                2017-09-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>#Https加密流程<br>@(协议)</p>
-<p>[TOC]</p>
-<h2 id="加密方式"><a href="#加密方式" class="headerlink" title="加密方式"></a>加密方式</h2><blockquote>
-<p>加密方式大体分为对称加密、非对称加密两种</p>
-</blockquote>
-<ol>
-<li><p>对称加密算法的优点是<strong>算法公开、计算量小、加密速度快、加密效率高</strong>。对称加密算法的缺点是在数据传送前，发送方和接收方必须商定好秘钥，然后使双方都能保存好秘钥。其次如果一方的秘钥被泄露，那么加密信息也就不安全了。另外，每对用户每次使用对称加密算法时，都需要使用其他人不知道的唯一秘钥，这会使得收、发双方所拥有的钥匙数量巨大，密钥管理成为双方的负担。</p>
-</li>
-<li><p>非对称加密与对称加密相比，其安全性更好：对称加密的通信双方使用相同的秘钥，如果一方的秘钥遭泄露，那么整个通信就会被破解。而非对称加密使用一对秘钥，一个用来加密，一个用来解密，而且公钥是公开的，秘钥是自己保存的，不需要像对称加密那样在通信之前要先同步秘钥。非对称加密的<strong>缺点是加密和解密花费时间长、速度慢，只适合对少量数据进行加密</strong>。</p>
-</li>
-</ol>
-<h2 id="Https采用的加密方式"><a href="#Https采用的加密方式" class="headerlink" title="Https采用的加密方式"></a>Https采用的加密方式</h2><blockquote>
-<p>根据上述的优缺点，Https采用了两者结合的方式进行加密。</p>
-</blockquote>
-<h3 id="只使用非对称加密"><a href="#只使用非对称加密" class="headerlink" title="只使用非对称加密"></a>只使用非对称加密</h3><ul>
-<li><p>如何验证server是真的server？<br><img src="/2017/09/14/Https加密流程/./1531019257645.png" alt="Alt text"></p>
-</li>
-<li><p>上述的单项<strong>认证过程</strong>过程最起码是安全的。</p>
-</li>
-<li>那么开始正常的数据传输<br><img src="/2017/09/14/Https加密流程/./1531019240418.png" alt="Alt text"></li>
-<li>注意上述的传输过程，client和server的身份都确定了，但是存在一个问题就是：server回复的信息可能被第三者截获，虽然第三者无法修改信息（即使修改了也没用，因为没有私钥，无法对修改后的数据进行加密），但它可以解密（因为公钥是公开的）看到信息，这样数据就无法保密了。<blockquote>
-<p><strong>实验证明：只用非对称加密是不可靠的，同样从上述非对称加密的缺点来看，它并不适合对大批明文进行加密。</strong></p>
-</blockquote>
-</li>
-</ul>
-<h3 id="只使用对称加密"><a href="#只使用对称加密" class="headerlink" title="只使用对称加密"></a>只使用对称加密</h3><blockquote>
-<ol>
-<li>对称的话，秘钥是保密的，所以（只要不泄露）肯定能保证安全。</li>
-<li>那么问题来了：server如何把秘钥给client？这岂不又是一个发送信息而又要信息保密的过程？</li>
-<li>想一下非对称加密：<br>server—&gt;client不是安全的（信息无法保密）<br>client—&gt;server是安全的（即使被窃取到了，没有私钥也无法解密）</li>
-<li>所以可以让<strong>client</strong>生成一个对称秘钥Key，这个Key经非对称加密由client—&gt;server，这样不就行了？</li>
-</ol>
-</blockquote>
-<p><img src="/2017/09/14/Https加密流程/./1531021694804.png" alt="Alt text"></p>
-<blockquote>
-<ol>
-<li>因为私钥只有server拥有，因此client可以通过判断对方是否有私钥来判断对方是否是server。</li>
-<li>client通过非对称加密的掩护，安全的和server商量好一个对称加密算法和密钥来保证后面通信过程内容的安全。</li>
-</ol>
-</blockquote>
-<hr>
-<p>上述看起来已经安全了，但有个问题：非对称加密确实保证了对称加密的秘钥的安全传输，那么谁来保证非对称加密的公钥的安全传输呢？</p>
-<ol>
-<li>？？？非对称加密的公钥不是公开的吗？<br>公钥是公开的，那么server如何把公钥发给client呢？</li>
-</ol>
-<ul>
-<li>把公钥放到互联网的某个地方的一个下载地址，事先给client去下载。</li>
-<li>每次和client开始通信时，“服务器”把公钥发给server。</li>
-</ul>
-<ol start="2">
-<li>对于方法1，client无法确定这个下载地址是不是server发布的，可能是第三者自己生成的Public，然后伪造的假的地址。<br>对于方法2，也有问题，因为第三者也可以自己生成一对Public和Private，他只要向client发送他自己的Public就可以冒充Server了（<strong>这样的话，相当于后期的所有操作都是在和假的server做交互</strong>）。</li>
-</ol>
-<h2 id="使用数字证书保证公钥的安全"><a href="#使用数字证书保证公钥的安全" class="headerlink" title="使用数字证书保证公钥的安全"></a>使用数字证书保证公钥的安全</h2><blockquote>
-<ol>
-<li>为了解决上述【大家都可以生成公钥、私钥对，无法确认公钥对到底是谁的】的这个问题，出现了数字证书。</li>
-<li>那也就是说：数字证书可以保证数字证书里的公钥确实是这个证书的所有者(Subject)的，或者证书可以用来确认对方的身份。</li>
-</ol>
-</blockquote>
-<p><img src="/2017/09/14/Https加密流程/./1531037375452.png" alt="Alt text"></p>
-<blockquote>
-<p>上述数字签名部分不确定对不对，但大致思路应该没问题。</p>
-</blockquote>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://app.yinxiang.com/shard/s3/nl/16566837/a82545e3-55ea-4176-aaec-51662e8b1c7f" target="_blank" rel="noopener">数字证书原理</a><br><a href="https://app.yinxiang.com/shard/s3/nl/16566837/bfe9a658-00bd-42ae-954f-84c4345db77e" target="_blank" rel="noopener">关于Https那些事</a><br><a href="https://app.yinxiang.com/shard/s3/nl/16566837/bcf0d794-71dd-4d33-842f-8e65f9d08b64" target="_blank" rel="noopener">也许，这样理解HTTPS更容易</a></p>
-
-          
-        
+    <div class="post-spread">
       
     </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
   </div>
-  
-  
-  
-  </article>
-
-
-    
-  </section>
-
-  
 
 
           </div>
@@ -853,6 +392,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -873,8 +416,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -916,6 +468,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#观察者模式"><span class="nav-number">1.</span> <span class="nav-text">观察者模式</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -1049,6 +617,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
