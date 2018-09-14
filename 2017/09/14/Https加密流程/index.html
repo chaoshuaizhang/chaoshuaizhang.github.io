@@ -90,7 +90,7 @@
 <meta property="og:image" content="http://yoursite.com/2017/09/14/Https加密流程/1531019240418.png">
 <meta property="og:image" content="http://yoursite.com/2017/09/14/Https加密流程/1531021694804.png">
 <meta property="og:image" content="http://yoursite.com/2017/09/14/Https加密流程/1531037375452.png">
-<meta property="og:updated_time" content="2018-09-14T15:45:54.482Z">
+<meta property="og:updated_time" content="2018-09-14T17:41:30.736Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Https加密流程">
 <meta name="twitter:description" content="#Https加密流程@(协议) [TOC] 加密方式 加密方式大体分为对称加密、非对称加密两种   对称加密算法的优点是算法公开、计算量小、加密速度快、加密效率高。对称加密算法的缺点是在数据传送前，发送方和接收方必须商定好秘钥，然后使双方都能保存好秘钥。其次如果一方的秘钥被泄露，那么加密信息也就不安全了。另外，每对用户每次使用对称加密算法时，都需要使用其他人不知道的唯一秘钥，这会使得收、发双方所拥">
@@ -334,7 +334,7 @@
 <li>对称的话，秘钥是保密的，所以（只要不泄露）肯定能保证安全。</li>
 <li>那么问题来了：server如何把秘钥给client？这岂不又是一个发送信息而又要信息保密的过程？</li>
 <li>想一下非对称加密：<br>server—&gt;client不是安全的（信息无法保密）<br>client—&gt;server是安全的（即使被窃取到了，没有私钥也无法解密）</li>
-<li>所以可以让<strong>client</strong>生成一个对称秘钥Key，这个Key经非对称加密由client—&gt;server，这样不就行了？<br><img src="./1531021694804.png" alt="Alt text"></li>
+<li>所以可以让<strong>client</strong>生成一个对称秘钥Key，这个Key经非对称加密由client—&gt;server，这样不就行了？<br><img src="./1531021694804.png" alt="图片啊啊啊"></li>
 </ol>
 </blockquote>
 <blockquote>
