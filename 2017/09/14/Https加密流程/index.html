@@ -90,7 +90,7 @@
 <meta property="og:image" content="http://yoursite.com/2017/09/14/Https加密流程/1531019240418.png">
 <meta property="og:image" content="http://yoursite.com/2017/09/14/Https加密流程/1531021694804.png">
 <meta property="og:image" content="http://yoursite.com/2017/09/14/Https加密流程/1531037375452.png">
-<meta property="og:updated_time" content="2018-09-14T18:29:04.828Z">
+<meta property="og:updated_time" content="2018-09-15T00:54:19.607Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Https加密流程">
 <meta name="twitter:description" content="#Https加密流程@(协议) [TOC] 加密方式 加密方式大体分为对称加密、非对称加密两种   对称加密算法的优点是算法公开、计算量小、加密速度快、加密效率高。对称加密算法的缺点是在数据传送前，发送方和接收方必须商定好秘钥，然后使双方都能保存好秘钥。其次如果一方的秘钥被泄露，那么加密信息也就不安全了。另外，每对用户每次使用对称加密算法时，都需要使用其他人不知道的唯一秘钥，这会使得收、发双方所拥">
@@ -319,11 +319,11 @@
 <p>根据上述的优缺点，Https采用了两者结合的方式进行加密。</p>
 </blockquote>
 <h3 id="只使用非对称加密"><a href="#只使用非对称加密" class="headerlink" title="只使用非对称加密"></a>只使用非对称加密</h3><ul>
-<li><p>如何验证server是真的server？<br><img src="/2017/09/14/Https加密流程/./1531019257645.png" alt="Alt text"></p>
+<li><p>如何验证server是真的server？<br><img src="/2017/09/14/Https加密流程/1531019257645.png" alt="Alt text"></p>
 </li>
 <li><p>上述的单项<strong>认证过程</strong>过程最起码是安全的。</p>
 </li>
-<li>那么开始正常的数据传输<br><img src="/2017/09/14/Https加密流程/./1531019240418.png" alt="Alt text"></li>
+<li>那么开始正常的数据传输<br><img src="/2017/09/14/Https加密流程/1531019240418.png" alt="Alt text"></li>
 <li>注意上述的传输过程，client和server的身份都确定了，但是存在一个问题就是：server回复的信息可能被第三者截获，虽然第三者无法修改信息（即使修改了也没用，因为没有私钥，无法对修改后的数据进行加密），但它可以解密（因为公钥是公开的）看到信息，这样数据就无法保密了。<blockquote>
 <p><strong>实验证明：只用非对称加密是不可靠的，同样从上述非对称加密的缺点来看，它并不适合对大批明文进行加密。</strong></p>
 </blockquote>
@@ -337,7 +337,7 @@
 <li>所以可以让<strong>client</strong>生成一个对称秘钥Key，这个Key经非对称加密由client—&gt;server，这样不就行了？</li>
 </ol>
 </blockquote>
-<p><img src="/2017/09/14/Https加密流程/./1531021694804.png" alt="Alt text"></p>
+<p><img src="/2017/09/14/Https加密流程/1531021694804.png" alt="Alt text"></p>
 <blockquote>
 <ol>
 <li>因为私钥只有server拥有，因此client可以通过判断对方是否有私钥来判断对方是否是server。</li>
@@ -362,7 +362,7 @@
 <li>那也就是说：数字证书可以保证数字证书里的公钥确实是这个证书的所有者(Subject)的，或者证书可以用来确认对方的身份。</li>
 </ol>
 </blockquote>
-<p><img src="/2017/09/14/Https加密流程/./1531037375452.png" alt="Alt text"></p>
+<p><img src="/2017/09/14/Https加密流程/1531037375452.png" alt="Alt text"></p>
 <blockquote>
 <p>上述数字签名部分不确定对不对，但大致思路应该没问题。</p>
 </blockquote>

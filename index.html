@@ -760,11 +760,11 @@
 <p>根据上述的优缺点，Https采用了两者结合的方式进行加密。</p>
 </blockquote>
 <h3 id="只使用非对称加密"><a href="#只使用非对称加密" class="headerlink" title="只使用非对称加密"></a>只使用非对称加密</h3><ul>
-<li><p>如何验证server是真的server？<br><img src="/2017/09/14/Https加密流程/./1531019257645.png" alt="Alt text"></p>
+<li><p>如何验证server是真的server？<br><img src="/2017/09/14/Https加密流程/1531019257645.png" alt="Alt text"></p>
 </li>
 <li><p>上述的单项<strong>认证过程</strong>过程最起码是安全的。</p>
 </li>
-<li>那么开始正常的数据传输<br><img src="/2017/09/14/Https加密流程/./1531019240418.png" alt="Alt text"></li>
+<li>那么开始正常的数据传输<br><img src="/2017/09/14/Https加密流程/1531019240418.png" alt="Alt text"></li>
 <li>注意上述的传输过程，client和server的身份都确定了，但是存在一个问题就是：server回复的信息可能被第三者截获，虽然第三者无法修改信息（即使修改了也没用，因为没有私钥，无法对修改后的数据进行加密），但它可以解密（因为公钥是公开的）看到信息，这样数据就无法保密了。<blockquote>
 <p><strong>实验证明：只用非对称加密是不可靠的，同样从上述非对称加密的缺点来看，它并不适合对大批明文进行加密。</strong></p>
 </blockquote>
@@ -778,7 +778,7 @@
 <li>所以可以让<strong>client</strong>生成一个对称秘钥Key，这个Key经非对称加密由client—&gt;server，这样不就行了？</li>
 </ol>
 </blockquote>
-<p><img src="/2017/09/14/Https加密流程/./1531021694804.png" alt="Alt text"></p>
+<p><img src="/2017/09/14/Https加密流程/1531021694804.png" alt="Alt text"></p>
 <blockquote>
 <ol>
 <li>因为私钥只有server拥有，因此client可以通过判断对方是否有私钥来判断对方是否是server。</li>
@@ -803,7 +803,7 @@
 <li>那也就是说：数字证书可以保证数字证书里的公钥确实是这个证书的所有者(Subject)的，或者证书可以用来确认对方的身份。</li>
 </ol>
 </blockquote>
-<p><img src="/2017/09/14/Https加密流程/./1531037375452.png" alt="Alt text"></p>
+<p><img src="/2017/09/14/Https加密流程/1531037375452.png" alt="Alt text"></p>
 <blockquote>
 <p>上述数字签名部分不确定对不对，但大致思路应该没问题。</p>
 </blockquote>
