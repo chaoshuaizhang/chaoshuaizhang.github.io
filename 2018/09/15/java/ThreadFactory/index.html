@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="ThreadFactory@(java)  好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory123456789101112131415161718192021222324252627282930static class DefaultThreadFactory implements Thr">
+<meta name="description" content="ThreadFactory@(java)  文字乱码   好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory123456789101112131415161718192021222324252627282930static class DefaultThreadFactory impleme">
 <meta name="keywords" content="thread">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ThreadFactory">
 <meta property="og:url" content="http://yoursite.com/2018/09/15/java/ThreadFactory/index.html">
 <meta property="og:site_name" content="changePosition">
-<meta property="og:description" content="ThreadFactory@(java)  好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory123456789101112131415161718192021222324252627282930static class DefaultThreadFactory implements Thr">
+<meta property="og:description" content="ThreadFactory@(java)  文字乱码   好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory123456789101112131415161718192021222324252627282930static class DefaultThreadFactory impleme">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-02-27T09:10:15.187Z">
+<meta property="og:updated_time" content="2019-02-27T09:29:53.625Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ThreadFactory">
-<meta name="twitter:description" content="ThreadFactory@(java)  好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory123456789101112131415161718192021222324252627282930static class DefaultThreadFactory implements Thr">
+<meta name="twitter:description" content="ThreadFactory@(java)  文字乱码   好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory123456789101112131415161718192021222324252627282930static class DefaultThreadFactory impleme">
 
 
 
@@ -344,6 +344,9 @@
       
         <h1 id="ThreadFactory"><a href="#ThreadFactory" class="headerlink" title="ThreadFactory"></a>ThreadFactory</h1><p>@(java)</p>
 <blockquote>
+<p>文字乱码</p>
+</blockquote>
+<blockquote>
 <p>好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultThreadFactory</span> <span class="keyword">implements</span> <span class="title">ThreadFactory</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> AtomicInteger poolNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> ThreadGroup group;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> AtomicInteger threadNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> String namePrefix;</span><br><span class="line"></span><br><span class="line">	DefaultThreadFactory() &#123;</span><br><span class="line">		SecurityManager s = System.getSecurityManager();</span><br><span class="line">		<span class="comment">//线程组</span></span><br><span class="line">		group = (s != <span class="keyword">null</span>) ? s.getThreadGroup() :</span><br><span class="line">							  Thread.currentThread().getThreadGroup();</span><br><span class="line">		<span class="comment">//设置线程池中默认的线程名</span></span><br><span class="line">		namePrefix = <span class="string">"pool-"</span> +</span><br><span class="line">					  poolNumber.getAndIncrement() +</span><br><span class="line">					 <span class="string">"-thread-"</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Thread <span class="title">newThread</span><span class="params">(Runnable r)</span> </span>&#123;</span><br><span class="line">		Thread t = <span class="keyword">new</span> Thread(group, r,</span><br><span class="line">							  namePrefix + threadNumber.getAndIncrement(),</span><br><span class="line">							  <span class="number">0</span>);</span><br><span class="line">		<span class="comment">//恢复为非守护线程</span></span><br><span class="line">		<span class="keyword">if</span> (t.isDaemon())</span><br><span class="line">			t.setDaemon(<span class="keyword">false</span>);</span><br><span class="line">		<span class="comment">//恢复为默认的优先级</span></span><br><span class="line">		<span class="keyword">if</span> (t.getPriority() != Thread.NORM_PRIORITY)</span><br><span class="line">			t.setPriority(Thread.NORM_PRIORITY);</span><br><span class="line">		<span class="keyword">return</span> t;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 </blockquote>
 <p><strong>注意</strong>为什么要执行恢复为非守护线程，默认优先级？</p>
@@ -470,7 +473,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
