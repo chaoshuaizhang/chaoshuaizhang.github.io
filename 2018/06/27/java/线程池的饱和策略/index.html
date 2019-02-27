@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="###线程池的饱和策略@(java)  当没有更多线程或队列槽可用时，或者因为超出它们的边界，或者在关闭Executor时，ThreadPoolExecutor.execute无法接受任务时，ThreadPoolExecutor会调用rejectedExecution这个方法。什么时候会出现？   AbortPolicy：默认的饱和策略，对于队列满了的情况，会直接抛出异常。 CallerRunsP">
+<meta name="description" content="线程池的饱和策略@(java)  当没有更多线程或队列槽可用时，或者因为超出它们的边界，或者在关闭Executor时，ThreadPoolExecutor.execute无法接受任务时，ThreadPoolExecutor会调用rejectedExecution这个方法。什么时候会出现？   AbortPolicy：默认的饱和策略，对于队列满了的情况，会直接抛出异常。 CallerRunsPoli">
 <meta name="keywords" content="thread">
 <meta property="og:type" content="article">
 <meta property="og:title" content="线程池的饱和策略">
-<meta property="og:url" content="http://yoursite.com/2019/02/27/java/线程池的饱和策略/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/06/27/java/线程池的饱和策略/index.html">
 <meta property="og:site_name" content="changePosition">
-<meta property="og:description" content="###线程池的饱和策略@(java)  当没有更多线程或队列槽可用时，或者因为超出它们的边界，或者在关闭Executor时，ThreadPoolExecutor.execute无法接受任务时，ThreadPoolExecutor会调用rejectedExecution这个方法。什么时候会出现？   AbortPolicy：默认的饱和策略，对于队列满了的情况，会直接抛出异常。 CallerRunsP">
+<meta property="og:description" content="线程池的饱和策略@(java)  当没有更多线程或队列槽可用时，或者因为超出它们的边界，或者在关闭Executor时，ThreadPoolExecutor.execute无法接受任务时，ThreadPoolExecutor会调用rejectedExecution这个方法。什么时候会出现？   AbortPolicy：默认的饱和策略，对于队列满了的情况，会直接抛出异常。 CallerRunsPoli">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-02-27T09:49:36.088Z">
+<meta property="og:updated_time" content="2019-02-27T09:56:44.753Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="线程池的饱和策略">
-<meta name="twitter:description" content="###线程池的饱和策略@(java)  当没有更多线程或队列槽可用时，或者因为超出它们的边界，或者在关闭Executor时，ThreadPoolExecutor.execute无法接受任务时，ThreadPoolExecutor会调用rejectedExecution这个方法。什么时候会出现？   AbortPolicy：默认的饱和策略，对于队列满了的情况，会直接抛出异常。 CallerRunsP">
+<meta name="twitter:description" content="线程池的饱和策略@(java)  当没有更多线程或队列槽可用时，或者因为超出它们的边界，或者在关闭Executor时，ThreadPoolExecutor.execute无法接受任务时，ThreadPoolExecutor会调用rejectedExecution这个方法。什么时候会出现？   AbortPolicy：默认的饱和策略，对于队列满了的情况，会直接抛出异常。 CallerRunsPoli">
 
 
 
@@ -120,7 +120,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/02/27/java/线程池的饱和策略/">
+  <link rel="canonical" href="http://yoursite.com/2018/06/27/java/线程池的饱和策略/">
 
 
 
@@ -253,7 +253,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/27/java/线程池的饱和策略/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/27/java/线程池的饱和策略/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="changePosition">
@@ -282,8 +282,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-27T17:46:29+08:00">
-                2019-02-27
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-27T17:46:29+08:00">
+                2018-06-27
               </time>
             
 
@@ -342,7 +342,7 @@
       
 
       
-        <p>###线程池的饱和策略<br>@(java)</p>
+        <h2 id="线程池的饱和策略"><a href="#线程池的饱和策略" class="headerlink" title="线程池的饱和策略"></a>线程池的饱和策略</h2><p>@(java)</p>
 <blockquote>
 <p>当没有更多线程或队列槽可用时，或者因为超出它们的边界，或者在关闭Executor时，ThreadPoolExecutor.execute无法接受任务时，ThreadPoolExecutor会调用rejectedExecution这个方法。<br>什么时候会出现？</p>
 <blockquote>
@@ -353,10 +353,8 @@
 </ul>
 </blockquote>
 </blockquote>
-<p>#####主要实现RejectedExecutionHandler接口<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RejectedExecutionHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 当&#123;<span class="doctag">@link</span> ThreadPoolExecutor #execute execute&#125;无法接受任务</span></span><br><span class="line"><span class="comment">     * 时，会调用这个方法。 当没有更多线程或队列槽可用时，或者因为超出它们</span></span><br><span class="line"><span class="comment">     * 的边界，或者在关闭Executor时，可能会发生这种情况。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor executor)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>#####实现类</p>
-<p>######AbortPolicy</p>
-<blockquote>
+<h5 id="主要实现RejectedExecutionHandler接口"><a href="#主要实现RejectedExecutionHandler接口" class="headerlink" title="主要实现RejectedExecutionHandler接口"></a>主要实现RejectedExecutionHandler接口</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RejectedExecutionHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 当&#123;<span class="doctag">@link</span> ThreadPoolExecutor #execute execute&#125;无法接受任务</span></span><br><span class="line"><span class="comment">     * 时，会调用这个方法。 当没有更多线程或队列槽可用时，或者因为超出它们</span></span><br><span class="line"><span class="comment">     * 的边界，或者在关闭Executor时，可能会发生这种情况。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor executor)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="现类"><a href="#现类" class="headerlink" title="现类"></a>现类</h5><h6 id="AbortPolicy"><a href="#AbortPolicy" class="headerlink" title="AbortPolicy"></a>AbortPolicy</h6><blockquote>
 <p>默认的Handler</p>
 <ol>
 <li>队列满-抛异常</li>
@@ -375,27 +373,23 @@
 </li>
 </ol>
 </blockquote>
-<p>######DiscardPolicy</p>
-<blockquote>
+<h6 id="DiscardPolicy"><a href="#DiscardPolicy" class="headerlink" title="DiscardPolicy"></a>DiscardPolicy</h6><blockquote>
 <p>丢弃策略</p>
 <ol>
 <li>队列满时，丢掉待入队的任务，直到队列有空闲，才加入任务。</li>
 </ol>
 </blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//线程数不够，或者executor关闭时，执行</span></span><br><span class="line">	<span class="comment">//此处的空方法表示什么都不执行，即对于那些无法处理的线程不进行任何处理---即丢弃</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>######CallerRunsPolicy</p>
-<blockquote>
+<h6 id="CallerRunsPolicy"><a href="#CallerRunsPolicy" class="headerlink" title="CallerRunsPolicy"></a>CallerRunsPolicy</h6><blockquote>
 <p>当线程池没有资源，队列满了时，无法执行的task会<strong>交给调用线程（开启线程池的那个线程）执行。</strong><br>比如有10个任务，3个线程，队列为3，则：<br>1-3三个任务由线程直接执行。<br>4-6三个任务放进队列<br>第7个任务会根据情况，如果没有空闲线程，队列不空闲，则交由调用线程执行</p>
 </blockquote>
 <p><strong>rejectedExecution执行体</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!e.isShutdown()) &#123;</span><br><span class="line">	    <span class="comment">//注意看：这里执行了r.run()，请问是哪个线程执行的？</span></span><br><span class="line">	    <span class="comment">//分析下：主线程开启了线程池来执行任务，而当前的方法是在线程调度的过程中发生的</span></span><br><span class="line">	    <span class="comment">//那么谁来进行线程调度？主线程。</span></span><br><span class="line">	    <span class="comment">//所以r.run()也是在main线程池中执行的。</span></span><br><span class="line">        r.run();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p><strong>例子</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">    executor.execute(() -&gt; &#123;</span><br><span class="line">        System.out.println(<span class="string">"my run ... 1 "</span> + Thread.currentThread().getName());</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>######DiscardOldestPolicy</p>
-<blockquote>
+<h6 id="DiscardOldestPolicy"><a href="#DiscardOldestPolicy" class="headerlink" title="DiscardOldestPolicy"></a>DiscardOldestPolicy</h6><blockquote>
 <p>移除（丢弃不执行）最老（队头）的task，执行新插入的task</p>
 </blockquote>
 <p><strong>rejectedExecution实现</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!e.isShutdown()) &#123;</span><br><span class="line">	    <span class="comment">//出队</span></span><br><span class="line">        e.getQueue().poll();</span><br><span class="line">        <span class="comment">//由线程池执行新入队的线程</span></span><br><span class="line">        e.execute(r);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>######自定义RejectedExecutionHandler</p>
-<blockquote>
+<h6 id="自定义RejectedExecutionHandler"><a href="#自定义RejectedExecutionHandler" class="headerlink" title="自定义RejectedExecutionHandler"></a>自定义RejectedExecutionHandler</h6><blockquote>
 <p>当上述四种策略都无法满足时，可以自定义饱和策略。</p>
 </blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyHandler</span> <span class="keyword">implements</span> <span class="title">RejectedExecutionHandler</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor executor)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//r.run();</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RejectedExecutionException(<span class="string">"异常信息"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -428,8 +422,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/15/java/ThreadFactory/" rel="next" title="ThreadFactory">
-                <i class="fa fa-chevron-left"></i> ThreadFactory
+              <a href="/2017/09/15/设计模式/观察者模式/" rel="next" title="观察者模式">
+                <i class="fa fa-chevron-left"></i> 观察者模式
               </a>
             
           </div>
@@ -437,6 +431,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/14/spring/SOA 学习笔记/" rel="prev" title="SOA 学习笔记">
+                SOA 学习笔记 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -488,8 +486,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -549,6 +556,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#线程池的饱和策略"><span class="nav-number">1.</span> <span class="nav-text">线程池的饱和策略</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#主要实现RejectedExecutionHandler接口"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">主要实现RejectedExecutionHandler接口</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#现类"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">现类</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#AbortPolicy"><span class="nav-number">1.0.0.2.1.</span> <span class="nav-text">AbortPolicy</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#DiscardPolicy"><span class="nav-number">1.0.0.2.2.</span> <span class="nav-text">DiscardPolicy</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#CallerRunsPolicy"><span class="nav-number">1.0.0.2.3.</span> <span class="nav-text">CallerRunsPolicy</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#DiscardOldestPolicy"><span class="nav-number">1.0.0.2.4.</span> <span class="nav-text">DiscardOldestPolicy</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#自定义RejectedExecutionHandler"><span class="nav-number">1.0.0.2.5.</span> <span class="nav-text">自定义RejectedExecutionHandler</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
