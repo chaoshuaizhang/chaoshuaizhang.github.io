@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="SOA,">
+  <meta name="keywords" content="thread,">
 
 
 
@@ -79,20 +79,18 @@
 
 
 
-<meta name="description" content="SOA 学习笔记@(java)[SOA]  后台学习推荐书籍spring in action 第四版springboot 揭秘  配合博客dubbo 官网《大型网站技术架构：核心原理与案例分析》《大型网站系统与Java中间件实践》大型分布式网站架构设计与实践SOA理解redisredis开发与运维  ###SOA项目搭建篇 主要目标是：完全清楚为什么要这么搭建，如何体现解耦、复用  大致的继承关系">
-<meta name="keywords" content="SOA">
+<meta name="description" content="ThreadFactory@(java)  好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory123456789101112131415161718192021222324252627282930static class DefaultThreadFactory implements Thr">
+<meta name="keywords" content="thread">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SOA 学习笔记">
-<meta property="og:url" content="http://yoursite.com/2018/09/14/spring/SOA 学习笔记/index.html">
+<meta property="og:title" content="ThreadFactory">
+<meta property="og:url" content="http://yoursite.com/2018/09/15/java/ThreadFactory/index.html">
 <meta property="og:site_name" content="changePosition">
-<meta property="og:description" content="SOA 学习笔记@(java)[SOA]  后台学习推荐书籍spring in action 第四版springboot 揭秘  配合博客dubbo 官网《大型网站技术架构：核心原理与案例分析》《大型网站系统与Java中间件实践》大型分布式网站架构设计与实践SOA理解redisredis开发与运维  ###SOA项目搭建篇 主要目标是：完全清楚为什么要这么搭建，如何体现解耦、复用  大致的继承关系">
+<meta property="og:description" content="ThreadFactory@(java)  好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory123456789101112131415161718192021222324252627282930static class DefaultThreadFactory implements Thr">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/2018/09/14/spring/SOA%20学习笔记/1534138305704.png">
-<meta property="og:updated_time" content="2018-09-15T02:00:41.909Z">
+<meta property="og:updated_time" content="2019-02-27T09:10:15.187Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SOA 学习笔记">
-<meta name="twitter:description" content="SOA 学习笔记@(java)[SOA]  后台学习推荐书籍spring in action 第四版springboot 揭秘  配合博客dubbo 官网《大型网站技术架构：核心原理与案例分析》《大型网站系统与Java中间件实践》大型分布式网站架构设计与实践SOA理解redisredis开发与运维  ###SOA项目搭建篇 主要目标是：完全清楚为什么要这么搭建，如何体现解耦、复用  大致的继承关系">
-<meta name="twitter:image" content="http://yoursite.com/2018/09/14/spring/SOA%20学习笔记/1534138305704.png">
+<meta name="twitter:title" content="ThreadFactory">
+<meta name="twitter:description" content="ThreadFactory@(java)  好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory123456789101112131415161718192021222324252627282930static class DefaultThreadFactory implements Thr">
 
 
 
@@ -122,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/09/14/spring/SOA 学习笔记/">
+  <link rel="canonical" href="http://yoursite.com/2018/09/15/java/ThreadFactory/">
 
 
 
 
 
-  <title>SOA 学习笔记 | changePosition</title>
+  <title>ThreadFactory | changePosition</title>
   
 
 
@@ -255,7 +253,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/14/spring/SOA 学习笔记/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/15/java/ThreadFactory/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="changePosition">
@@ -272,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">SOA 学习笔记</h1>
+          <h1 class="post-title" itemprop="name headline">ThreadFactory</h1>
         
 
         <div class="post-meta">
@@ -284,8 +282,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-14T13:43:05+08:00">
-                2018-09-14
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-15T10:46:38+08:00">
+                2018-09-15
               </time>
             
 
@@ -344,53 +342,15 @@
       
 
       
-        <h2 id="SOA-学习笔记"><a href="#SOA-学习笔记" class="headerlink" title="SOA 学习笔记"></a>SOA 学习笔记</h2><p>@(java)[SOA]</p>
+        <h1 id="ThreadFactory"><a href="#ThreadFactory" class="headerlink" title="ThreadFactory"></a>ThreadFactory</h1><p>@(java)</p>
 <blockquote>
-<p>后台学习推荐书籍<br>spring in action 第四版<br>springboot 揭秘  配合博客<br>dubbo 官网<br>《大型网站技术架构：核心原理与案例分析》<br>《大型网站系统与Java中间件实践》<br>大型分布式网站架构设计与实践<br>SOA理解<br>redis<br>redis开发与运维</p>
+<p>好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultThreadFactory</span> <span class="keyword">implements</span> <span class="title">ThreadFactory</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> AtomicInteger poolNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> ThreadGroup group;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> AtomicInteger threadNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> String namePrefix;</span><br><span class="line"></span><br><span class="line">	DefaultThreadFactory() &#123;</span><br><span class="line">		SecurityManager s = System.getSecurityManager();</span><br><span class="line">		<span class="comment">//线程组</span></span><br><span class="line">		group = (s != <span class="keyword">null</span>) ? s.getThreadGroup() :</span><br><span class="line">							  Thread.currentThread().getThreadGroup();</span><br><span class="line">		<span class="comment">//设置线程池中默认的线程名</span></span><br><span class="line">		namePrefix = <span class="string">"pool-"</span> +</span><br><span class="line">					  poolNumber.getAndIncrement() +</span><br><span class="line">					 <span class="string">"-thread-"</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Thread <span class="title">newThread</span><span class="params">(Runnable r)</span> </span>&#123;</span><br><span class="line">		Thread t = <span class="keyword">new</span> Thread(group, r,</span><br><span class="line">							  namePrefix + threadNumber.getAndIncrement(),</span><br><span class="line">							  <span class="number">0</span>);</span><br><span class="line">		<span class="comment">//恢复为非守护线程</span></span><br><span class="line">		<span class="keyword">if</span> (t.isDaemon())</span><br><span class="line">			t.setDaemon(<span class="keyword">false</span>);</span><br><span class="line">		<span class="comment">//恢复为默认的优先级</span></span><br><span class="line">		<span class="keyword">if</span> (t.getPriority() != Thread.NORM_PRIORITY)</span><br><span class="line">			t.setPriority(Thread.NORM_PRIORITY);</span><br><span class="line">		<span class="keyword">return</span> t;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 </blockquote>
-<p>###<strong>SOA项目搭建篇</strong></p>
-<p><strong>主要目标是：完全清楚为什么要这么搭建，如何体现解耦、复用</strong></p>
-<ol>
-<li>大致的继承关系</li>
-</ol>
-<p><img src="/2018/09/14/spring/SOA 学习笔记/./1534138305704.png" alt="Alt text"></p>
-<ul>
-<li><p>SOATopPom</p>
+<p><strong>注意</strong>为什么要执行恢复为非守护线程，默认优先级？</p>
 <blockquote>
-<p>dependency parent是spring-boot-starter-parent<br>最基础的项目只包含一个pom.xml文件，里边主要是：<br>1、第三方的依赖<br>2、伺服地址配置<br>3、部署构件配置<br>4、对于SP项目来说，spring-boot-starter等aop、web包没有包含在这个pom.xml文件中</p>
+<p>因为线程的创建是依赖当前线程的，当前线程创建了子线程，则当前线程就是子线程的Parent，子线程的一些属相会直接使用父线程的，所以要恢复为默认的。</p>
 </blockquote>
-</li>
-<li><p>SOAParent</p>
-<blockquote>
-<p>SOAParent是聚合项目（一个prj包含多个module）<br>主项目也只包含一个pom.xml文件，里边是业务层所需的依赖<br>module：<br>  IService - jar：只写具体的接口，不写实现<br>  bean - jar<br>  dao - jar</p>
-</blockquote>
-</li>
-<li><p>SOAProvider</p>
-<blockquote>
-<p>dependency parent为SOAParent，主要作用是实现IService，规范的情况下，provider中只有serviceImpl，并把实现了的service注册到zookeeper</p>
-</blockquote>
-</li>
-<li><p>SOAConsumer</p>
-<blockquote>
-<p>consumer的dependency parent不需要为SOAParent（正常情况下消费者是与后台无关的，除非是一个系统既是consumer，又是provider），它只要引入对应的IService就行。</p>
-</blockquote>
-</li>
-</ul>
-<p>###<strong>Dubbo篇</strong></p>
-<p>###<strong>zookeeper篇</strong></p>
-<ol>
-<li><p>zookeeper默认的三个端口</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//对client端提供服务，在provider和consumer中设置registry时使用</span></span><br><span class="line"><span class="number">2181</span></span><br><span class="line"><span class="comment">//服务器与集群中的 Leader 服务器交换信息的端口</span></span><br><span class="line"><span class="number">2888</span></span><br><span class="line"><span class="comment">//一旦集群中的 Leader 服务器挂了，需要一个端口重新进行选举，选出一个新的 Leader</span></span><br><span class="line"><span class="number">3888</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>application.properties中spring-dubbo的配置</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//应用名称</span></span><br><span class="line">spring.dubbo.application.name=dubbo_consumer</span><br><span class="line"><span class="comment">//注册中心地址</span></span><br><span class="line"><span class="comment">//两台服务器，三个zookeeper注册中心（算是伪集群）</span></span><br><span class="line">spring.dubbo.registry.address=zookeeper:<span class="comment">//172.16.103.146:2281?backup=172.16.103.19:2281,172.16.103.136:2381</span></span><br><span class="line"><span class="comment">//协议名称</span></span><br><span class="line">spring.dubbo.protocol.name=dubbo</span><br><span class="line"><span class="comment">//协议端口</span></span><br><span class="line">spring.dubbo.protocol.port=<span class="number">20800</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line">spring.dubbo.registry.timeout=<span class="number">6000</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>###Dubbo-Admin搭建</p>
-<ol start="2">
-<li>出现的问题<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>. It is probably not running</span><br><span class="line">	删除data下面除myid之外的其它文件</span><br><span class="line">	保证dataDir、dataDirLog的路径是正确的</span><br><span class="line"><span class="number">2</span>. 实验证明，当provider写了版本号后，consumer必须也要写版本号，不然引不到</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.daemon = parent.isDaemon();</span><br><span class="line"><span class="keyword">this</span>.priority = parent.getPriority();</span><br><span class="line"><span class="keyword">if</span> (security == <span class="keyword">null</span> || isCCLOverridden(parent.getClass()))</span><br><span class="line">    <span class="keyword">this</span>.contextClassLoader = parent.getContextClassLoader();</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="keyword">this</span>.contextClassLoader = parent.contextClassLoader;</span><br><span class="line"><span class="keyword">this</span>.inheritedAccessControlContext =</span><br><span class="line">        acc != <span class="keyword">null</span> ? acc : AccessController.getContext();</span><br><span class="line"><span class="keyword">this</span>.target = target;</span><br><span class="line">setPriority(priority);</span><br><span class="line"><span class="keyword">if</span> (parent.inheritableThreadLocals != <span class="keyword">null</span>)</span><br><span class="line">    <span class="keyword">this</span>.inheritableThreadLocals =</span><br><span class="line">        ThreadLocal.createInheritedMap(parent.inheritableThreadLocals);</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -408,7 +368,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/SOA/" rel="tag"># SOA</a>
+            <a href="/tags/thread/" rel="tag"># thread</a>
           
         </div>
       
@@ -421,8 +381,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/09/15/设计模式/观察者模式/" rel="next" title="观察者模式">
-                <i class="fa fa-chevron-left"></i> 观察者模式
+              <a href="/2018/09/14/spring/SOA 学习笔记/" rel="next" title="SOA 学习笔记">
+                <i class="fa fa-chevron-left"></i> SOA 学习笔记
               </a>
             
           </div>
@@ -431,8 +391,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/09/15/java/ThreadFactory/" rel="prev" title="ThreadFactory">
-                ThreadFactory <i class="fa fa-chevron-right"></i>
+              <a href="/2018/09/15/java/Java中的管道解析/" rel="prev" title="Java中的管道解析">
+                Java中的管道解析 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -565,7 +525,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SOA-学习笔记"><span class="nav-number">1.</span> <span class="nav-text">SOA 学习笔记</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ThreadFactory"><span class="nav-number">1.</span> <span class="nav-text">ThreadFactory</span></a></li></ol></div>
             
 
           </div>
