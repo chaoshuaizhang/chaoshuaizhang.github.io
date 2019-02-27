@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/15/java/Java中的管道解析/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/27/java/线程池的饱和策略/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="changePosition">
@@ -271,7 +271,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/09/15/java/Java中的管道解析/" itemprop="url">Java中的管道解析</a></h1>
+                <a class="post-title-link" href="/2019/02/27/java/线程池的饱和策略/" itemprop="url">线程池的饱和策略</a></h1>
         
 
         <div class="post-meta">
@@ -283,8 +283,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-15T10:46:38+08:00">
-                2018-09-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-27T17:46:29+08:00">
+                2019-02-27
               </time>
             
 
@@ -345,46 +345,63 @@
       
         
           
-            <h1 id="Java中的管道解析"><a href="#Java中的管道解析" class="headerlink" title="Java中的管道解析"></a>Java中的管道解析</h1><p>@(java)</p>
-<p>[TOC]</p>
+            <p>###线程池的饱和策略<br>@(java)</p>
 <blockquote>
-<p>线程间通信的一种，使用到了wait-notify</p>
-</blockquote>
-<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><h4 id="读取数据流"><a href="#读取数据流" class="headerlink" title="读取数据流"></a>读取数据流</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReadData</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">(PipedReader in)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">char</span>[] bytes = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">8</span>];</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">int</span> l = <span class="number">0</span>;</span><br><span class="line">            <span class="comment">//读管道循环读(从与之建立连接的写管道读)</span></span><br><span class="line">            <span class="keyword">while</span> ((l = in.read(bytes)) != -<span class="number">1</span>) &#123;</span><br><span class="line">                l = in.read(bytes);</span><br><span class="line">                String s = <span class="keyword">new</span> String(bytes, <span class="number">0</span>, l);</span><br><span class="line">                System.out.println(<span class="string">"消费："</span> + s);</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">"--- OVER ---"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="写数据"><a href="#写数据" class="headerlink" title="写数据"></a>写数据</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WriteData</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(PipedOutputStream out)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">	            <span class="comment">//写到管道（与读管道建立连接的管道）里边</span></span><br><span class="line">                out.write(<span class="keyword">new</span> String(<span class="string">""</span> + i).getBytes());</span><br><span class="line">                Thread.sleep(<span class="number">10</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                out.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="测试类"><a href="#测试类" class="headerlink" title="测试类"></a>测试类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        WriteData writeData = <span class="keyword">new</span> WriteData();</span><br><span class="line">        ReadData readData = <span class="keyword">new</span> ReadData();</span><br><span class="line">        <span class="comment">//定义写管道</span></span><br><span class="line">        PipedWriter PipedWriter = <span class="keyword">new</span> PipedWriter();</span><br><span class="line">        <span class="comment">//定义读管道</span></span><br><span class="line">        PipedReader PipedReader = <span class="keyword">new</span> PipedReader();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//建立连接</span></span><br><span class="line">            PipedReader.connect(PipedWriter);</span><br><span class="line">            ThreadRead threadRead = <span class="keyword">new</span> ThreadRead(readData, PipedReader);</span><br><span class="line">            <span class="comment">//读管道开始读---&gt;等待写管道写</span></span><br><span class="line">            threadRead.start();</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">            ThreadWrite threadWrite = <span class="keyword">new</span> ThreadWrite(writeData, PipedWriter);</span><br><span class="line">            <span class="comment">//写管道开始写</span></span><br><span class="line">            threadWrite.start();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadWrite</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> WriteData writeData;</span><br><span class="line">    <span class="keyword">private</span> PipedWriter pipedWriter;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ThreadWrite</span><span class="params">(WriteData writeData, PipedWriter pipedWriter)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.writeData = writeData;</span><br><span class="line">        <span class="keyword">this</span>.pipedWriter = pipedWriter;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.run();</span><br><span class="line">        writeData.write(pipedWriter);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadRead</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> ReadData readData;</span><br><span class="line">    <span class="keyword">private</span> PipedReader pipedReader;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ThreadRead</span><span class="params">(ReadData readData, PipedReader pipedReader)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.readData = readData;</span><br><span class="line">        <span class="keyword">this</span>.pipedReader = pipedReader;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.run();</span><br><span class="line">        readData.read(pipedReader);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="管道流"><a href="#管道流" class="headerlink" title="管道流"></a>管道流</h3><blockquote>
-<p>使用管道流的过程中经常见的两种异常：</p>
+<p>当没有更多线程或队列槽可用时，或者因为超出它们的边界，或者在关闭Executor时，ThreadPoolExecutor.execute无法接受任务时，ThreadPoolExecutor会调用rejectedExecution这个方法。<br>什么时候会出现？</p>
+<blockquote>
 <ul>
-<li>java.io.IOException: Write end dead</li>
-<li>java.io.IOException: Read end dead<br>Piped字节流和字符流完全一样，下面只分析字节流</li>
+<li>AbortPolicy：默认的饱和策略，对于队列满了的情况，会直接抛出异常。</li>
+<li>CallerRunsPolicy：会拒绝无法执行（线程队列满了）的线程，线程被拒绝执行后，会交给调用线程来执行。</li>
+<li></li>
 </ul>
 </blockquote>
-<p><strong>源码均位于PipedInputStream.java中</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Thread对象</span></span><br><span class="line">Thread readSide;</span><br><span class="line">Thread writeSide;</span><br><span class="line"></span><br><span class="line"><span class="comment">//发生在读操作</span></span><br><span class="line"><span class="keyword">if</span> (writeSide != <span class="keyword">null</span> &amp;&amp; !writeSide.isAlive() &amp;&amp; !closedByWriter &amp;&amp; (in &lt; <span class="number">0</span>)) &#123;</span><br><span class="line">	<span class="comment">//分析条件：如果写线程不为空 并且 写线程死掉 并且 没有写操作没有close 并且 读操作没有读到任何数据(-1)</span></span><br><span class="line">	<span class="comment">//则 抛出此异常</span></span><br><span class="line">	<span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Write end dead"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//发生在写操作</span></span><br><span class="line"><span class="keyword">if</span> (readSide != <span class="keyword">null</span> &amp;&amp; !readSide.isAlive()) &#123;</span><br><span class="line">	<span class="comment">//分析条件：若读线程不为空 并且 读线程已经死掉</span></span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Read end dead"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><strong>总结</strong></p>
-<ul>
-<li>若要在读操作不发生异常，则至少需要保证：<ol>
-<li>写线程存活</li>
-<li>若写线程已经结束（死掉），那就要保证写操作被 close</li>
-</ol>
-</li>
-<li>若要在写操作不发生异常，则至少需要保证：<ol>
-<li>要保证有存活的读线程（即使执行一个死循环while(true); 因为只要保证读线程不结束）</li>
-<li>看下图：只有读线程执行了read操作，才会给readSide赋值，所以，如果读线程没有读，那么即使它结束了也不会报错，尾音readSide为null</li>
-</ol>
-</li>
-</ul>
-<p><img src="/2018/09/15/java/Java中的管道解析/./1534070686097.png" alt="Alt text"></p>
-<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><blockquote>
-<p>上述涉及到的主要操作就是：write个read</p>
 </blockquote>
+<p>#####主要实现RejectedExecutionHandler接口<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RejectedExecutionHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 当&#123;<span class="doctag">@link</span> ThreadPoolExecutor #execute execute&#125;无法接受任务</span></span><br><span class="line"><span class="comment">     * 时，会调用这个方法。 当没有更多线程或队列槽可用时，或者因为超出它们</span></span><br><span class="line"><span class="comment">     * 的边界，或者在关闭Executor时，可能会发生这种情况。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor executor)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>#####实现类</p>
+<p>######AbortPolicy</p>
+<blockquote>
+<p>默认的Handler</p>
 <ol>
-<li>建立连接（reader.connect(writer)  或   writer.connect(reader) ），最终都会走到writer的connect方法</li>
-<li>开始读 / 写</li>
-<li>开始写 / 读</li>
+<li>队列满-抛异常</li>
+<li>但队列中的任务继续执行</li>
+<li>之后即使队列为空，仍不会再往队列中放数据了（因为已经抛异常了）<br><strong>线程数为3，队列为5，则最少可执行8个任务。</strong>三个任务直接执行，其余5个放队列。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 当队列满了时，通过直接抛出异常来解决饱和问题，但</span></span><br><span class="line"><span class="comment"> * 是队列中的任务会继续执行，直到执行完成。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//注意这里是主线程，当其他线程无法执行时，会进入到这里，如果执行r.run()则继续执行，但线程是主线程了</span></span><br><span class="line">	<span class="comment">//System.out.println(Thread.currentThread().getName());</span></span><br><span class="line">	<span class="keyword">throw</span> <span class="keyword">new</span> RejectedExecutionException(<span class="string">"Task "</span> + r.toString() +</span><br><span class="line">										 <span class="string">" rejected from "</span> +</span><br><span class="line">										 e.toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">()</span>  <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">	...<span class="comment">//省略一些代码：做一些基本判断，管道是否连接，是否关闭等</span></span><br><span class="line">    readSide = Thread.currentThread();</span><br><span class="line">    <span class="keyword">int</span> trials = <span class="number">2</span>;</span><br><span class="line">    <span class="comment">//循环</span></span><br><span class="line">    <span class="keyword">while</span> (in &lt; <span class="number">0</span>) &#123;</span><br><span class="line">	    <span class="comment">//closedByWriter是否被写者关闭，Writer在close时会调用Reader中的receivedLast()方法来</span></span><br><span class="line">	    <span class="comment">//设置closedByWriter=true，并notifyAll读者</span></span><br><span class="line">        <span class="keyword">if</span> (closedByWriter) &#123;</span><br><span class="line">            <span class="comment">/* closed by writer, return EOF */</span></span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="keyword">if</span> ((writeSide != <span class="keyword">null</span>) &amp;&amp; (!writeSide.isAlive()) &amp;&amp; (--trials &lt; <span class="number">0</span>)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Pipe broken"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/* might be a writer waiting */</span></span><br><span class="line">        notifyAll();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            wait(<span class="number">1000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException ex) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> java.io.InterruptedIOException();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> ret = buffer[out++];</span><br><span class="line">    <span class="keyword">if</span> (out &gt;= buffer.length) &#123;</span><br><span class="line">        out = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (in == out) &#123;</span><br><span class="line">        <span class="comment">/* now empty */</span></span><br><span class="line">        in = -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">    executor.execute(() -&gt; &#123;</span><br><span class="line">        System.out.println(<span class="string">"my run ... 1 "</span> + Thread.currentThread().getName());</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        System.out.println(<span class="string">"-----OVER-----"</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//输出结果</span></span><br><span class="line">my run ... <span class="number">1</span> pool-<span class="number">1</span>-thread-<span class="number">1</span></span><br><span class="line">Exception in thread <span class="string">"main"</span> java.util.concurrent.RejectedExecutionException: ......</span><br><span class="line">-----OVER-----</span><br><span class="line">my run ... <span class="number">1</span> pool-<span class="number">1</span>-thread-<span class="number">1</span></span><br><span class="line">-----OVER-----</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ol>
+<li>对上述的输出结果有些诧异，因为只有一个线程，为什么会有两个完整的执行体（打印出OVER说明线程执行体执行完成）？</li>
+<li>执行两次的原因不清楚，为什么会执行两次？只有一个线程容量，加入第二个任务时应该直接抛异常吧，为什么是执行完第二个任务后才抛异常？<blockquote>
+<p><strong>这个容量满了是指当前的线程池以及其缓冲队列的容量都满了才是满了, 而不是线程池的数量。先勉强用这个解释吧，但我看代码仍没看出来！</strong>应该就是这个原因，如果把线程数设置为1，但Queue设置为10，则会先执行一个任务，然后把其余任务加入到队列，如果队列满了，并且没有空闲线程。</p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<p>######DiscardPolicy</p>
+<blockquote>
+<p>丢弃策略</p>
+<ol>
+<li>队列满时，丢掉待入队的任务，直到队列有空闲，才加入任务。</li>
+</ol>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//线程数不够，或者executor关闭时，执行</span></span><br><span class="line">	<span class="comment">//此处的空方法表示什么都不执行，即对于那些无法处理的线程不进行任何处理---即丢弃</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>######CallerRunsPolicy</p>
+<blockquote>
+<p>当线程池没有资源，队列满了时，无法执行的task会<strong>交给调用线程（开启线程池的那个线程）执行。</strong><br>比如有10个任务，3个线程，队列为3，则：<br>1-3三个任务由线程直接执行。<br>4-6三个任务放进队列<br>第7个任务会根据情况，如果没有空闲线程，队列不空闲，则交由调用线程执行</p>
+</blockquote>
+<p><strong>rejectedExecution执行体</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!e.isShutdown()) &#123;</span><br><span class="line">	    <span class="comment">//注意看：这里执行了r.run()，请问是哪个线程执行的？</span></span><br><span class="line">	    <span class="comment">//分析下：主线程开启了线程池来执行任务，而当前的方法是在线程调度的过程中发生的</span></span><br><span class="line">	    <span class="comment">//那么谁来进行线程调度？主线程。</span></span><br><span class="line">	    <span class="comment">//所以r.run()也是在main线程池中执行的。</span></span><br><span class="line">        r.run();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>例子</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">    executor.execute(() -&gt; &#123;</span><br><span class="line">        System.out.println(<span class="string">"my run ... 1 "</span> + Thread.currentThread().getName());</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>######DiscardOldestPolicy</p>
+<blockquote>
+<p>移除（丢弃不执行）最老（队头）的task，执行新插入的task</p>
+</blockquote>
+<p><strong>rejectedExecution实现</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!e.isShutdown()) &#123;</span><br><span class="line">	    <span class="comment">//出队</span></span><br><span class="line">        e.getQueue().poll();</span><br><span class="line">        <span class="comment">//由线程池执行新入队的线程</span></span><br><span class="line">        e.execute(r);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>######自定义RejectedExecutionHandler</p>
+<blockquote>
+<p>当上述四种策略都无法满足时，可以自定义饱和策略。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyHandler</span> <span class="keyword">implements</span> <span class="title">RejectedExecutionHandler</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor executor)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//r.run();</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RejectedExecutionException(<span class="string">"异常信息"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           
         
       
@@ -527,9 +544,6 @@
           
             <h1 id="ThreadFactory"><a href="#ThreadFactory" class="headerlink" title="ThreadFactory"></a>ThreadFactory</h1><p>@(java)</p>
 <blockquote>
-<p>文字乱码</p>
-</blockquote>
-<blockquote>
 <p>好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultThreadFactory</span> <span class="keyword">implements</span> <span class="title">ThreadFactory</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> AtomicInteger poolNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> ThreadGroup group;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> AtomicInteger threadNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> String namePrefix;</span><br><span class="line"></span><br><span class="line">	DefaultThreadFactory() &#123;</span><br><span class="line">		SecurityManager s = System.getSecurityManager();</span><br><span class="line">		<span class="comment">//线程组</span></span><br><span class="line">		group = (s != <span class="keyword">null</span>) ? s.getThreadGroup() :</span><br><span class="line">							  Thread.currentThread().getThreadGroup();</span><br><span class="line">		<span class="comment">//设置线程池中默认的线程名</span></span><br><span class="line">		namePrefix = <span class="string">"pool-"</span> +</span><br><span class="line">					  poolNumber.getAndIncrement() +</span><br><span class="line">					 <span class="string">"-thread-"</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Thread <span class="title">newThread</span><span class="params">(Runnable r)</span> </span>&#123;</span><br><span class="line">		Thread t = <span class="keyword">new</span> Thread(group, r,</span><br><span class="line">							  namePrefix + threadNumber.getAndIncrement(),</span><br><span class="line">							  <span class="number">0</span>);</span><br><span class="line">		<span class="comment">//恢复为非守护线程</span></span><br><span class="line">		<span class="keyword">if</span> (t.isDaemon())</span><br><span class="line">			t.setDaemon(<span class="keyword">false</span>);</span><br><span class="line">		<span class="comment">//恢复为默认的优先级</span></span><br><span class="line">		<span class="keyword">if</span> (t.getPriority() != Thread.NORM_PRIORITY)</span><br><span class="line">			t.setPriority(Thread.NORM_PRIORITY);</span><br><span class="line">		<span class="keyword">return</span> t;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 </blockquote>
 <p><strong>注意</strong>为什么要执行恢复为非守护线程，默认优先级？</p>
@@ -537,6 +551,186 @@
 <p>因为线程的创建是依赖当前线程的，当前线程创建了子线程，则当前线程就是子线程的Parent，子线程的一些属相会直接使用父线程的，所以要恢复为默认的。</p>
 </blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.daemon = parent.isDaemon();</span><br><span class="line"><span class="keyword">this</span>.priority = parent.getPriority();</span><br><span class="line"><span class="keyword">if</span> (security == <span class="keyword">null</span> || isCCLOverridden(parent.getClass()))</span><br><span class="line">    <span class="keyword">this</span>.contextClassLoader = parent.getContextClassLoader();</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="keyword">this</span>.contextClassLoader = parent.contextClassLoader;</span><br><span class="line"><span class="keyword">this</span>.inheritedAccessControlContext =</span><br><span class="line">        acc != <span class="keyword">null</span> ? acc : AccessController.getContext();</span><br><span class="line"><span class="keyword">this</span>.target = target;</span><br><span class="line">setPriority(priority);</span><br><span class="line"><span class="keyword">if</span> (parent.inheritableThreadLocals != <span class="keyword">null</span>)</span><br><span class="line">    <span class="keyword">this</span>.inheritableThreadLocals =</span><br><span class="line">        ThreadLocal.createInheritedMap(parent.inheritableThreadLocals);</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/15/java/Java中的管道解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/15/java/Java中的管道解析/" itemprop="url">Java中的管道解析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-15T10:46:38+08:00">
+                2018-09-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Java中的管道解析"><a href="#Java中的管道解析" class="headerlink" title="Java中的管道解析"></a>Java中的管道解析</h1><p>@(java)</p>
+<p>[TOC]</p>
+<blockquote>
+<p>线程间通信的一种，使用到了wait-notify</p>
+</blockquote>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><h4 id="读取数据流"><a href="#读取数据流" class="headerlink" title="读取数据流"></a>读取数据流</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReadData</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">(PipedReader in)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">char</span>[] bytes = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">8</span>];</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">int</span> l = <span class="number">0</span>;</span><br><span class="line">            <span class="comment">//读管道循环读(从与之建立连接的写管道读)</span></span><br><span class="line">            <span class="keyword">while</span> ((l = in.read(bytes)) != -<span class="number">1</span>) &#123;</span><br><span class="line">                l = in.read(bytes);</span><br><span class="line">                String s = <span class="keyword">new</span> String(bytes, <span class="number">0</span>, l);</span><br><span class="line">                System.out.println(<span class="string">"消费："</span> + s);</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">"--- OVER ---"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="写数据"><a href="#写数据" class="headerlink" title="写数据"></a>写数据</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WriteData</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(PipedOutputStream out)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">	            <span class="comment">//写到管道（与读管道建立连接的管道）里边</span></span><br><span class="line">                out.write(<span class="keyword">new</span> String(<span class="string">""</span> + i).getBytes());</span><br><span class="line">                Thread.sleep(<span class="number">10</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                out.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="测试类"><a href="#测试类" class="headerlink" title="测试类"></a>测试类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        WriteData writeData = <span class="keyword">new</span> WriteData();</span><br><span class="line">        ReadData readData = <span class="keyword">new</span> ReadData();</span><br><span class="line">        <span class="comment">//定义写管道</span></span><br><span class="line">        PipedWriter PipedWriter = <span class="keyword">new</span> PipedWriter();</span><br><span class="line">        <span class="comment">//定义读管道</span></span><br><span class="line">        PipedReader PipedReader = <span class="keyword">new</span> PipedReader();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//建立连接</span></span><br><span class="line">            PipedReader.connect(PipedWriter);</span><br><span class="line">            ThreadRead threadRead = <span class="keyword">new</span> ThreadRead(readData, PipedReader);</span><br><span class="line">            <span class="comment">//读管道开始读---&gt;等待写管道写</span></span><br><span class="line">            threadRead.start();</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">            ThreadWrite threadWrite = <span class="keyword">new</span> ThreadWrite(writeData, PipedWriter);</span><br><span class="line">            <span class="comment">//写管道开始写</span></span><br><span class="line">            threadWrite.start();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadWrite</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> WriteData writeData;</span><br><span class="line">    <span class="keyword">private</span> PipedWriter pipedWriter;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ThreadWrite</span><span class="params">(WriteData writeData, PipedWriter pipedWriter)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.writeData = writeData;</span><br><span class="line">        <span class="keyword">this</span>.pipedWriter = pipedWriter;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.run();</span><br><span class="line">        writeData.write(pipedWriter);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadRead</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> ReadData readData;</span><br><span class="line">    <span class="keyword">private</span> PipedReader pipedReader;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ThreadRead</span><span class="params">(ReadData readData, PipedReader pipedReader)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.readData = readData;</span><br><span class="line">        <span class="keyword">this</span>.pipedReader = pipedReader;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.run();</span><br><span class="line">        readData.read(pipedReader);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="管道流"><a href="#管道流" class="headerlink" title="管道流"></a>管道流</h3><blockquote>
+<p>使用管道流的过程中经常见的两种异常：</p>
+<ul>
+<li>java.io.IOException: Write end dead</li>
+<li>java.io.IOException: Read end dead<br>Piped字节流和字符流完全一样，下面只分析字节流</li>
+</ul>
+</blockquote>
+<p><strong>源码均位于PipedInputStream.java中</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Thread对象</span></span><br><span class="line">Thread readSide;</span><br><span class="line">Thread writeSide;</span><br><span class="line"></span><br><span class="line"><span class="comment">//发生在读操作</span></span><br><span class="line"><span class="keyword">if</span> (writeSide != <span class="keyword">null</span> &amp;&amp; !writeSide.isAlive() &amp;&amp; !closedByWriter &amp;&amp; (in &lt; <span class="number">0</span>)) &#123;</span><br><span class="line">	<span class="comment">//分析条件：如果写线程不为空 并且 写线程死掉 并且 没有写操作没有close 并且 读操作没有读到任何数据(-1)</span></span><br><span class="line">	<span class="comment">//则 抛出此异常</span></span><br><span class="line">	<span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Write end dead"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//发生在写操作</span></span><br><span class="line"><span class="keyword">if</span> (readSide != <span class="keyword">null</span> &amp;&amp; !readSide.isAlive()) &#123;</span><br><span class="line">	<span class="comment">//分析条件：若读线程不为空 并且 读线程已经死掉</span></span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Read end dead"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>总结</strong></p>
+<ul>
+<li>若要在读操作不发生异常，则至少需要保证：<ol>
+<li>写线程存活</li>
+<li>若写线程已经结束（死掉），那就要保证写操作被 close</li>
+</ol>
+</li>
+<li>若要在写操作不发生异常，则至少需要保证：<ol>
+<li>要保证有存活的读线程（即使执行一个死循环while(true); 因为只要保证读线程不结束）</li>
+<li>看下图：只有读线程执行了read操作，才会给readSide赋值，所以，如果读线程没有读，那么即使它结束了也不会报错，尾音readSide为null</li>
+</ol>
+</li>
+</ul>
+<p><img src="/2018/09/15/java/Java中的管道解析/./1534070686097.png" alt="Alt text"></p>
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><blockquote>
+<p>上述涉及到的主要操作就是：write个read</p>
+</blockquote>
+<ol>
+<li>建立连接（reader.connect(writer)  或   writer.connect(reader) ），最终都会走到writer的connect方法</li>
+<li>开始读 / 写</li>
+<li>开始写 / 读</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">()</span>  <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">	...<span class="comment">//省略一些代码：做一些基本判断，管道是否连接，是否关闭等</span></span><br><span class="line">    readSide = Thread.currentThread();</span><br><span class="line">    <span class="keyword">int</span> trials = <span class="number">2</span>;</span><br><span class="line">    <span class="comment">//循环</span></span><br><span class="line">    <span class="keyword">while</span> (in &lt; <span class="number">0</span>) &#123;</span><br><span class="line">	    <span class="comment">//closedByWriter是否被写者关闭，Writer在close时会调用Reader中的receivedLast()方法来</span></span><br><span class="line">	    <span class="comment">//设置closedByWriter=true，并notifyAll读者</span></span><br><span class="line">        <span class="keyword">if</span> (closedByWriter) &#123;</span><br><span class="line">            <span class="comment">/* closed by writer, return EOF */</span></span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="keyword">if</span> ((writeSide != <span class="keyword">null</span>) &amp;&amp; (!writeSide.isAlive()) &amp;&amp; (--trials &lt; <span class="number">0</span>)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Pipe broken"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/* might be a writer waiting */</span></span><br><span class="line">        notifyAll();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            wait(<span class="number">1000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException ex) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> java.io.InterruptedIOException();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> ret = buffer[out++];</span><br><span class="line">    <span class="keyword">if</span> (out &gt;= buffer.length) &#123;</span><br><span class="line">        out = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (in == out) &#123;</span><br><span class="line">        <span class="comment">/* now empty */</span></span><br><span class="line">        in = -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
           
         
@@ -1180,7 +1374,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
