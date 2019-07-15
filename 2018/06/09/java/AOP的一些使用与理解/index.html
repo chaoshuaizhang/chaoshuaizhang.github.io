@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="AOP,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="AOP[TOC]   OOP作用：日志记录，权限验证，事务控制，性能检测，错误信息检测等等，和核心业务没有任何关系。 为什么要使用切面编程：方便，提取公共的非业务代码，避免一些逻辑校验代码与业务代码混合，可以使用分层思想，从上到下，一个一个的切面，剥离一些“无用”的代码，直到抽出核心代码。    AOP-AspectJ-SpringAOP-JDK动态代理-CGlib动态代理这几个的关系  实现切面">
+<meta name="keywords" content="AOP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AOP的一些使用与理解">
+<meta property="og:url" content="http://yoursite.com/2018/06/09/java/AOP的一些使用与理解/index.html">
+<meta property="og:site_name" content="changePosition">
+<meta property="og:description" content="AOP[TOC]   OOP作用：日志记录，权限验证，事务控制，性能检测，错误信息检测等等，和核心业务没有任何关系。 为什么要使用切面编程：方便，提取公共的非业务代码，避免一些逻辑校验代码与业务代码混合，可以使用分层思想，从上到下，一个一个的切面，剥离一些“无用”的代码，直到抽出核心代码。    AOP-AspectJ-SpringAOP-JDK动态代理-CGlib动态代理这几个的关系  实现切面">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2018/06/09/java/AOP的一些使用与理解/67c610db84fdb4a7d346f0a5d181ca23.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/09/java/AOP的一些使用与理解/8acf8e36d6042f9459df05007a3c803c.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/09/java/AOP的一些使用与理解/de2ffb0b869b69dd743b870a970e2830.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/09/java/AOP的一些使用与理解/eec369c68e59c64f7144db801613ed47.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/09/java/AOP的一些使用与理解/6121ca1a8f560bccbdab7df5bb0d8d61.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/09/java/AOP的一些使用与理解/4ad811775c2ba1fe9a2f72e7011385e6.png">
+<meta property="og:image" content="http://yoursite.com/2018/06/09/java/AOP的一些使用与理解/b1b1ed687d431b10051a5c88bcf30d5a.png">
+<meta property="og:updated_time" content="2019-07-15T03:10:18.513Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AOP的一些使用与理解">
+<meta name="twitter:description" content="AOP[TOC]   OOP作用：日志记录，权限验证，事务控制，性能检测，错误信息检测等等，和核心业务没有任何关系。 为什么要使用切面编程：方便，提取公共的非业务代码，避免一些逻辑校验代码与业务代码混合，可以使用分层思想，从上到下，一个一个的切面，剥离一些“无用”的代码，直到抽出核心代码。    AOP-AspectJ-SpringAOP-JDK动态代理-CGlib动态代理这几个的关系  实现切面">
+<meta name="twitter:image" content="http://yoursite.com/2018/06/09/java/AOP的一些使用与理解/67c610db84fdb4a7d346f0a5d181ca23.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/06/09/java/AOP的一些使用与理解/">
+
+
+
+
+
+  <title>AOP的一些使用与理解 | changePosition</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">changePosition</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/09/java/AOP的一些使用与理解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AOP的一些使用与理解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-09T23:56:01+08:00">
+                2018-06-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="AOP"><a href="#AOP" class="headerlink" title="AOP"></a>AOP</h1><p>[TOC]</p>
+<blockquote>
+<ul>
+<li>OOP作用：日志记录，权限验证，事务控制，性能检测，错误信息检测等等，和核心业务没有任何关系。</li>
+<li>为什么要使用切面编程：方便，提取公共的非业务代码，避免一些逻辑校验代码与业务代码混合，可以使用分层思想，从上到下，一个一个的切面，剥离一些“无用”的代码，直到抽出核心代码。</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>AOP-AspectJ-SpringAOP-JDK动态代理-CGlib动态代理这几个的关系<br><img src="/2018/06/09/java/AOP的一些使用与理解/./67c610db84fdb4a7d346f0a5d181ca23.png" alt="Alt text"></p>
+</blockquote>
+<h3 id="实现切面的两种思路"><a href="#实现切面的两种思路" class="headerlink" title="实现切面的两种思路"></a>实现切面的两种思路</h3><h4 id="横向扩展"><a href="#横向扩展" class="headerlink" title="横向扩展"></a>横向扩展</h4><ul>
+<li>AspectJ</li>
+<li>代理</li>
+</ul>
+<h4 id="纵向扩展"><a href="#纵向扩展" class="headerlink" title="纵向扩展"></a>纵向扩展</h4><blockquote>
+<p>一般通过继承的方式：A要有个大日志的功能，则B继承A，B重写A的方法，添加日志，A又想有监测的功能，则C继承B，重写B的方法，添加监测功能。</p>
+</blockquote>
+<p>缺点：如上所述，添加的功能越多，代码耦合越大。</p>
+<h3 id="AspectJ分析"><a href="#AspectJ分析" class="headerlink" title="AspectJ分析"></a>AspectJ分析</h3><blockquote>
+<p>分为两种：</p>
+<ul>
+<li>基于AspectJ语法编写，然后使用ajc（默认java使用的是javac，因为要编译AspectJ，需要在IDE中改成ajc，或者是使用命令，依赖于aspectjtool包）编译.aj文件，生成标准的class文件。</li>
+<li>基于注解，Java语言+aspectj包的注解，通过AspectJ提供的编织器，编织代码到目标class文件中（<strong>但是我反编译class文件，没有看到被织入的代码</strong>）。</li>
+</ul>
+</blockquote>
+<h5 id="织入的概念"><a href="#织入的概念" class="headerlink" title="织入的概念"></a>织入的概念</h5><blockquote>
+<p>何为织入？使切面的逻辑代码并入（逻辑上并入或者物理上并入）到业务代码中，这里的逻辑和物理是指：A中调用B称为逻辑织入，A和B融合到一起称为物理织入。</p>
+</blockquote>
+<ul>
+<li>如何织入？两种方式吧（<a href="https://blog.mythsman.com/2017/12/21/1/" target="_blank" rel="noopener">参考网络</a>）</li>
+</ul>
+<ol>
+<li>提供注册机制，通过提供配置文件（注册表）指明那些类需要被切。（<strong>逻辑织入</strong>）</li>
+<li>在编译期或者类加载期，优先编译或加载切面代码，然后将切面代码并入到指定的类中，一般都是通过aspectjweaver包实现的。（<strong>物理织入</strong>）</li>
+</ol>
+<blockquote>
+<p>总感觉这两种方式差不多吧，难道第一种是我使用某一个方法时，先查一下它是否进行了切面注册，如果是的话，先执行切面？第二种就是我常用的方式。</p>
+</blockquote>
+<h5 id="物理织入"><a href="#物理织入" class="headerlink" title="物理织入"></a>物理织入</h5><blockquote>
+<p><strong>具体分为三种</strong></p>
+<blockquote>
+<p>使用AspectJ语法的话，默认只能使用第一种方式（因为.aj文件只能通过ajc编译），使用注解的话，下列三种方式都可以实现。</p>
+<ol>
+<li>编译时织入<br>利用<strong>ajc编译器替代javac编译器</strong>，直接将源文件(java或者aspect文件)编译成class文件并将切面织入进代码。</li>
+<li>编译后织入<br>利用ajc编译器<strong>向javac编译期编译后的</strong>class文件或jar文件织入切面代码。</li>
+<li>加载时织入<br><strong>不使用ajc编译器</strong>，利用aspectjweaver.jar工具，使用java agent代理在类加载期将切面织入进代码。</li>
+</ol>
+</blockquote>
+</blockquote>
+<p><img src="/2018/06/09/java/AOP的一些使用与理解/./8acf8e36d6042f9459df05007a3c803c.png" alt="Alt text"></p>
+<h4 id="第一种、使用AspectJ语法"><a href="#第一种、使用AspectJ语法" class="headerlink" title="第一种、使用AspectJ语法"></a>第一种、使用AspectJ语法</h4><blockquote>
+<p>这种方式只需借助<code>aspectjrt.jar、aspectjtools.jar这两个jar包</code></p>
+</blockquote>
+<h5 id="使用原生AspectJ语法定义切面"><a href="#使用原生AspectJ语法定义切面" class="headerlink" title="使用原生AspectJ语法定义切面"></a>使用原生AspectJ语法定义切面</h5><blockquote>
+<p>此文件为TestAspect.aj文件，默认IDE是不能创建.aj文件的，添加spring-aop依赖后就可以创建。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> aspect TestAspect &#123;</span><br><span class="line">    <span class="comment">//定义切点</span></span><br><span class="line">    <span class="function">pointcut <span class="title">webLog</span><span class="params">()</span>: <span class="title">execution</span><span class="params">(<span class="keyword">public</span> * net.shopin.pdaware.common..*.sayHello(..)</span>)</span>;</span><br><span class="line">    <span class="comment">//前置通知</span></span><br><span class="line">    before(): webLog() &#123;</span><br><span class="line">        System.out.println(<span class="string">"前置 入参打印"</span> + thisJoinPoint.getArgs());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//环绕通知</span></span><br><span class="line">    around(): webLog()&#123;</span><br><span class="line">        System.out.println(<span class="string">"环绕打印"</span>);</span><br><span class="line">        <span class="comment">//获得参数名</span></span><br><span class="line">        String[] names = ((CodeSignature) thisJoinPointStaticPart.getSignature()).getParameterNames();</span><br><span class="line">        <span class="comment">//获得参数</span></span><br><span class="line">        Object[] args = thisJoinPoint.getArgs();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//后置通知</span></span><br><span class="line">    after(): webLog(JoinPoint point)&#123;</span><br><span class="line">        System.out.println(<span class="string">"后置 返参打印"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="织入后的文件"><a href="#织入后的文件" class="headerlink" title="织入后的文件"></a>织入后的文件</h5><blockquote>
+<p>首先，我没有看到织入成功的文件，配置了ajc但是没生效，所以拷贝一段网络的代码吧。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="comment">//前置通知</span></span><br><span class="line">		TestAspect.aspectOf().ajc$before$TestAspect$<span class="number">1</span>$<span class="number">682722</span>c();</span><br><span class="line">		<span class="comment">//核心业务代码</span></span><br><span class="line">		System.out.println(<span class="string">"Hello"</span>);</span><br><span class="line">	&#125; <span class="keyword">catch</span> (Throwable localThrowable) &#123;</span><br><span class="line">		<span class="comment">//后置通知（不清楚为什么这里也有后置通知）</span></span><br><span class="line">		TestAspect.aspectOf().ajc$after$TestAspect$<span class="number">2</span>$<span class="number">682722</span>c();</span><br><span class="line">		<span class="keyword">throw</span> localThrowable;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//明明这里有一个后置通知就行了，为什么上边的catch中还会有一个？</span></span><br><span class="line">	TestAspect.aspectOf().ajc$after$TestAspect$<span class="number">2</span>$<span class="number">682722</span>c();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="编译后的Aspect文件"><a href="#编译后的Aspect文件" class="headerlink" title="编译后的Aspect文件"></a>编译后的Aspect文件</h5><ul>
+<li><p>看到上述的前置后置都是调用TestAspect.aspectOf().XXX来实现打日志，可以联想到可能是个单例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> TestAspect <span class="title">aspectOf</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(ajc$perSingletonInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> NoAspectBoundException(<span class="string">"TestAspect"</span>, ajc$initFailureCause);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> ajc$perSingletonInstance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>什么时候初始化perSingletonInstance呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//静态代码块，类加载时就先初始化</span></span><br><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="comment">//实例化我们定义的切面对象</span></span><br><span class="line">		ajc$postClinit();</span><br><span class="line">	&#125; <span class="keyword">catch</span> (Throwable localThrowable) &#123;</span><br><span class="line">		ajc$initFailureCause = localThrowable;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> ajc$postClinit() &#123;</span><br><span class="line">	<span class="comment">//可以看到在这里实例化了一个TestAspect对象</span></span><br><span class="line">	ajc$perSingletonInstance = <span class="keyword">new</span> TestAspect();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过单例来调用前置、后置、环绕等方法<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> ajc$before$TestAspect$<span class="number">1</span>$<span class="number">682722</span>c() &#123;</span><br><span class="line">	System.out.println(<span class="string">"前置 入参打印"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> ajc$after$TestAspect$<span class="number">2</span>$<span class="number">682722</span>c() &#123;</span><br><span class="line">	System.out.println(<span class="string">"后置 返参打印"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<blockquote>
+<p>通过看上边.aj文件的编译情况，可以想到为什么说AspectJ是静态编译了，他就是把在核心业务代码前后调用了一些方法，和我们手动定义一些Util方法是有些类似的，不同的是，这些AspectJ会自动为我们做好。<br>缺点：</p>
+</blockquote>
+<h4 id="第二种、使用注解"><a href="#第二种、使用注解" class="headerlink" title="第二种、使用注解"></a>第二种、使用注解</h4><blockquote>
+<p>这种方式不仅需要借助<code>aspectjrt.jar、aspectjtools.jar这两个jar包</code>还需要<code>aspectjweaver.jar</code>，因为注解的方式需要把目标class文件和切面class文件进行织入。aspectj语法的方式不需要aspectjweaver，不太清楚为什么不需要aspectweaver包，但肯定和它是.aj有关，哈哈。</p>
+<blockquote>
+<p>下面将讲三种方式：编译时、后、加载时。我从服务端down的class文件中没有织入代码，难道使用的是加载是的织入方式？不是的！Spring的aop借助的是【】</p>
+</blockquote>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Order</span>(<span class="number">1</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebLogAspect</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Pointcut</span>(<span class="string">"execution(public * net.shopin.pdaware..*Controller.*(..))"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">webLog</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Before</span>(<span class="string">"webLog()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doLogBefore</span><span class="params">(JoinPoint joinPoint)</span> </span>&#123;&#125;</span><br><span class="line">    <span class="meta">@After</span>(<span class="string">"webLog()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doLogAfter</span><span class="params">(JoinPoint joinPoint)</span> </span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="方式一、编译时织入"><a href="#方式一、编译时织入" class="headerlink" title="方式一、编译时织入"></a>方式一、编译时织入</h5><blockquote>
+<p>所谓编译时织入就是：在使用ajc编译目标.java文件和切面文件时，就进行融合，生成的class文件和上述使用AspectJ语法编写后的织入是一样的。</p>
+</blockquote>
+<h5 id="方式二、编译后织入"><a href="#方式二、编译后织入" class="headerlink" title="方式二、编译后织入"></a>方式二、编译后织入</h5><blockquote>
+<p>编译后织入分为两步。</p>
+</blockquote>
+<ul>
+<li>第一步：使用javac编译目标文件和切面文件，生成.class（和java文件没有区别，看不出什么）。</li>
+<li>第二步：使用ajc再次处理（编译？）上述class文件，得到新的织入切面代码后的class文件（此时看到的新的class文件和上述AspectJ语法编译后的class是一样的，单例模式）。</li>
+</ul>
+<hr>
+<blockquote>
+<p>上述两种aspect.class时如何织入到target.class文件中的？</p>
+<blockquote>
+<p>我们在<strong>aspect中定义的有我要切哪些目标类、方法等</strong>，所以编译期会通过这些标识去找到对应的target，然后织入。</p>
+</blockquote>
+</blockquote>
+<h5 id="方式三、加载时织入（LTW）"><a href="#方式三、加载时织入（LTW）" class="headerlink" title="方式三、加载时织入（LTW）"></a>方式三、加载时织入（LTW）</h5><blockquote>
+<p>LTW：Load-Time Weaving<br>此时就不借助于ajc工具了。</p>
+</blockquote>
+<h6 id="如何实现？"><a href="#如何实现？" class="headerlink" title="如何实现？"></a>如何实现？</h6><blockquote>
+<p>上述已经说了，编译时、后是通过ajc查看class为标识把目标class和切面class进行关联，那么运行时呢？已经编译过了，咋关联？</p>
+<blockquote>
+<p>是否可以通过一种方式：在加载目标类时它知道它要被某个切面进行关联，所以JVM要先加载那个切面，然后再加载它自己。也就是在目标类加载之前，其对应的切面必须被加载完成。</p>
+</blockquote>
+</blockquote>
+<p><strong>具体的织入方式需要借助于JavaAgent</strong></p>
+<blockquote>
+<p>对于javaagent这里就不做详细介绍了，毕竟不清楚。大致拷贝下它的作用</p>
+</blockquote>
+<ul>
+<li>可以在加载 class 文件之前做拦截，对字节码做修改</li>
+<li>可以在运行期对已加载类的字节码做变更，但是这种情况下会有很多的限制</li>
+<li>还有其他一些小众的功能：<blockquote>
+<ul>
+<li>获取所有已经加载过的类</li>
+<li>获取所有已经初始化过的类（执行过 clinit 方法，是上面的一个子集）</li>
+<li>获取某个对象的大小</li>
+<li>将某个 jar 加入到 bootstrap classpath 里作为高优先级被 bootstrapClassloader 加载</li>
+<li>将某个 jar 加入到 classpath 里供 AppClassloard 去加载</li>
+<li>设置某些 native 方法的前缀，主要在查找 native 方法的时候做规则匹配</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p><strong>从agent的作用可以看出来，它可以实现运行时的织入。</strong></p>
+<h6 id="使用LTW方式的要求"><a href="#使用LTW方式的要求" class="headerlink" title="使用LTW方式的要求"></a>使用LTW方式的要求</h6><blockquote>
+<p>官方给了三个要使用LTW的前置条件。</p>
+<ol>
+<li>All aspects to be used for weaving <strong>must be defined to the weaver before any types to be woven are loaded</strong>. This avoids types being “missed” by aspects added later, with the result that invariants across types fail.<br>在加载需要被织入切面的业务代码前，必须把所有的织入类先加载了。</li>
+<li>All aspects visible to the weaver are usable. A visible aspect is one defined by the weaving class loader or one of its parent class loaders. All concrete visible aspects are woven and all abstract visible aspects may be extended.</li>
+<li><strong>A class loader may only weave classes that it defines.</strong> It may not weave classes loaded by <strong>a delegate or parent class loader</strong>.<br>类加载器可能只会织入它定义（加载）的那些类。其它加载器、父加载器定义的类他可能无法织入。</li>
+</ol>
+</blockquote>
+<h3 id="SpringAOP"><a href="#SpringAOP" class="headerlink" title="SpringAOP"></a>SpringAOP</h3><h5 id="疑惑点"><a href="#疑惑点" class="headerlink" title="疑惑点"></a>疑惑点</h5><blockquote>
+<p>总是不清楚SpringAOP这个概念，都说实现方式是JDK动态代理或者是Cglib，但是我在Spring项目中使用的只是AspectJ，所以就一直在想AspectJ是不是也是SpringAOP的一种实现方式，毕竟SpringAOP也依赖了aspectjweaver的包。</p>
+</blockquote>
+<h6 id="pom中的依赖"><a href="#pom中的依赖" class="headerlink" title="pom中的依赖"></a>pom中的依赖</h6><blockquote>
+<p>可以看到spring-aop中也是依赖aspectjweaver的，所以为啥它的实现方式只是代理而没有AspectJ呢？</p>
+</blockquote>
+<ul>
+<li>spring-boot-starter-aop<br><img src="/2018/06/09/java/AOP的一些使用与理解/./de2ffb0b869b69dd743b870a970e2830.png" alt="Alt text"></li>
+<li>spring-aop<br><img src="/2018/06/09/java/AOP的一些使用与理解/./eec369c68e59c64f7144db801613ed47.png" alt="Alt text"></li>
+</ul>
+<h5 id="如何判断你用的是织入方式还是代理方式"><a href="#如何判断你用的是织入方式还是代理方式" class="headerlink" title="如何判断你用的是织入方式还是代理方式"></a>如何判断你用的是织入方式还是代理方式</h5><blockquote>
+<p>目前没有看出来，只能通过打印</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">IAnimalEat target = (IAnimalEat) factory.getProxy();</span><br><span class="line">System.out.println(<span class="string">"生成的新的代理类："</span> + target.getClass().getName());</span><br></pre></td></tr></table></figure>
+<ul>
+<li>JDK<br><img src="/2018/06/09/java/AOP的一些使用与理解/./6121ca1a8f560bccbdab7df5bb0d8d61.png" alt="Alt text"></li>
+<li>Cglib<br><img src="/2018/06/09/java/AOP的一些使用与理解/./4ad811775c2ba1fe9a2f72e7011385e6.png" alt="Alt text"></li>
+</ul>
+<h3 id="JDK动态代理原理"><a href="#JDK动态代理原理" class="headerlink" title="JDK动态代理原理"></a>JDK动态代理原理</h3><blockquote>
+<p>直接看手写动态代理那块儿就行，重点是为什么非得要接口才能实现</p>
+</blockquote>
+<h3 id="Cglib代理原理"><a href="#Cglib代理原理" class="headerlink" title="Cglib代理原理"></a>Cglib代理原理</h3><h3 id="SpringAOP分析"><a href="#SpringAOP分析" class="headerlink" title="SpringAOP分析"></a>SpringAOP分析</h3><h4 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h4><blockquote>
+<p>都直到是两种方式，什么有接口是jdk，没接口是jdk。</p>
+</blockquote>
+<h5 id="模板实例"><a href="#模板实例" class="headerlink" title="模板实例"></a>模板实例</h5><blockquote>
+<p>先不用管这个实例会采用什么方式代理，先分析流程。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ProxyFactory factory = <span class="keyword">new</span> ProxyFactory();</span><br><span class="line">IAnimalEat dog = <span class="keyword">new</span> Dog();</span><br><span class="line"><span class="comment">//第一步：设置目标代理类</span></span><br><span class="line">factory.setTarget(dog);</span><br><span class="line"><span class="comment">//第二步：设置各种通知</span></span><br><span class="line">factory.addAdvice(<span class="keyword">new</span> BeforeAdvice());</span><br><span class="line">factory.addAdvice(<span class="keyword">new</span> AfterReturnAdvice());</span><br><span class="line"><span class="comment">//得到代理类（这块儿如果没有接口的话，就直接用实体类接受就行，不影响）</span></span><br><span class="line">IAnimalEat target = (IAnimalEat) factory.getProxy();</span><br><span class="line"><span class="comment">//执行业务方法</span></span><br><span class="line">target.eat();</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>有个简单的SpringAOP就实现了，当然可以对其进行封装，详见下边的参考文档。</p>
+</blockquote>
+<h6 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h6><blockquote>
+<p>分析上述模板代码的执行流程。</p>
+</blockquote>
+<p><strong>从模板可以看出，核心方法应该是getProxy()，so我们先分析它。</strong></p>
+<ul>
+<li><p>ProxyFactory.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getProxy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">this</span>.createAopProxy().getProxy();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">synchronized</span> AopProxy <span class="title">createAopProxy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//getAopProxyFactory得到的就是一个DefaultAopProxyFactory()对象</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">this</span>.getAopProxyFactory().createAopProxy(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>DefaultAopProxyFactory.java</p>
+<blockquote>
+<p>核心代码，可以看到具体使用jdk还是cglib全在这里进行判断</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> AopProxy <span class="title">createAopProxy</span><span class="params">(AdvisedSupport config)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//【1】此处成立则使用JDK代理</span></span><br><span class="line">	<span class="keyword">if</span> (!config.isOptimize() &amp;&amp; !config.isProxyTargetClass() &amp;&amp; !<span class="keyword">this</span>.hasNoUserSuppliedProxyInterfaces(config)) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> JdkDynamicAopProxy(config);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		Class&lt;?&gt; targetClass = config.getTargetClass();</span><br><span class="line">		<span class="comment">//【3】判断targetClass是否是接口，是否是proxy的子类，都是的话用JDK代理，否则Cglib</span></span><br><span class="line">		<span class="keyword">return</span> (AopProxy)(!targetClass.isInterface() &amp;&amp; !Proxy.isProxyClass(targetClass) ? <span class="keyword">new</span> ObjenesisCglibAopProxy(config) : <span class="keyword">new</span> JdkDynamicAopProxy(config));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//这个方法的cache这块儿不太懂</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isProxyClass</span><span class="params">(Class&lt;?&gt; cl)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> Proxy.class.isAssignableFrom(cl) &amp;&amp; proxyClassCache.containsValue(cl);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">hasNoUserSuppliedProxyInterfaces</span><span class="params">(AdvisedSupport config)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//得到设置的接口类（要么有一个，要么没有）</span></span><br><span class="line">	Class&lt;?&gt;[] ifcs = config.getProxiedInterfaces();</span><br><span class="line">	<span class="comment">//【2】</span></span><br><span class="line">	<span class="keyword">return</span> ifcs.length == <span class="number">0</span> || ifcs.length == <span class="number">1</span> &amp;&amp; SpringProxy.class.isAssignableFrom(ifcs[<span class="number">0</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>【1】：config应该就是一个配置类，isOptimize默认是false，isProxyTargetClass默认也是false，但是这两个属性都提供了set方法供我们修改它的值。<br>【2】：hasNoUserSuppliedProxyInterfaces根据是否有接口、接口个数是不是1并且接口是不是SpringProxy类型，来返回true、false。</p>
+<blockquote>
+<p>先不管第三点，<strong>如果我们想用JDK代理，则需要保证</strong>：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>. Optimize = <span class="keyword">false</span><span class="comment">//是否对产生代理的策略进行优化</span></span><br><span class="line"><span class="number">2</span>. isProxyTargetClass = <span class="keyword">false</span><span class="comment">//设置代理的模式jdk/cglib</span></span><br><span class="line"><span class="number">3</span>. 设置了接口类，并且接口不继承自SpringProxy。</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>如何设置接口类？</p>
+</blockquote>
+<ul>
+<li>AdvisedSupport.java<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Class&lt;?&gt;[] getProxiedInterfaces() &#123;</span><br><span class="line">	<span class="comment">//interfaces是一个list对象</span></span><br><span class="line">	<span class="keyword">return</span> (Class[])<span class="keyword">this</span>.interfaces.toArray(<span class="keyword">new</span> Class[<span class="keyword">this</span>.interfaces.size()]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<blockquote>
+<p>看一下interfaces是在哪赋值的？</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setInterfaces</span><span class="params">(Class... interfaces)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">this</span>.interfaces.clear();</span><br><span class="line">	Class[] var2 = interfaces;</span><br><span class="line">	<span class="keyword">int</span> var3 = interfaces.length;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> var4 = <span class="number">0</span>; var4 &lt; var3; ++var4) &#123;</span><br><span class="line">		Class&lt;?&gt; ifc = var2[var4];</span><br><span class="line">		<span class="comment">//调用addInterface方法，往上述的interfaces里添加接口类</span></span><br><span class="line">		<span class="keyword">this</span>.addInterface(ifc);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addInterface</span><span class="params">(Class&lt;?&gt; intf)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (!<span class="keyword">this</span>.interfaces.contains(intf)) &#123;</span><br><span class="line">		<span class="keyword">this</span>.interfaces.add(intf);</span><br><span class="line">		<span class="keyword">this</span>.adviceChanged();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>OK，只要设置setInterfaces就行，我们发现<strong>ProxyFactory继承自ProxyCreatorSupport，ProxyCreatorSupport继承自AdvisedSupport</strong>。<br>所以上述的三点可以改为：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>. Optimize = <span class="keyword">false</span><span class="comment">//是否对产生代理的策略进行优化</span></span><br><span class="line"><span class="number">2</span>. isProxyTargetClass = <span class="keyword">false</span><span class="comment">//设置代理的模式jdk/cglib</span></span><br><span class="line"><span class="number">3</span>. 设置setInterfaces，并且接口不继承自SpringProxy。</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>同时发现设置优化时才会有机会使用Cglib，难道Cglib性能更好？（Cglib：创建慢，执行块，JDK：创建快，执行慢）。</p>
+<ul>
+<li>所以，最终如果想使用JDK，则需要把模板修改为：</li>
+</ul>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">factory.setTarget(dog);</span><br><span class="line">factory.setProxyTargetClass(<span class="keyword">false</span>);<span class="comment">//默认false，可不设置</span></span><br><span class="line">factory.setOptimize(<span class="keyword">false</span>);<span class="comment">//默认false，可不设置</span></span><br><span class="line">factory.setInterfaces(IAnimalEat.class);<span class="comment">//设置目标类的接口</span></span><br><span class="line">factory.addAdvice(<span class="keyword">new</span> BeforeAdvice());</span><br><span class="line">factory.addAdvice(<span class="keyword">new</span> AfterReturnAdvice());</span><br><span class="line">IAnimalEat target = (IAnimalEat) factory.getProxy();</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>运行：<br><img src="/2018/06/09/java/AOP的一些使用与理解/./b1b1ed687d431b10051a5c88bcf30d5a.png" alt="Alt text"></p>
+</li>
+<li><p>如果我们想使用Cglib代理呢？</p>
+<blockquote>
+<p><strong>必要不充分条件</strong>：上述的三个条件只要有一个不成立就行。<br>忘记了还有一个重要的判断呢。</p>
+</blockquote>
+</li>
+</ul>
+<p>【3】：判断targetClass是否是接口类型，是否继承proxy等</p>
+<ul>
+<li>我们自己定义的代理类不可能是接口，并且一般不会继承自Proxy类，所以当逻辑走到了这里，并且代理类是我们自己定义的时候，一般就会使用Cglib代理。</li>
+</ul>
+<h4 id="Cglib和JDK比较"><a href="#Cglib和JDK比较" class="headerlink" title="Cglib和JDK比较"></a>Cglib和JDK比较</h4><blockquote>
+<p>性能问题：由于Cglib代理是利用ASM字节码生成框架<strong>在内存中生成一个需要被代理类的子类完成代理</strong>，而JDK动态代理是<strong>利用反射</strong>原理完成动态代理，所以Cglib创建的动态代理对象性能比JDk动态代理动态创建出来的代理对象新能要好的多，但是对象创建的速度比JDk动态代理要慢，所以，当Spring使用的是单例情况下可以选用Cglib代理，反之使用JDK动态代理更加合适。同时还有一个问题，被final修饰的类只能使用JDK动态代理，因为被final修饰的类不能被继承，而Cglib则是利用的继承原理实现代理的。<a href="https://my.oschina.net/zicheng/blog/1920892" target="_blank" rel="noopener">摘自</a></p>
+</blockquote>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://mp.weixin.qq.com/s/V3v3uit9pLyGU-eO9VyArg" target="_blank" rel="noopener">文章</a><br><a href="https://www.eclipse.org/aspectj/doc/released/devguide/ltw.html" target="_blank" rel="noopener">LTW</a><br><a href="https://www.infoq.cn/article/javaagent-illustrated" target="_blank" rel="noopener">JavaAgent</a><br><a href="https://www.cnblogs.com/best/p/5679656.html#_label4" target="_blank" rel="noopener">封装，看了这篇才知道SpringAOP怎么写</a><br><a href="https://blog.csdn.net/luanlouis/article/details/51155821" target="_blank" rel="noopener">参考</a><br><a href="https://my.oschina.net/u/2518341/blog/1806912" target="_blank" rel="noopener">ProxyFactory和ProxyFactoryBean区别</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/AOP/" rel="tag"># AOP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/15/设计模式/观察者模式/" rel="next" title="观察者模式">
+                <i class="fa fa-chevron-left"></i> 观察者模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/27/java/线程池的饱和策略/" rel="prev" title="线程池的饱和策略">
+                线程池的饱和策略 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">changePosition</p>
+              <p class="site-description motion-element" itemprop="description">知识体系树</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#AOP"><span class="nav-number">1.</span> <span class="nav-text">AOP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实现切面的两种思路"><span class="nav-number">1.0.1.</span> <span class="nav-text">实现切面的两种思路</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#横向扩展"><span class="nav-number">1.0.1.1.</span> <span class="nav-text">横向扩展</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#纵向扩展"><span class="nav-number">1.0.1.2.</span> <span class="nav-text">纵向扩展</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AspectJ分析"><span class="nav-number">1.0.2.</span> <span class="nav-text">AspectJ分析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#织入的概念"><span class="nav-number">1.0.2.0.1.</span> <span class="nav-text">织入的概念</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#物理织入"><span class="nav-number">1.0.2.0.2.</span> <span class="nav-text">物理织入</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第一种、使用AspectJ语法"><span class="nav-number">1.0.2.1.</span> <span class="nav-text">第一种、使用AspectJ语法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#使用原生AspectJ语法定义切面"><span class="nav-number">1.0.2.1.1.</span> <span class="nav-text">使用原生AspectJ语法定义切面</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#织入后的文件"><span class="nav-number">1.0.2.1.2.</span> <span class="nav-text">织入后的文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#编译后的Aspect文件"><span class="nav-number">1.0.2.1.3.</span> <span class="nav-text">编译后的Aspect文件</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二种、使用注解"><span class="nav-number">1.0.2.2.</span> <span class="nav-text">第二种、使用注解</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#方式一、编译时织入"><span class="nav-number">1.0.2.2.1.</span> <span class="nav-text">方式一、编译时织入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#方式二、编译后织入"><span class="nav-number">1.0.2.2.2.</span> <span class="nav-text">方式二、编译后织入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#方式三、加载时织入（LTW）"><span class="nav-number">1.0.2.2.3.</span> <span class="nav-text">方式三、加载时织入（LTW）</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#如何实现？"><span class="nav-number">1.0.2.2.3.1.</span> <span class="nav-text">如何实现？</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#使用LTW方式的要求"><span class="nav-number">1.0.2.2.3.2.</span> <span class="nav-text">使用LTW方式的要求</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringAOP"><span class="nav-number">1.0.3.</span> <span class="nav-text">SpringAOP</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#疑惑点"><span class="nav-number">1.0.3.0.1.</span> <span class="nav-text">疑惑点</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#pom中的依赖"><span class="nav-number">1.0.3.0.1.1.</span> <span class="nav-text">pom中的依赖</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#如何判断你用的是织入方式还是代理方式"><span class="nav-number">1.0.3.0.2.</span> <span class="nav-text">如何判断你用的是织入方式还是代理方式</span></a></li></ol></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK动态代理原理"><span class="nav-number">1.0.4.</span> <span class="nav-text">JDK动态代理原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cglib代理原理"><span class="nav-number">1.0.5.</span> <span class="nav-text">Cglib代理原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringAOP分析"><span class="nav-number">1.0.6.</span> <span class="nav-text">SpringAOP分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实现方式"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">实现方式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#模板实例"><span class="nav-number">1.0.6.1.1.</span> <span class="nav-text">模板实例</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#源码分析"><span class="nav-number">1.0.6.1.1.1.</span> <span class="nav-text">源码分析</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Cglib和JDK比较"><span class="nav-number">1.0.6.2.</span> <span class="nav-text">Cglib和JDK比较</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">1.0.7.</span> <span class="nav-text">参考</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">changePosition</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
