@@ -446,299 +446,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/25/android/一大句话阐述事件分发/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="changePosition">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/25/android/一大句话阐述事件分发/" itemprop="url">一大句话阐述事件分发</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-25T11:37:07+08:00">
-                2019-07-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="事件传递到Activity"><a href="#事件传递到Activity" class="headerlink" title="事件传递到Activity"></a>事件传递到Activity</h3><blockquote>
-<ol>
-<li>AMS在启动Activity时，会在ActivityThread的performLaunchActivity方法中去执行<code>activity.attach</code>，在attach中会构造一个window实例（PhoneWindow类型）并把当前Activity实例传过去，便于后期回调，在构造Window过程中会产生一个DecorView，这就是应用的根布局（整个应用中应该只有一个DecorView，那就是main Activity的，其它的Activity都是用的这一个）。在根布局显示时会再构造一个ViewRootImpl实例，并把ViewRootImpl、Window、DecorView相互关联起来，这时就可以接收外部输入事件了。</li>
-<li>当有Input事件时，事件会分发给WindowInputEventReceiver（ViewRootImpl的内部类），receiver接收到事件后最终会调用上述DecorView的dispatchTouchEvent方法，并在dispatch中通过上述传过来的Activity实例回调到Activity的dispatch中。</li>
-</ol>
-</blockquote>
-<h3 id="View-ViewGroup的事件传递"><a href="#View-ViewGroup的事件传递" class="headerlink" title="View / ViewGroup的事件传递"></a>View / ViewGroup的事件传递</h3><blockquote>
-<ol>
-<li>在Activity的dispatch中会直接调用Window的superDispatch，然后调DecorView的superDispatch，最终走到ViewGroup的dispatch中（这个过程都是直接调用，没有任何逻辑，我的理解这里就是为了能把Activity接收的事件丢出来，丢给Activity自己的contentView），在VG中先判断onIntrcept是否拦截：</li>
-</ol>
-<ul>
-<li>拦截的话会直接执行View的dispatch方法，并且在dispatch中判断是否有touch事件，以及touch事件的返回值—如果为true则直接view的dispatch直接返回true，否则执行onTouchEvent，并执行onClick，dispatch最终的返回值由onTouchEvent决定。</li>
-<li>不拦截的话，会先判断当前事件是不是down，不是的话说明已经有消费事件的目标view了，也就是mFirstTouchTarget，直接执行target的dispatch方法。是down事件的话会遍历其子view，找到消费事件的目标view，赋值为mFirstTouchTarget，最终执行mFirstTouchTarget的dispatch方法。</li>
-</ul>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/24/android/事件如何分发到Activity/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="changePosition">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/24/android/事件如何分发到Activity/" itemprop="url">事件如何分发到Activity</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-24T14:59:27+08:00">
-                2019-07-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Activity的attach方法"><a href="#Activity的attach方法" class="headerlink" title="Activity的attach方法"></a>Activity的attach方法</h2><blockquote>
-<p>在ActivityThread中的H发送RESUME_ACTIVITY消息时，会在performResumeActivity中执行activity.attch</p>
-</blockquote>
-<h3 id="attach做了什么"><a href="#attach做了什么" class="headerlink" title="attach做了什么"></a>attach做了什么</h3><h5 id="1-在attach时创建一个window，并让当前Activity与Window建立关联"><a href="#1-在attach时创建一个window，并让当前Activity与Window建立关联" class="headerlink" title="1. 在attach时创建一个window，并让当前Activity与Window建立关联"></a>1. 在attach时创建一个window，并让当前Activity与Window建立关联</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//传入的this是当前activity</span></span><br><span class="line">mWindow = <span class="keyword">new</span> PhoneWindow(<span class="keyword">this</span>, window, activityConfigCallback);</span><br><span class="line"><span class="comment">//this是当前activity（这里很重要，最后会通过这个回调），设置CallBack，实现dispatchTouchEvent方法</span></span><br><span class="line">mWindow.setCallback(<span class="keyword">this</span>);</span><br></pre></td></tr></table></figure>
-<h5 id="2-PhoneWindow的构造方法"><a href="#2-PhoneWindow的构造方法" class="headerlink" title="2. PhoneWindow的构造方法"></a>2. PhoneWindow的构造方法</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">PhoneWindow</span><span class="params">(Context context, Window preservedWindow, ActivityConfigCallback activityConfigCallback)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//Only main activity windows use decor context, all the other </span></span><br><span class="line">	<span class="comment">//windows depend on whatever context that was given to them.</span></span><br><span class="line">	<span class="keyword">if</span> (preservedWindow != <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="comment">//得到main传过来的DecorView</span></span><br><span class="line">		mDecor = (DecorView) preservedWindow.getDecorView();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>很重要的一点：一个应用里边的DecorView只有一个。</p>
-</blockquote>
-<h5 id="3-执行完performResumeActivity后会继续在handleResume方法中调用activity的makeVisible方法"><a href="#3-执行完performResumeActivity后会继续在handleResume方法中调用activity的makeVisible方法" class="headerlink" title="3. 执行完performResumeActivity后会继续在handleResume方法中调用activity的makeVisible方法"></a>3. 执行完performResumeActivity后会继续在handleResume方法中调用activity的makeVisible方法</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Activity.java</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">makeVisible</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (!mWindowAdded) &#123;</span><br><span class="line">		<span class="comment">//追踪getWM最终看到得到的是一个</span></span><br><span class="line">		ViewManager wm = getWindowManager();</span><br><span class="line">		<span class="comment">//往当前窗口添加DecorView</span></span><br><span class="line">		wm.addView(mDecor, getWindow().getAttributes());</span><br><span class="line">		mWindowAdded = <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//显示decorView，也就是contentView也显示了</span></span><br><span class="line">	mDecor.setVisibility(View.VISIBLE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>所以这个时候contentView才是显示状态，也就是在onResume过程中才显示，才可交互。</p>
-</blockquote>
-<h5 id="4-看下addView方法"><a href="#4-看下addView方法" class="headerlink" title="4. 看下addView方法"></a>4. 看下addView方法</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//WindowManagerImpl.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addView</span><span class="params">(View view, ViewGroup.LayoutParams params)</span> </span>&#123;</span><br><span class="line">	mGlobal.addView(view, params, mContext.getDisplay(), mParentWindow);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h6 id="构造一个ViewRootImpl，并把root、decor、window建立关联"><a href="#构造一个ViewRootImpl，并把root、decor、window建立关联" class="headerlink" title="构造一个ViewRootImpl，并把root、decor、window建立关联"></a>构造一个ViewRootImpl，并把root、decor、window建立关联</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//WindowManagerGlobal.java</span></span><br><span class="line"><span class="comment">//参数view就是传过来的DecorView</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addView</span><span class="params">(View view, ViewGroup.LayoutParams params, Display display, Window parentWindow)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">final</span> WindowManager.LayoutParams wparams = (WindowManager.LayoutParams) params;</span><br><span class="line">	ViewRootImpl root;</span><br><span class="line">	<span class="keyword">synchronized</span> (mLock) &#123;</span><br><span class="line">		<span class="comment">//构造一个ViewRootImpl实例</span></span><br><span class="line">		root = <span class="keyword">new</span> ViewRootImpl(view.getContext(), display);</span><br><span class="line">		view.setLayoutParams(wparams);</span><br><span class="line">		mViews.add(view);</span><br><span class="line">		mRoots.add(root);</span><br><span class="line">		mParams.add(wparams);</span><br><span class="line">		<span class="comment">//ViewRootImpl实例与DecorView实例建立关联，下面会用到这个view</span></span><br><span class="line">		root.setView(view, wparams, panelParentView);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="5-在ViewRootImpl的add方法中会构造一个WindowInputEventReceiver实例，用于接收input事件"><a href="#5-在ViewRootImpl的add方法中会构造一个WindowInputEventReceiver实例，用于接收input事件" class="headerlink" title="5. 在ViewRootImpl的add方法中会构造一个WindowInputEventReceiver实例，用于接收input事件"></a>5. 在ViewRootImpl的add方法中会构造一个WindowInputEventReceiver实例，用于接收input事件</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mInputEventReceiver = <span class="keyword">new</span> WindowInputEventReceiver(mInputChannel, Looper.myLooper());</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>WindowInputEventReceiver是ViewRootImpl的内部类，从类名可以看出它就是接收输入事件的。</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">WindowInputEventReceiver</span> <span class="keyword">extends</span> <span class="title">InputEventReceiver</span> </span>&#123;</span><br><span class="line">	<span class="comment">//当有事件输入时，父类会回调给onInputEvent方法</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onInputEvent</span><span class="params">(InputEvent event)</span></span>&#123;</span><br><span class="line">		enqueueInputEvent(event, <span class="keyword">this</span>, <span class="number">0</span>, <span class="keyword">true</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBatchedInputEventPending</span><span class="params">()</span>...</span></span><br><span class="line"><span class="function">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dispose</span><span class="params">()</span>...</span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>其父类InputEventReceiver有一个dispatchInputEvent方法用于分发接收到的事件</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//InputEventReceiver.java</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dispatchInputEvent</span><span class="params">(<span class="keyword">int</span> seq, InputEvent event)</span> </span>&#123;</span><br><span class="line">	mSeqMap.put(event.getSequenceNumber(), seq);</span><br><span class="line">	<span class="comment">//会继续调用子类也就是上边WindowInputEventReceiver的onInputEvent方法</span></span><br><span class="line">	onInputEvent(event);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">enqueueInputEvent</span><span class="params">(InputEvent event, InputEventReceiver receiver, <span class="keyword">int</span> flags, <span class="keyword">boolean</span> processImmediately)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//从这里可以看出：Input事件也是一个一个的消息，是一个链表结构，一个一个发</span></span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">if</span> (processImmediately) &#123;</span><br><span class="line">		<span class="comment">//立即发消息</span></span><br><span class="line">		doProcessInputEvents();</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">//应该是延迟发消息（内部会调用handler在“合适的时间发送”）</span></span><br><span class="line">		scheduleProcessInputEvents();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">doProcessInputEvents</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="comment">// Deliver all pending input events in the queue.</span></span><br><span class="line">	<span class="comment">//循环发出队列中的全部消息</span></span><br><span class="line">	<span class="keyword">while</span> (mPendingInputEventHead != <span class="keyword">null</span>) &#123;</span><br><span class="line">		QueuedInputEvent q = mPendingInputEventHead;</span><br><span class="line">		mPendingInputEventHead = q.mNext;</span><br><span class="line">		<span class="comment">//通过这个方法分发事件</span></span><br><span class="line">		deliverInputEvent(q);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//交付（有点分发的意思）事件</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">deliverInputEvent</span><span class="params">(QueuedInputEvent q)</span> </span>&#123;</span><br><span class="line">	InputStage stage;</span><br><span class="line">	<span class="keyword">if</span> (q.shouldSendToSynthesizer()) &#123;</span><br><span class="line">		stage = mSyntheticInputStage;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		stage = q.shouldSkipIme() ? mFirstPostImeInputStage : mFirstInputStage;</span><br><span class="line">	&#125;</span><br><span class="line">	stage.deliver(q);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">deliver</span><span class="params">(QueuedInputEvent q)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//注意看这里有个onProcess方法，它是InputStage中的方法，但是InputStage是个抽象类，所以这里可能是调其子类的onProcess方法</span></span><br><span class="line">	apply(q, onProcess(q));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>InputStage的实现类：</p>
-<ul>
-<li>ViewPreImeInputStage</li>
-<li>EarlyPostImeInputStage</li>
-<li>ViewPostImeInputStage</li>
-<li>SyntheticInputStage<br><strong>我们的触摸事件走的应该是ViewPostImeInputStage这个</strong></li>
-</ul>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">onProcess</span><span class="params">(QueuedInputEvent q)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (q.mEvent <span class="keyword">instanceof</span> KeyEvent) &#123;</span><br><span class="line">		<span class="comment">//输入事件（如键盘）</span></span><br><span class="line">		<span class="keyword">return</span> processKeyEvent(q);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">//手指触摸事件</span></span><br><span class="line">		<span class="keyword">return</span> processPointerEvent(q);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="6-最终会调用decorView的dispatchPointerEvent分发"><a href="#6-最终会调用decorView的dispatchPointerEvent分发" class="headerlink" title="6. 最终会调用decorView的dispatchPointerEvent分发"></a>6. 最终会调用decorView的dispatchPointerEvent分发</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ViewRootImpl.java</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">processPointerEvent</span><span class="params">(QueuedInputEvent q)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">final</span> MotionEvent event = (MotionEvent)q.mEvent;</span><br><span class="line">	<span class="comment">//这个mView就是上边ViewRootImpl.setView设置的</span></span><br><span class="line">	<span class="keyword">boolean</span> handled = mView.dispatchPointerEvent(event);</span><br><span class="line">	<span class="keyword">return</span> handled ? FINISH_HANDLED : FORWARD;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="7-dispatchPointerEvent又会调用自己的dispatchTouchEvent，也就是decorview的dispatchTouchEvent"><a href="#7-dispatchPointerEvent又会调用自己的dispatchTouchEvent，也就是decorview的dispatchTouchEvent" class="headerlink" title="7. dispatchPointerEvent又会调用自己的dispatchTouchEvent，也就是decorview的dispatchTouchEvent"></a>7. dispatchPointerEvent又会调用自己的dispatchTouchEvent，也就是decorview的dispatchTouchEvent</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//View.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">dispatchPointerEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (event.isTouchEvent()) &#123;</span><br><span class="line">		<span class="comment">//执行DecorView的dispatchTouchEvent方法</span></span><br><span class="line">		<span class="keyword">return</span> dispatchTouchEvent(event);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="8-终于，在decorView的dispatch中拿到上边构造window时传的Activity实例回调其dispatch"><a href="#8-终于，在decorView的dispatch中拿到上边构造window时传的Activity实例回调其dispatch" class="headerlink" title="8. 终于，在decorView的dispatch中拿到上边构造window时传的Activity实例回调其dispatch"></a>8. 终于，在decorView的dispatch中拿到上边构造window时传的Activity实例回调其dispatch</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//这个cb就是Activity实例</span></span><br><span class="line">	<span class="keyword">final</span> Window.Callback cb = mWindow.getCallback();</span><br><span class="line">	<span class="comment">//调用activity的dispatchTouchEvent方法</span></span><br><span class="line">	<span class="keyword">return</span> cb != <span class="keyword">null</span> &amp;&amp; !mWindow.isDestroyed() &amp;&amp; mFeatureId &lt; <span class="number">0</span>? cb.dispatchTouchEvent(ev) : <span class="keyword">super</span>.dispatchTouchEvent(ev);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/23/协议/TCP-IP协议/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -781,6 +488,28 @@
           </span>
 
           
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/协议/" itemprop="url" rel="index">
+                    <span itemprop="name">协议</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -810,9 +539,77 @@
       
         
           
-            <h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><p>三次握手、四次挥手</p>
-<p><a href="https://www.cnblogs.com/thrillerz/p/6464203.html" target="_blank" rel="noopener">参考</a><br><a href="https://blog.csdn.net/whuslei/article/details/6667471/" target="_blank" rel="noopener">原文</a></p>
-<h4 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h4><h5 id="为什么要三次？"><a href="#为什么要三次？" class="headerlink" title="为什么要三次？"></a>为什么要三次？</h5><h5 id="握手失败"><a href="#握手失败" class="headerlink" title="握手失败"></a>握手失败</h5><h4 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h4><h5 id="挥手失败"><a href="#挥手失败" class="headerlink" title="挥手失败"></a>挥手失败</h5><h4 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h4><h4 id="同时打开"><a href="#同时打开" class="headerlink" title="同时打开"></a>同时打开</h4><h4 id="同时关闭"><a href="#同时关闭" class="headerlink" title="同时关闭"></a>同时关闭</h4>
+            <h2 id="先介绍一下其中的TCP、UDP"><a href="#先介绍一下其中的TCP、UDP" class="headerlink" title="先介绍一下其中的TCP、UDP"></a>先介绍一下其中的TCP、UDP</h2><blockquote>
+<p>TCP/IP协议中包含多种协议，这里只介绍下TCP/UDP，后期再把ARP、IP等协议补充进来。</p>
+</blockquote>
+<h3 id="TCP与UDP的区别"><a href="#TCP与UDP的区别" class="headerlink" title="TCP与UDP的区别"></a>TCP与UDP的区别</h3><blockquote>
+<p>这些参考自计算机网络教材-谢希仁版</p>
+</blockquote>
+<h3 id="TCP的连接、断开"><a href="#TCP的连接、断开" class="headerlink" title="TCP的连接、断开"></a>TCP的连接、断开</h3><blockquote>
+<p>下面为传输时会用到的一些状态<br><img src="/2019/07/23/协议/TCP-IP协议/./1563859396682.png" alt="@摘自TCP/IP详解"></p>
+</blockquote>
+<h4 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h4><p><img src="/2019/07/23/协议/TCP-IP协议/./1563849314546.png" alt="Alt text"></p>
+<blockquote>
+<ul>
+<li>第一次握手时客户端发送一个随机的序号seq=i、确认号SYN=1</li>
+<li>第二次握手时服务端发送一个随机的序号j、确认号为上次的确认号+1，即i+1、ACK表示应答信号、SYN表示同步信号</li>
+<li>第三次握手时客户端发送一个序号（这个序号是客户端第一次发的序号i+1）、一个确认号：上边的序号+1</li>
+</ul>
+</blockquote>
+<h5 id="为什么要三次？"><a href="#为什么要三次？" class="headerlink" title="为什么要三次？"></a>为什么要三次？</h5><blockquote>
+<p>下面分几种情况来分析。</p>
+</blockquote>
+<h6 id="一种情况"><a href="#一种情况" class="headerlink" title="一种情况"></a>一种情况</h6><ul>
+<li>服务端收到第一次握手：客户端发送能力、服务端接收能力都OK</li>
+<li>客户端收到第二次握手：<strong>客户端自己发送能力、客户端自己接收能力、服务端接收能力、服务端发送能力OK</strong></li>
+<li>服务端收到第三次握手：<strong>客户端发送能力、客户端接收能力、服务端发送能力、服务端接收能力都OK</strong><blockquote>
+<p>可以看到在第二次握手后，客户端已经完全知道大家都OK了，但是还需要再发送一个让服务端知道他的发送能力也OK。</p>
+</blockquote>
+</li>
+</ul>
+<h6 id="另一种情况"><a href="#另一种情况" class="headerlink" title="另一种情况"></a>另一种情况</h6><blockquote>
+<p>关于握手时消息超时的，这块儿需要再捋一下。</p>
+</blockquote>
+<h5 id="握手失败怎么办？"><a href="#握手失败怎么办？" class="headerlink" title="握手失败怎么办？"></a>握手失败怎么办？</h5><h6 id="假设第三次握手失败"><a href="#假设第三次握手失败" class="headerlink" title="假设第三次握手失败"></a>假设第三次握手失败</h6><blockquote>
+<p>当客户端第三次握手发的消息丢了之后会导致握手失败，我们要做的就是在服务端设置一个<strong>超时计时器</strong>，在服务端发出消息之后，如果在超时时间到了之后还没接收到客户端的反馈消息，则服务端会重新发出一个消息，<strong>重传次数</strong>默认是5，如果重传次数到了之后还没响应，则服务端主动断开连接，由上图所知，此时客户端已经是ESTABLISHED状态。此时客户端如果给服务端发消息。服务端<strong>会响应RST-重新连接</strong>。<br><img src="/2019/07/23/协议/TCP-IP协议/./1563859011501.png" alt="@我们的服务器默认重传次数是2"></p>
+</blockquote>
+<h4 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h4><blockquote>
+<p>建立一个连接需要三次握手，而终止一个连接要经过4次握手。这由TCP的半关闭（half-close）造成的。既然一个TCP连接是全双工（即数据在两个方向上能同时传递），因此每个方向必须单独地进行关闭。这原则就是当一方完成它的数据发送任务后就能发送一个FIN来终止这个方向连接。当一端收到一个FIN，它必须通知应用层另一端几经终止了那个方向的数据传送。发送FIN通常是应用层进行关闭的结果。</p>
+</blockquote>
+<p><img src="/2019/07/23/协议/TCP-IP协议/./1563879213309.png" alt="Alt text"></p>
+<ul>
+<li>连接时：双方只是对握手信号做个响应，不发送有用的数据包</li>
+<li>断开时：因为是在传输的过程中，突然有一端要断开了（假设客户端请求断开），此时服务端应该怎么办？因为可能有一些数据包还没给客户端发送完毕，但是又要立即反馈客户端的断开请求，怎么办？先回复一个消息：我收到了你的断开请求。继续发送数据包（<strong>此时客户端处于半关闭状态，不会发消息，但可以接收并响应消息</strong>），发送完毕后，发送一个断开请求，收到客户端响应后关闭连接。<blockquote>
+<p>收到一个FIN只意味着在这一方向上没有数据流动。一个TCP连接在收到一个FIN后仍能发送数据。这也就是为什么要四次挥手的原因。</p>
+</blockquote>
+</li>
+</ul>
+<h5 id="TIME-WAIT状态有什么用？"><a href="#TIME-WAIT状态有什么用？" class="headerlink" title="TIME_WAIT状态有什么用？"></a>TIME_WAIT状态有什么用？</h5><blockquote>
+<p>个人的理解+网上的各种资料查找。不一定对</p>
+</blockquote>
+<ul>
+<li>接收FIN之前传入的消息（有可能那些消息传输太慢，或者超时重传什么的）。</li>
+<li>假如没有TIME_WAIT，一旦接收到服务端的FIN后，又立马与其它服务连接上了，那如果上个服务现在才到，岂不是：上个连接的数据包发到了这个连接上？（这种情况感觉不大可能，它肯定知道是不是自己的数据包吧）</li>
+</ul>
+<h4 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h4><blockquote>
+<p>出现滑动窗口的原因是：提高TCP的吞吐量，不要接收一个响应一个。更快传输无外乎每次传的多一点，但这里又产生了一个问题：传的多了，次序怎么保证？有包丢失了怎么整？</p>
+</blockquote>
+<p>滑动窗口分为接收窗口和发送窗口。它是传输层进行流控的一种协议，服务端的一次ACK至少包含两个信息：</p>
+<ul>
+<li>期望得到的下一个包的序号（滑动窗口传输需要对所有的包排好顺序）。</li>
+<li>自己还能接收多少个包。</li>
+</ul>
+<h6 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h6><p>假设发送了8个，ACK了3个，期望再发3个，那么发送窗口会向右滑动3个，此时窗口里有5个已发送未ACK+3个待发送，此时客户端会继续等待服务端的ACK，直到得到ACK，如果超时则会把窗口中的数据全部重新发送一下。</p>
+<p><img src="/2019/07/23/协议/TCP-IP协议/./1563881598390.png" alt="@计算机网络-谢希仁"></p>
+<h4 id="同时打开"><a href="#同时打开" class="headerlink" title="同时打开"></a>同时打开</h4><p><img src="/2019/07/23/协议/TCP-IP协议/./1563852853811.png" alt="@出自TCP/IP详解第一卷"></p>
+<blockquote>
+<p>此时双方没有明确的客户端、服务端之分，双方都是主动建立连接、又被动接收连接，<strong>此时比正常的三次握手多了一次握手</strong>。</p>
+</blockquote>
+<h4 id="同时关闭"><a href="#同时关闭" class="headerlink" title="同时关闭"></a>同时关闭</h4><p><img src="/2019/07/23/协议/TCP-IP协议/./1563853023405.png" alt="@出自TCP/IP详解第一卷"></p>
+<blockquote>
+<p>此时一方收到Fin信号后，直接发送一个响应，并断开。（同时关闭说明双方都没有要发送的消息了）</p>
+</blockquote>
+
           
         
       
@@ -1502,6 +1299,155 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/15/thread/ThreadFactory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/15/thread/ThreadFactory/" itemprop="url">ThreadFactory</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-15T10:46:38+08:00">
+                2018-09-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="ThreadFactory"><a href="#ThreadFactory" class="headerlink" title="ThreadFactory"></a>ThreadFactory</h1><blockquote>
+<p>好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultThreadFactory</span> <span class="keyword">implements</span> <span class="title">ThreadFactory</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> AtomicInteger poolNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> ThreadGroup group;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> AtomicInteger threadNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> String namePrefix;</span><br><span class="line"></span><br><span class="line">	DefaultThreadFactory() &#123;</span><br><span class="line">		SecurityManager s = System.getSecurityManager();</span><br><span class="line">		<span class="comment">//线程组</span></span><br><span class="line">		group = (s != <span class="keyword">null</span>) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();</span><br><span class="line">		<span class="comment">//设置线程池中默认的线程名</span></span><br><span class="line">		namePrefix = <span class="string">"pool-"</span> + poolNumber.getAndIncrement() + <span class="string">"-thread-"</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Thread <span class="title">newThread</span><span class="params">(Runnable r)</span> </span>&#123;</span><br><span class="line">		Thread t = <span class="keyword">new</span> Thread(group, r, namePrefix + threadNumber.getAndIncrement(), <span class="number">0</span>);</span><br><span class="line">		<span class="comment">//恢复为非守护线程</span></span><br><span class="line">		<span class="keyword">if</span> (t.isDaemon())</span><br><span class="line">			t.setDaemon(<span class="keyword">false</span>);</span><br><span class="line">		<span class="comment">//恢复为默认的优先级</span></span><br><span class="line">		<span class="keyword">if</span> (t.getPriority() != Thread.NORM_PRIORITY)</span><br><span class="line">			t.setPriority(Thread.NORM_PRIORITY);</span><br><span class="line">		<span class="keyword">return</span> t;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<p><strong>注意</strong>为什么要执行恢复为非守护线程，默认优先级？</p>
+<blockquote>
+<p>因为线程的创建是依赖当前线程的，当前线程创建了子线程，则当前线程就是子线程的Parent，子线程的一些属相会直接使用父线程的，所以要恢复为默认的。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.daemon = parent.isDaemon();</span><br><span class="line"><span class="keyword">this</span>.priority = parent.getPriority();</span><br><span class="line"><span class="keyword">if</span> (security == <span class="keyword">null</span> || isCCLOverridden(parent.getClass()))</span><br><span class="line">    <span class="keyword">this</span>.contextClassLoader = parent.getContextClassLoader();</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="keyword">this</span>.contextClassLoader = parent.contextClassLoader;</span><br><span class="line"><span class="keyword">this</span>.inheritedAccessControlContext =</span><br><span class="line">        acc != <span class="keyword">null</span> ? acc : AccessController.getContext();</span><br><span class="line"><span class="keyword">this</span>.target = target;</span><br><span class="line">setPriority(priority);</span><br><span class="line"><span class="keyword">if</span> (parent.inheritableThreadLocals != <span class="keyword">null</span>)</span><br><span class="line">    <span class="keyword">this</span>.inheritableThreadLocals =</span><br><span class="line">        ThreadLocal.createInheritedMap(parent.inheritableThreadLocals);</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/15/java/Java中的管道解析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1682,7 +1628,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/15/thread/ThreadFactory/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/14/spring/SOA 学习笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="changePosition">
@@ -1701,7 +1647,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/09/15/thread/ThreadFactory/" itemprop="url">ThreadFactory</a></h1>
+                <a class="post-title-link" href="/2018/09/14/spring/SOA 学习笔记/" itemprop="url">SOA 学习笔记</a></h1>
         
 
         <div class="post-meta">
@@ -1713,8 +1659,192 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-15T10:46:38+08:00">
-                2018-09-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-14T13:43:05+08:00">
+                2018-09-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index">
+                    <span itemprop="name">spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="SOA-学习笔记"><a href="#SOA-学习笔记" class="headerlink" title="SOA 学习笔记"></a>SOA 学习笔记</h2><h3 id="SOA项目搭建篇"><a href="#SOA项目搭建篇" class="headerlink" title="SOA项目搭建篇"></a>SOA项目搭建篇</h3><p><strong>主要目标是：完全清楚为什么要这么搭建，如何体现解耦、复用</strong></p>
+<ol>
+<li>大致的继承关系</li>
+</ol>
+<p><img src="/2018/09/14/spring/SOA 学习笔记/./1534138305704.png" alt="Alt text"></p>
+<ul>
+<li><p>SOATopPom</p>
+<blockquote>
+<p>dependency parent是spring-boot-starter-parent<br>最基础的项目只包含一个pom.xml文件，里边主要是：<br>1、第三方的依赖<br>2、伺服地址配置<br>3、部署构件配置<br>4、对于SP项目来说，spring-boot-starter等aop、web包没有包含在这个pom.xml文件中</p>
+</blockquote>
+</li>
+<li><p>SOAParent</p>
+<blockquote>
+<p>SOAParent是聚合项目（一个prj包含多个module）<br>主项目也只包含一个pom.xml文件，里边是业务层所需的依赖<br>module：<br>  IService - jar：只写具体的接口，不写实现<br>  bean - jar<br>  dao - jar</p>
+</blockquote>
+</li>
+<li><p>SOAProvider</p>
+<blockquote>
+<p>dependency parent为SOAParent，主要作用是实现IService，规范的情况下，provider中只有serviceImpl，并把实现了的service注册到zookeeper</p>
+</blockquote>
+</li>
+<li><p>SOAConsumer</p>
+<blockquote>
+<p>consumer的dependency parent不需要为SOAParent（正常情况下消费者是与后台无关的，除非是一个系统既是consumer，又是provider），它只要引入对应的IService就行。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="Dubbo篇"><a href="#Dubbo篇" class="headerlink" title="Dubbo篇"></a>Dubbo篇</h3><h3 id="zookeeper篇"><a href="#zookeeper篇" class="headerlink" title="zookeeper篇"></a>zookeeper篇</h3><ol>
+<li><p>zookeeper默认的三个端口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//对client端提供服务，在provider和consumer中设置registry时使用</span></span><br><span class="line"><span class="number">2181</span></span><br><span class="line"><span class="comment">//服务器与集群中的 Leader 服务器交换信息的端口</span></span><br><span class="line"><span class="number">2888</span></span><br><span class="line"><span class="comment">//一旦集群中的 Leader 服务器挂了，需要一个端口重新进行选举，选出一个新的 Leader</span></span><br><span class="line"><span class="number">3888</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>application.properties中spring-dubbo的配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//应用名称</span></span><br><span class="line">spring.dubbo.application.name=dubbo_consumer</span><br><span class="line"><span class="comment">//注册中心地址</span></span><br><span class="line"><span class="comment">//两台服务器，三个zookeeper注册中心（算是伪集群）</span></span><br><span class="line">spring.dubbo.registry.address=zookeeper:<span class="comment">//172.16.103.146:2281?backup=172.16.103.19:2281,172.16.103.136:2381</span></span><br><span class="line"><span class="comment">//协议名称</span></span><br><span class="line">spring.dubbo.protocol.name=dubbo</span><br><span class="line"><span class="comment">//协议端口</span></span><br><span class="line">spring.dubbo.protocol.port=<span class="number">20800</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line">spring.dubbo.registry.timeout=<span class="number">6000</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="Dubbo-Admin搭建"><a href="#Dubbo-Admin搭建" class="headerlink" title="Dubbo-Admin搭建"></a>Dubbo-Admin搭建</h3><ol start="2">
+<li>出现的问题<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>. It is probably not running</span><br><span class="line">	删除data下面除myid之外的其它文件</span><br><span class="line">	保证dataDir、dataDirLog的路径是正确的</span><br><span class="line"><span class="number">2</span>. 实验证明，当provider写了版本号后，consumer必须也要写版本号，不然引不到</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<hr>
+<blockquote>
+<p>后台学习推荐书籍<br>spring in action 第四版<br>springboot 揭秘  配合博客<br>dubbo 官网<br>《大型网站技术架构：核心原理与案例分析》<br>《大型网站系统与Java中间件实践》<br>大型分布式网站架构设计与实践<br>SOA理解<br>redis<br>redis开发与运维</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/27/thread/线程池的饱和策略/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/27/thread/线程池的饱和策略/" itemprop="url">线程池的饱和策略</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-27T17:46:29+08:00">
+                2018-06-27
               </time>
             
 
@@ -1775,15 +1905,57 @@
       
         
           
-            <h1 id="ThreadFactory"><a href="#ThreadFactory" class="headerlink" title="ThreadFactory"></a>ThreadFactory</h1><blockquote>
-<p>好像从没有用过这个ThreadFactory，不过从名字看，应该、是造线程的工厂。如果我们不先设置ThreadFactory的话，它会使用默认的Factory<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultThreadFactory</span> <span class="keyword">implements</span> <span class="title">ThreadFactory</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> AtomicInteger poolNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> ThreadGroup group;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> AtomicInteger threadNumber = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> String namePrefix;</span><br><span class="line"></span><br><span class="line">	DefaultThreadFactory() &#123;</span><br><span class="line">		SecurityManager s = System.getSecurityManager();</span><br><span class="line">		<span class="comment">//线程组</span></span><br><span class="line">		group = (s != <span class="keyword">null</span>) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();</span><br><span class="line">		<span class="comment">//设置线程池中默认的线程名</span></span><br><span class="line">		namePrefix = <span class="string">"pool-"</span> + poolNumber.getAndIncrement() + <span class="string">"-thread-"</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Thread <span class="title">newThread</span><span class="params">(Runnable r)</span> </span>&#123;</span><br><span class="line">		Thread t = <span class="keyword">new</span> Thread(group, r, namePrefix + threadNumber.getAndIncrement(), <span class="number">0</span>);</span><br><span class="line">		<span class="comment">//恢复为非守护线程</span></span><br><span class="line">		<span class="keyword">if</span> (t.isDaemon())</span><br><span class="line">			t.setDaemon(<span class="keyword">false</span>);</span><br><span class="line">		<span class="comment">//恢复为默认的优先级</span></span><br><span class="line">		<span class="keyword">if</span> (t.getPriority() != Thread.NORM_PRIORITY)</span><br><span class="line">			t.setPriority(Thread.NORM_PRIORITY);</span><br><span class="line">		<span class="keyword">return</span> t;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<p><strong>注意</strong>为什么要执行恢复为非守护线程，默认优先级？</p>
+            <h2 id="线程池的饱和策略"><a href="#线程池的饱和策略" class="headerlink" title="线程池的饱和策略"></a>线程池的饱和策略</h2><p>@(java)</p>
 <blockquote>
-<p>因为线程的创建是依赖当前线程的，当前线程创建了子线程，则当前线程就是子线程的Parent，子线程的一些属相会直接使用父线程的，所以要恢复为默认的。</p>
+<p>当没有更多线程或队列槽可用时，或者因为超出它们的边界，或者在关闭Executor时，ThreadPoolExecutor.execute无法接受任务时，ThreadPoolExecutor会调用rejectedExecution这个方法。<br>什么时候会出现？</p>
+<blockquote>
+<ul>
+<li>AbortPolicy：默认的饱和策略，对于队列满了的情况，会直接抛出异常。</li>
+<li>CallerRunsPolicy：会拒绝无法执行（线程队列满了）的线程，线程被拒绝执行后，会交给调用线程来执行。</li>
+<li></li>
+</ul>
 </blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.daemon = parent.isDaemon();</span><br><span class="line"><span class="keyword">this</span>.priority = parent.getPriority();</span><br><span class="line"><span class="keyword">if</span> (security == <span class="keyword">null</span> || isCCLOverridden(parent.getClass()))</span><br><span class="line">    <span class="keyword">this</span>.contextClassLoader = parent.getContextClassLoader();</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="keyword">this</span>.contextClassLoader = parent.contextClassLoader;</span><br><span class="line"><span class="keyword">this</span>.inheritedAccessControlContext =</span><br><span class="line">        acc != <span class="keyword">null</span> ? acc : AccessController.getContext();</span><br><span class="line"><span class="keyword">this</span>.target = target;</span><br><span class="line">setPriority(priority);</span><br><span class="line"><span class="keyword">if</span> (parent.inheritableThreadLocals != <span class="keyword">null</span>)</span><br><span class="line">    <span class="keyword">this</span>.inheritableThreadLocals =</span><br><span class="line">        ThreadLocal.createInheritedMap(parent.inheritableThreadLocals);</span><br></pre></td></tr></table></figure>
-
+</blockquote>
+<h5 id="主要实现RejectedExecutionHandler接口"><a href="#主要实现RejectedExecutionHandler接口" class="headerlink" title="主要实现RejectedExecutionHandler接口"></a>主要实现RejectedExecutionHandler接口</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RejectedExecutionHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 当&#123;<span class="doctag">@link</span> ThreadPoolExecutor #execute execute&#125;无法接受任务</span></span><br><span class="line"><span class="comment">     * 时，会调用这个方法。 当没有更多线程或队列槽可用时，或者因为超出它们</span></span><br><span class="line"><span class="comment">     * 的边界，或者在关闭Executor时，可能会发生这种情况。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor executor)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="现类"><a href="#现类" class="headerlink" title="现类"></a>现类</h5><h6 id="AbortPolicy"><a href="#AbortPolicy" class="headerlink" title="AbortPolicy"></a>AbortPolicy</h6><blockquote>
+<p>默认的Handler</p>
+<ol>
+<li>队列满-抛异常</li>
+<li>但队列中的任务继续执行</li>
+<li>之后即使队列为空，仍不会再往队列中放数据了（因为已经抛异常了）<br><strong>线程数为3，队列为5，则最少可执行8个任务。</strong>三个任务直接执行，其余5个放队列。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 当队列满了时，通过直接抛出异常来解决饱和问题，但</span></span><br><span class="line"><span class="comment"> * 是队列中的任务会继续执行，直到执行完成。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//注意这里是主线程，当其他线程无法执行时，会进入到这里，如果执行r.run()则继续执行，但线程是主线程了</span></span><br><span class="line">	<span class="comment">//System.out.println(Thread.currentThread().getName());</span></span><br><span class="line">	<span class="keyword">throw</span> <span class="keyword">new</span> RejectedExecutionException(<span class="string">"Task "</span> + r.toString() +</span><br><span class="line">										 <span class="string">" rejected from "</span> +</span><br><span class="line">										 e.toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">    executor.execute(() -&gt; &#123;</span><br><span class="line">        System.out.println(<span class="string">"my run ... 1 "</span> + Thread.currentThread().getName());</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        System.out.println(<span class="string">"-----OVER-----"</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//输出结果</span></span><br><span class="line">my run ... <span class="number">1</span> pool-<span class="number">1</span>-thread-<span class="number">1</span></span><br><span class="line">Exception in thread <span class="string">"main"</span> java.util.concurrent.RejectedExecutionException: ......</span><br><span class="line">-----OVER-----</span><br><span class="line">my run ... <span class="number">1</span> pool-<span class="number">1</span>-thread-<span class="number">1</span></span><br><span class="line">-----OVER-----</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ol>
+<li>对上述的输出结果有些诧异，因为只有一个线程，为什么会有两个完整的执行体（打印出OVER说明线程执行体执行完成）？</li>
+<li>执行两次的原因不清楚，为什么会执行两次？只有一个线程容量，加入第二个任务时应该直接抛异常吧，为什么是执行完第二个任务后才抛异常？<blockquote>
+<p><strong>这个容量满了是指当前的线程池以及其缓冲队列的容量都满了才是满了, 而不是线程池的数量。先勉强用这个解释吧，但我看代码仍没看出来！</strong>应该就是这个原因，如果把线程数设置为1，但Queue设置为10，则会先执行一个任务，然后把其余任务加入到队列，如果队列满了，并且没有空闲线程。</p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<h6 id="DiscardPolicy"><a href="#DiscardPolicy" class="headerlink" title="DiscardPolicy"></a>DiscardPolicy</h6><blockquote>
+<p>丢弃策略</p>
+<ol>
+<li>队列满时，丢掉待入队的任务，直到队列有空闲，才加入任务。</li>
+</ol>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//线程数不够，或者executor关闭时，执行</span></span><br><span class="line">	<span class="comment">//此处的空方法表示什么都不执行，即对于那些无法处理的线程不进行任何处理---即丢弃</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="CallerRunsPolicy"><a href="#CallerRunsPolicy" class="headerlink" title="CallerRunsPolicy"></a>CallerRunsPolicy</h6><blockquote>
+<p>当线程池没有资源，队列满了时，无法执行的task会<strong>交给调用线程（开启线程池的那个线程）执行。</strong><br>比如有10个任务，3个线程，队列为3，则：<br>1-3三个任务由线程直接执行。<br>4-6三个任务放进队列<br>第7个任务会根据情况，如果没有空闲线程，队列不空闲，则交由调用线程执行</p>
+</blockquote>
+<p><strong>rejectedExecution执行体</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!e.isShutdown()) &#123;</span><br><span class="line">	    <span class="comment">//注意看：这里执行了r.run()，请问是哪个线程执行的？</span></span><br><span class="line">	    <span class="comment">//分析下：主线程开启了线程池来执行任务，而当前的方法是在线程调度的过程中发生的</span></span><br><span class="line">	    <span class="comment">//那么谁来进行线程调度？主线程。</span></span><br><span class="line">	    <span class="comment">//所以r.run()也是在main线程池中执行的。</span></span><br><span class="line">        r.run();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>例子</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">    executor.execute(() -&gt; &#123;</span><br><span class="line">        System.out.println(<span class="string">"my run ... 1 "</span> + Thread.currentThread().getName());</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h6 id="DiscardOldestPolicy"><a href="#DiscardOldestPolicy" class="headerlink" title="DiscardOldestPolicy"></a>DiscardOldestPolicy</h6><blockquote>
+<p>移除（丢弃不执行）最老（队头）的task，执行新插入的task</p>
+</blockquote>
+<p><strong>rejectedExecution实现</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!e.isShutdown()) &#123;</span><br><span class="line">	    <span class="comment">//出队</span></span><br><span class="line">        e.getQueue().poll();</span><br><span class="line">        <span class="comment">//由线程池执行新入队的线程</span></span><br><span class="line">        e.execute(r);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h6 id="自定义RejectedExecutionHandler"><a href="#自定义RejectedExecutionHandler" class="headerlink" title="自定义RejectedExecutionHandler"></a>自定义RejectedExecutionHandler</h6><blockquote>
+<p>当上述四种策略都无法满足时，可以自定义饱和策略。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyHandler</span> <span class="keyword">implements</span> <span class="title">RejectedExecutionHandler</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor executor)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//r.run();</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RejectedExecutionException(<span class="string">"异常信息"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           
         
       
@@ -1868,7 +2040,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1890,7 +2062,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
