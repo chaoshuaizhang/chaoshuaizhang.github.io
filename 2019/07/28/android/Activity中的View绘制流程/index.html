@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="绘制流程,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="起源 记得分析事件时如何传递到Activity时有一个点：构造一个ViewRootImpl，并且将root、decor、window建立关联。root.setView(view, wparams, panelParentView)  123456789public void setView(View view, WindowManager.LayoutParams attrs, View pane">
+<meta name="keywords" content="绘制流程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Activity中的View绘制流程">
+<meta property="og:url" content="http://yoursite.com/2019/07/28/android/Activity中的View绘制流程/index.html">
+<meta property="og:site_name" content="changePosition">
+<meta property="og:description" content="起源 记得分析事件时如何传递到Activity时有一个点：构造一个ViewRootImpl，并且将root、decor、window建立关联。root.setView(view, wparams, panelParentView)  123456789public void setView(View view, WindowManager.LayoutParams attrs, View pane">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-30T00:34:28.420Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Activity中的View绘制流程">
+<meta name="twitter:description" content="起源 记得分析事件时如何传递到Activity时有一个点：构造一个ViewRootImpl，并且将root、decor、window建立关联。root.setView(view, wparams, panelParentView)  123456789public void setView(View view, WindowManager.LayoutParams attrs, View pane">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/07/28/android/Activity中的View绘制流程/">
+
+
+
+
+
+  <title>Activity中的View绘制流程 | changePosition</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">changePosition</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/28/android/Activity中的View绘制流程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Activity中的View绘制流程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-28T19:48:28+08:00">
+                2019-07-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="起源"><a href="#起源" class="headerlink" title="起源"></a>起源</h2><blockquote>
+<p>记得分析事件时如何传递到Activity时有一个点：构造一个ViewRootImpl，并且将root、decor、window建立关联。<br><code>root.setView(view, wparams, panelParentView)</code></p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setView</span><span class="params">(View view, WindowManager.LayoutParams attrs, View panelParentView)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="comment">// Schedule the first layout -before- adding to the window</span></span><br><span class="line">	<span class="comment">// manager, to make sure we do the relayout before receiving</span></span><br><span class="line">	<span class="comment">// any other events from the system.</span></span><br><span class="line">	<span class="comment">//【注意】注释中有一句很重要的话：要保证在接收到事件前，先布置好布局</span></span><br><span class="line">	requestLayout();</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="请求绘制"><a href="#请求绘制" class="headerlink" title="请求绘制"></a>请求绘制</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">requestLayout</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">	mLayoutRequested = <span class="keyword">true</span>;</span><br><span class="line">	scheduleTraversals();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>最终会在scheduleTraversals方法中调用performTraversals完成绘制<strong>这里的绘制是从顶级View发起的，然后遍历子View循环绘制</strong></p>
+</blockquote>
+<h2 id="绘制流程"><a href="#绘制流程" class="headerlink" title="绘制流程"></a>绘制流程</h2><h4 id="核心方法（从顶级开始遍历）"><a href="#核心方法（从顶级开始遍历）" class="headerlink" title="核心方法（从顶级开始遍历）"></a>核心方法（从顶级开始遍历）</h4><blockquote>
+<p>在performTraversals中依次调用measure、layout、draw。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ViewRootImpl.java</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performTraversals</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="comment">//mWindowAttributes是MATCH_PARENT的</span></span><br><span class="line">	WindowManager.LayoutParams lp = mWindowAttributes;</span><br><span class="line">	mWidth = frame.width();</span><br><span class="line">	mHeight = frame.height();</span><br><span class="line">	<span class="comment">//默认布局的宽高就是屏幕的宽高</span></span><br><span class="line">	<span class="keyword">int</span> childWidthMeasureSpec = getRootMeasureSpec(mWidth, lp.width);</span><br><span class="line">	<span class="keyword">int</span> childHeightMeasureSpec = getRootMeasureSpec(mHeight, lp.height);	</span><br><span class="line">	<span class="comment">//执行measure测量</span></span><br><span class="line">	performMeasure(childWidthMeasureSpec, childHeightMeasureSpec);</span><br><span class="line">	<span class="comment">//放置子View</span></span><br><span class="line">	performLayout(lp, mWidth, mHeight);</span><br><span class="line">	<span class="comment">//draw绘制</span></span><br><span class="line">	performDraw();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="测量measure"><a href="#测量measure" class="headerlink" title="测量measure"></a>测量measure</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//这里调用当前View的measure来进行测量，最后通过onMeasure完成测量</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performMeasure</span><span class="params">(<span class="keyword">int</span> childWidthMeasureSpec, <span class="keyword">int</span> childHeightMeasureSpec)</span> </span>&#123;</span><br><span class="line">	mView.measure(childWidthMeasureSpec, childHeightMeasureSpec);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">measure</span><span class="params">(<span class="keyword">int</span> widthMeasureSpec, <span class="keyword">int</span> heightMeasureSpec)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//这里会执行view自身的onMeasure方法，一般每个子View都会重写onMeasure，依据自己布局的特点来测量</span></span><br><span class="line">	onMeasure(widthMeasureSpec, heightMeasureSpec);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>对于最初的布局，mView就是DecorView。在测量时是根据自身的大小和LayoutParams一起计算出来最终大小的。</p>
+</blockquote>
+<h4 id="布局layout"><a href="#布局layout" class="headerlink" title="布局layout"></a>布局layout</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//测量完成后调用layout完成对自己子View的布局</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performLayout</span><span class="params">(WindowManager.LayoutParams lp, <span class="keyword">int</span> desiredWindowWidth, <span class="keyword">int</span> desiredWindowHeight)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//在layout中调用自己的onLayout完成对自己view的摆放</span></span><br><span class="line">	host.layout(<span class="number">0</span>, <span class="number">0</span>, host.getMeasuredWidth(), host.getMeasuredHeight());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onLayout</span><span class="params">(<span class="keyword">boolean</span> changed, <span class="keyword">int</span> left, <span class="keyword">int</span> top, <span class="keyword">int</span> right, <span class="keyword">int</span> bottom)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//空的</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>onLayout是一个空方法，和onMeasure一样里边没有逻辑，摆放由自己决定，不同的View的摆放逻辑不一样。我们会在此方法中根据measure的结果把View摆在对应的位置上。</p>
+</blockquote>
+<h4 id="绘制draw"><a href="#绘制draw" class="headerlink" title="绘制draw"></a>绘制draw</h4><blockquote>
+<p>绘制这一块儿感觉比较复杂。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performDraw</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	draw(fullRedrawNeeded);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">(<span class="keyword">boolean</span> fullRedrawNeeded)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//在dispatchOnDraw方法中会遍历各个子View执行其自己的onDraw方法</span></span><br><span class="line">	mAttachInfo.mTreeObserver.dispatchOnDraw();</span><br><span class="line">	...</span><br><span class="line">	mAttachInfo.mThreadedRenderer.draw(mView, mAttachInfo, <span class="keyword">this</span>);</span><br><span class="line">	<span class="comment">//注意这里也可能会调用scheduleTraversals来进行重绘</span></span><br><span class="line">	<span class="keyword">if</span> (animating) &#123;</span><br><span class="line">		mFullRedrawNeeded = <span class="keyword">true</span>;</span><br><span class="line">		scheduleTraversals();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><blockquote>
+<ul>
+<li>对于measure、layout、draw三个方法，View和ViewGroup的执行逻辑是不一样的。当对一个子布局进行绘制时需要判断其是View还是ViewGroup，如果是ViewGroup的话，继续遍历。。。</li>
+<li>对于View的invalidate方法也会执行到scheduleTraversals，也可以联想到：ViewGroup中任一view有变更，都会导致ViewRootImpl去重新绘制。</li>
+<li>ViewRootImpl控制着View的刷新等操作，它相当于是介于Activity与View之间的一个桥。</li>
+</ul>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><blockquote>
+<p>大致的绘制流程就是这样（并没有分析什么特别有用的东西）：在一个方法中先后执行measure、layout、draw完成绘制。布局的变化会导致ViewRootImpl进行重绘。</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/绘制流程/" rel="tag"># 绘制流程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/28/android/Activity的setContentView加载机制/" rel="next" title="Activity的setContentView加载机制">
+                <i class="fa fa-chevron-left"></i> Activity的setContentView加载机制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/30/android/android动画小结/" rel="prev" title="android动画小结">
+                android动画小结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">changePosition</p>
+              <p class="site-description motion-element" itemprop="description">知识体系树</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#起源"><span class="nav-number">1.</span> <span class="nav-text">起源</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#请求绘制"><span class="nav-number">1.0.1.</span> <span class="nav-text">请求绘制</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#绘制流程"><span class="nav-number">2.</span> <span class="nav-text">绘制流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#核心方法（从顶级开始遍历）"><span class="nav-number">2.0.1.</span> <span class="nav-text">核心方法（从顶级开始遍历）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测量measure"><span class="nav-number">2.0.2.</span> <span class="nav-text">测量measure</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#布局layout"><span class="nav-number">2.0.3.</span> <span class="nav-text">布局layout</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#绘制draw"><span class="nav-number">2.0.4.</span> <span class="nav-text">绘制draw</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注意"><span class="nav-number">2.1.</span> <span class="nav-text">注意</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">changePosition</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

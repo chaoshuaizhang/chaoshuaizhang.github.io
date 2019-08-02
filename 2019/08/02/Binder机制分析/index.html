@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="binder,aidl,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="结合AIDL分析Binder机制AIDL使用流程  aidl文件—&amp;gt;直接用as生成aidl文件就行，他会默认生成一个aidl文件夹，创建Book.java在java下的包下，而Book.aidl在aidl下的包下，注意这两个包名必须一致—&amp;gt;这点as会帮我们做。 aidl demo server-d:\myprjs\aidl\client\MyApplication aidl demo">
+<meta name="keywords" content="binder,aidl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Binder机制分析">
+<meta property="og:url" content="http://yoursite.com/2019/08/02/Binder机制分析/index.html">
+<meta property="og:site_name" content="changePosition">
+<meta property="og:description" content="结合AIDL分析Binder机制AIDL使用流程  aidl文件—&amp;gt;直接用as生成aidl文件就行，他会默认生成一个aidl文件夹，创建Book.java在java下的包下，而Book.aidl在aidl下的包下，注意这两个包名必须一致—&amp;gt;这点as会帮我们做。 aidl demo server-d:\myprjs\aidl\client\MyApplication aidl demo">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/08/02/Binder机制分析/1546689948194.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/02/Binder机制分析/1546690064092.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/02/Binder机制分析/1546697701352.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/02/Binder机制分析/1546697857391.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/02/Binder机制分析/1546618047950.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/02/Binder机制分析/1546618062864.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/02/Binder机制分析/1546620099505.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/02/Binder机制分析/1536638215799.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/02/Binder机制分析/1536641847499.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/02/Binder机制分析/1536648684435.png">
+<meta property="og:updated_time" content="2019-08-02T10:17:09.763Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Binder机制分析">
+<meta name="twitter:description" content="结合AIDL分析Binder机制AIDL使用流程  aidl文件—&amp;gt;直接用as生成aidl文件就行，他会默认生成一个aidl文件夹，创建Book.java在java下的包下，而Book.aidl在aidl下的包下，注意这两个包名必须一致—&amp;gt;这点as会帮我们做。 aidl demo server-d:\myprjs\aidl\client\MyApplication aidl demo">
+<meta name="twitter:image" content="http://yoursite.com/2019/08/02/Binder机制分析/1546689948194.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/08/02/Binder机制分析/">
+
+
+
+
+
+  <title>Binder机制分析 | changePosition</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">changePosition</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/02/Binder机制分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Binder机制分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-02T14:29:37+08:00">
+                2019-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="结合AIDL分析Binder机制"><a href="#结合AIDL分析Binder机制" class="headerlink" title="结合AIDL分析Binder机制"></a>结合AIDL分析Binder机制</h2><h3 id="AIDL使用流程"><a href="#AIDL使用流程" class="headerlink" title="AIDL使用流程"></a>AIDL使用流程</h3><blockquote>
+<ol>
+<li>aidl文件—&gt;直接用as生成aidl文件就行，他会默认生成一个aidl文件夹，创建Book.java在java下的包下，而Book.aidl在aidl下的包下，注意这两个包名必须一致—&gt;这点as会帮我们做。</li>
+<li>aidl demo server-d:\myprjs\aidl\client\MyApplication</li>
+<li>aidl demo client-d:\myprjs\aidl\server\MyAidlServer</li>
+</ol>
+</blockquote>
+<h4 id="服务端Service"><a href="#服务端Service" class="headerlink" title="服务端Service"></a>服务端Service</h4><h5 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BookManageService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"CLIENT_ERROR_LOG"</span>;</span><br><span class="line">    <span class="keyword">private</span> CopyOnWriteArrayList&lt;Book&gt; list = <span class="keyword">new</span> CopyOnWriteArrayList&lt;&gt;();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//下面分析mBinder</span></span><br><span class="line">    <span class="keyword">private</span> IBinder mBinder = <span class="keyword">new</span> IBookManager.Stub() &#123;&#125;;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate();</span><br><span class="line">		<span class="comment">//service在create时先添加一本书</span></span><br><span class="line">        list.add(<span class="keyword">new</span> Book(<span class="number">1001</span>, <span class="string">"谁许传"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 在客户端与服务端建立连接时传给客户端</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//把服务端的Binder对象传给client端</span></span><br><span class="line">        <span class="keyword">return</span> mBinder;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="mBinder对象"><a href="#mBinder对象" class="headerlink" title="mBinder对象"></a>mBinder对象</h5><blockquote>
+<p>我们在.aidl中定义的那些操作，真正的执行体在这里<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 创建这个Binder就是为了暴露给客户端</span></span><br><span class="line"><span class="comment"> * 客户端拿到server端的binder执行add，get方法时，经过一系列转换，最后走的就是这里。</span></span><br><span class="line"><span class="comment"> * IBookManager.aidl的这4个方法都执行在binder线程中</span></span><br><span class="line"><span class="comment"> * 注意mBinder是如何生成的：mBinder指向了一个匿名内部类（注意这个匿名内部类，下边的分析会提到）</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> IBinder mBinder = <span class="keyword">new</span> IBookManager.Stub() &#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, Parcel data, Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> List&lt;Book&gt; <span class="title">getBookList</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> list;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(Book book)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">		<span class="comment">//添加是在client的主线程中add的，但是这里走到了binder线程</span></span><br><span class="line">		list.add(book);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="客户端绑定服务端Service"><a href="#客户端绑定服务端Service" class="headerlink" title="客户端绑定服务端Service"></a>客户端绑定服务端Service</h4><h5 id="获得要绑定的connection"><a href="#获得要绑定的connection" class="headerlink" title="获得要绑定的connection"></a>获得要绑定的connection</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//client端定义的connection</span></span><br><span class="line"><span class="keyword">private</span> ServiceConnection connection = <span class="keyword">new</span> ServiceConnection() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;</span><br><span class="line">	    <span class="comment">//根据server端的binder对象调用AIDL中的Stub类的asInterface方法</span></span><br><span class="line">	    <span class="comment">//最终返回的是一个Proxy对象-实现了IBookManager接口（因为不是在同一进程，所以会用代理实现跨进程通信）</span></span><br><span class="line">	    <span class="comment">//相当于是本地的Proxy代理了远程的Binder，生成了一个Manager对象(即IInterface的实现类，里边有Binder)，但最终执行时肯定还是要通过被代理对象的。</span></span><br><span class="line">	    <span class="comment">//【注意：】上述的service对象实际是BinderProxy类型的对象</span></span><br><span class="line">        bookManager = IBookManager.Stub.asInterface(service);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName name)</span> </span>&#123;</span><br><span class="line">        Log.e(TAG, <span class="string">"onServiceDisconnected: "</span> + name.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h5 id="绑定"><a href="#绑定" class="headerlink" title="绑定"></a>绑定</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.setAction(<span class="string">"net.shopin.aidlservice"</span>);</span><br><span class="line">intent.setPackage(<span class="string">"net.shopin.myaidlserver"</span>);</span><br><span class="line"><span class="comment">//与服务端建立连接</span></span><br><span class="line"><span class="comment">//这边有个小问题：在api&gt;21时，上述的intent不仅要加action，还要加package</span></span><br><span class="line">bindService(intent, connection, Context.BIND_AUTO_CREATE);</span><br></pre></td></tr></table></figure>
+<h3 id="由AIDL自动生成的类"><a href="#由AIDL自动生成的类" class="headerlink" title="由AIDL自动生成的类"></a>由AIDL自动生成的类</h3><h4 id="Server端的IBookManager接口"><a href="#Server端的IBookManager接口" class="headerlink" title="Server端的IBookManager接口"></a>Server端的IBookManager接口</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IBookManager</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">IInterface</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Stub</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">Binder</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span></span>&#123;</span><br><span class="line">		<span class="comment">//下边分析Stub类</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	* 下面的方法就是我们在.aidl文件中定义的。</span></span><br><span class="line"><span class="comment">	* 可以肯定：必须会有一个类来实现这些方法，不然我们定义的操作没有执行体！</span></span><br><span class="line"><span class="comment">	* 那么是谁呢？就看谁实现了IBookManager接口===&gt;Stub类</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line">	<span class="keyword">public</span> java.util.<span class="function">List&lt;Book&gt; <span class="title">getBookList</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(Book book)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="IBookManager接口中的Stub类"><a href="#IBookManager接口中的Stub类" class="headerlink" title="IBookManager接口中的Stub类"></a>IBookManager接口中的Stub类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Local-side IPC implementation stub class.</span></span><br><span class="line"><span class="comment"> * 注意：Stub继承Binder，实现IBookManager，但它是一个抽象类，并且也是自动生成的-说明我们定义的那些操作的执行体肯定不在这里边-肯定在Stub的子类中-就是我们在Service中为了生成mBinder而定义的那个匿名内部类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Stub</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">Binder</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String DESCRIPTOR = <span class="string">"net.shopin.myaidlserver.IBookManager"</span>;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * Server端的Service构造Binder对象时会走到这里生成一个Stub()实例</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Stub</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">		注意：开始把当前的this（stub对象）和DESCRIPTOR建立关联</span></span><br><span class="line"><span class="comment">		所以后期：执行binder.queryLocalInterface(DESCRIPTOR)时，</span></span><br><span class="line"><span class="comment">		就是根据这里attach的对应关系来查找的</span></span><br><span class="line"><span class="comment">		*/</span></span><br><span class="line">		<span class="keyword">this</span>.attachInterface(<span class="keyword">this</span>, DESCRIPTOR);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> net.shopin.myaidlserver.<span class="function">IBookManager <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//具体代码下边分析</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, Parcel data, Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">		<span class="comment">//下边分析</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">		<span class="comment">//下边分析</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_getBookList = (IBinder.FIRST_CALL_TRANSACTION + <span class="number">0</span>);</span><br><span class="line">	<span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_addBook = (IBinder.FIRST_CALL_TRANSACTION + <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Stub类中的asInterface方法"><a href="#Stub类中的asInterface方法" class="headerlink" title="Stub类中的asInterface方法"></a>Stub类中的asInterface方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Cast an IBinder object into an net.shopin.myaidlserver.IBookManager interface, generating a proxy if needed.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> net.shopin.myaidlserver.<span class="function">IBookManager <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> ((obj == <span class="keyword">null</span>)) &#123;</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">//DESCRIPTOR就是包名+类名（string类型）</span></span><br><span class="line">       IInterface iin = obj.queryLocalInterface(DESCRIPTOR);</span><br><span class="line">       <span class="comment">//那么问题是：什么时候if条件不成立？</span></span><br><span class="line">       <span class="comment">//注意queryLocalInterface方法：在本地（指的就是当前进程）查找是否有DESCRIPTOR对应的IInterface</span></span><br><span class="line">       <span class="comment">//在Server端时，obj.queryLocalInterface是可以找到对应的DESCRIPTOR，因为此时Binder对象所处的进程和调用者所处的是同一个进程（这里的调用者指的就是bookManager.addBook操作所处的进程），但是当把server端的service设置为remote进程时，调用者和binder对象所处的就不是同一个进程了(此时，Binder就成为一个远程对象了)！</span></span><br><span class="line">       <span class="keyword">if</span> (((iin != <span class="keyword">null</span>) &amp;&amp; (iin <span class="keyword">instanceof</span> net.shopin.myaidlserver.IBookManager))) &#123;</span><br><span class="line">           <span class="keyword">return</span> ((net.shopin.myaidlserver.IBookManager) iin);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">//既然不在同一个进程，那如何获取到远程的(binder)对象实例来操作呢？</span></span><br><span class="line">       <span class="comment">//通过代理（和java的代理实现方式不一样）返回对应的IBookManager实现类（也就是Proxy类），也就是说以后操作IBookManager类的各个方法都是先操作Proxy，最后才到被代理对象了</span></span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> net.shopin.myaidlserver.IBookManager.Stub.Proxy(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Stub的onTransact方法"><a href="#Stub的onTransact方法" class="headerlink" title="Stub的onTransact方法"></a>Stub的onTransact方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* 这是Stub类中的onTransact方法，不同进程通信时才会走这里！</span></span><br><span class="line"><span class="comment">* 同一进程通信时（比如当前应用注册当前的Service(没有设置remote)，使用AIDL通信，直接就会走到Service中的匿名内部类中，不会经过这一系列的操作）</span></span><br><span class="line"><span class="comment">* */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, android.os.Parcel data, android.os.Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">	<span class="comment">//方法中的参数就是client调用transact方法时传过来的</span></span><br><span class="line">	<span class="keyword">switch</span> (code) &#123;</span><br><span class="line">		<span class="keyword">case</span> INTERFACE_TRANSACTION: &#123;</span><br><span class="line">			reply.writeString(DESCRIPTOR);</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">case</span> TRANSACTION_getBookList: &#123;</span><br><span class="line">			data.enforceInterface(DESCRIPTOR);</span><br><span class="line">			List&lt;Book&gt; _result = <span class="keyword">this</span>.getBookList();</span><br><span class="line">			reply.writeNoException();</span><br><span class="line">			reply.writeTypedList(_result);</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">case</span> TRANSACTION_addBook: &#123;</span><br><span class="line">			data.enforceInterface(DESCRIPTOR);</span><br><span class="line">			net.shopin.myaidlserver.Book _arg0;</span><br><span class="line">			<span class="keyword">if</span> ((<span class="number">0</span> != data.readInt())) &#123;</span><br><span class="line">				_arg0 = net.shopin.myaidlserver.Book.CREATOR.createFromParcel(data);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				_arg0 = <span class="keyword">null</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="comment">//注意下边的this.getBookList()，调的就是子类（那个匿名内部类）的getBookList方法</span></span><br><span class="line">			<span class="keyword">this</span>.addBook(_arg0);</span><br><span class="line">			reply.writeNoException();</span><br><span class="line">			<span class="comment">//注意这里直接返回了，并没有再调到Binder的onTransact</span></span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="代理类Proxy"><a href="#代理类Proxy" class="headerlink" title="代理类Proxy"></a>代理类Proxy</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> android.os.IBinder mRemote;</span><br><span class="line">    <span class="comment">//这个remote是在client中构建ServiceConnection时，onServiceConnected方法传来的，实际上还是Server的Service传来的Binder对象---&gt;也就是IBookManager.Stub()</span></span><br><span class="line">    Proxy(android.os.IBinder remote) &#123;</span><br><span class="line">	    <span class="comment">//当执行this.asBinder()时，会把这个binder对象返回</span></span><br><span class="line">        mRemote = remote;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> android.os.<span class="function">IBinder <span class="title">asBinder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mRemote;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(net.shopin.myaidlserver.Book book)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">        android.os.Parcel _data = android.os.Parcel.obtain();</span><br><span class="line">        android.os.Parcel _reply = android.os.Parcel.obtain();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">	        <span class="comment">//写入类名，类似于标记吧，只要类名一致都可以反序列化</span></span><br><span class="line">            _data.writeInterfaceToken(DESCRIPTOR);</span><br><span class="line">            <span class="keyword">if</span> ((book != <span class="keyword">null</span>)) &#123;</span><br><span class="line">                _data.writeInt(<span class="number">1</span>);</span><br><span class="line">                book.writeToParcel(_data, <span class="number">0</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                _data.writeInt(<span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//此处执行IBookManager.Stub()的transact方法</span></span><br><span class="line">            <span class="comment">//可以发现：此处真正执行的addBook方法，最终还是通过一个转换</span></span><br><span class="line">            <span class="comment">//mRemote.transact(Stub.TRANSACTION_addBook来实现的。</span></span><br><span class="line">            <span class="comment">//那么mRemote是谁呢？就是onServiceConnected传回来的Server端的IBinder，但是transact是父类Binder的方法，下边分析</span></span><br><span class="line">            mRemote.transact(Stub.TRANSACTION_addBook, _data, _reply, <span class="number">0</span>);</span><br><span class="line">            _reply.readException();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            _reply.recycle();</span><br><span class="line">            _data.recycle();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Binder中用到的方法"><a href="#Binder中用到的方法" class="headerlink" title="Binder中用到的方法"></a>Binder中用到的方法</h3><h4 id="transact方法"><a href="#transact方法" class="headerlink" title="transact方法"></a>transact方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 上述Proxy中的mRemote.transact方法最终执行Binder中的transact方法（这点通</span></span><br><span class="line"><span class="comment">* 过debug还未发现！），在该方法中依旧会调用onTransact方法-因为在Stub（Binder</span></span><br><span class="line"><span class="comment">* 的子类）中重写了(自动生成)onTransact方法，所以会先执行Stub类的onTransact</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">transact</span><span class="params">(<span class="keyword">int</span> code, Parcel data, Parcel reply,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (data != <span class="keyword">null</span>) &#123;</span><br><span class="line">        data.setDataPosition(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//执行onTransact方法（先执行我们在service中重写的onTransact方法[根据需要选择是否重写]，再执行Stub中自动生成的onTransact方法===&gt;完成跨进程通信）</span></span><br><span class="line">    <span class="keyword">boolean</span> r = onTransact(code, data, reply, flags);</span><br><span class="line">    <span class="keyword">if</span> (reply != <span class="keyword">null</span>) &#123;</span><br><span class="line">        reply.setDataPosition(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> r;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="上面分析完成后，开始执行add方法"><a href="#上面分析完成后，开始执行add方法" class="headerlink" title="上面分析完成后，开始执行add方法"></a>上面分析完成后，开始执行add方法</h3><p>bookManager.addBook(book);<br>客户端用manager add了book，那么真正的执行体在哪呢？<br><img src="/2019/08/02/Binder机制分析/./1546689948194.png" alt="Alt text"></p>
+<ol>
+<li>回想上边：manager如何生成的？根据Proxy和远程的IBinder生成的</li>
+<li><p>当执行add方法时，执行的是Proxy中的add方法<br><img src="/2019/08/02/Binder机制分析/./1546690064092.png" alt="Alt text"></p>
+</li>
+<li><p>观察上边client中Proxy的add方法…最终执行的还是IBinder<br>的transact方法—&gt;也就是Binder（注意：这个Binder指的是remote）的transact方法—&gt;最终会映射到Binder进程（dev/binder）</p>
+<blockquote>
+<p>第三步有些疑惑：通过debug并没有看到client执行mRemote时，server端有执行Binder的transact方法（难道是远程调用的原因？不清楚），直接执行的是onTransact！这点很奇怪，难道不是：<font color="#AA8800">client执行transact—&gt;server端的Binder.java的transact—&gt;server端实现IBinder.java的子类的onTransact？？？</font><br><font color="#FF0000">事实不太清楚，但大致的执行流程肯定是：<br>remote.transact执行后会通过binder机制（和dev/binder有关了）来远程映射到server端的onTransact方法，远程的onTransact通过其参数（data、code）找到对应的方法，进行相应的操作。<br></font><br><img src="/2019/08/02/Binder机制分析/./1546697701352.png" alt="Alt text"></p>
+</blockquote>
+</li>
+</ol>
+<p><img src="/2019/08/02/Binder机制分析/./1546697857391.png" alt="Alt text"></p>
+<ol start="5">
+<li>OK，一次读/写完成</li>
+</ol>
+<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p>为什么可以实现跨进程通信？原理是什么？</p>
+<p><img src="/2019/08/02/Binder机制分析/./1546618047950.png" alt="Alt text"><br><img src="/2019/08/02/Binder机制分析/./1546618062864.png" alt="Alt text"><br>如上图所示：server的service打印出的线程名是 9692_2，但可以看出进程是9692（是myaidlserver应用的），那么到底是Binder进程是哪个进程号？难道是因为没有设置service的remote？因为设置之后就表示是单独进程了！<br><img src="/2019/08/02/Binder机制分析/./1546620099505.png" alt="Alt text"><br><strong>如上图所示，确实是这样，设置其为单独的服务，并且设置名字后，发现果然成为了一个单独的服务！</strong></p>
+<p>那么到底什么是Binder进程？client与server通信时，说的是靠Binder进程从中调解，但事实是 靠的是 开启的那个service所在的那个进程？</p>
+<blockquote>
+<font color="#FF0000"><strong>注意</strong>：不要说Binder进程，Binder就是Binder，它是进程间通信时创建的一个对象，是一个桥梁，它是系统层面的一个进程！Binder内部维护了一个Binder线程池</font>
+</blockquote>
+<h3 id="AIDL编写时遇到的问题"><a href="#AIDL编写时遇到的问题" class="headerlink" title="AIDL编写时遇到的问题"></a>AIDL编写时遇到的问题</h3><ol>
+<li>关于找不到Book.java文件的问题<blockquote>
+<p>把Book.aidl放在了aidl包下，Book.java也放在了aidl包下就找不到了，原因是as只会去java下边找java文件，解决办法：</p>
+</blockquote>
+</li>
+</ol>
+<ul>
+<li><p>方案1：build文件修改</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sourceSets &#123;</span><br><span class="line">    main &#123;</span><br><span class="line">        java.srcDirs = [<span class="string">'src/main/java'</span>, <span class="string">'src/main/aidl'</span>]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>方案2：把aidl放在as创建的aidl包下，把java放在java包下</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">第一种方案</th>
+<th style="text-align:center">第二种方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><img src="/2019/08/02/Binder机制分析/./1536638215799.png" alt="Alt text"></td>
+<td style="text-align:center"><img src="/2019/08/02/Binder机制分析/./1536641847499.png" alt="Alt text"></td>
+</tr>
+</tbody>
+</table>
+<ol start="2">
+<li><p>对于往客户端放置aidl文件时有些问题</p>
+<blockquote>
+<p>在as中，aidl文件只能放在系统生成的aidl文件夹下(应该是这样的)，而系统生成的aidl文件夹的包名是和java文件夹下的包名是一样的，所以直接把服务端的aidl文件放在aidl文件夹下肯定不行—因为包名不一致，如果尝试把aidl下的包名改成和服务端一致的，也不行，会导致java下面的包也会随之改变。其实解决办法就是在net.shopin下新建一个myaidlserver包，如下图，新建一个包A，这样就保证了server和client的aid包名一直。让然此时也可以把myaidlclient包删除了。至于B，如果是按照上述第二种方案解决的，则也要在java下新建同样的包来存放java文件了。<br><img src="/2019/08/02/Binder机制分析/./1536648684435.png" alt="Alt text"></p>
+</blockquote>
+</li>
+<li><p>连接service时报错</p>
+<blockquote>
+<p>Service Intent must be explicit: Intent { act=net.shopin.aidlservice }，可以看下ContextImpl源码，看下service和contextimpl什么关系</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="AIDL权限问题"><a href="#AIDL权限问题" class="headerlink" title="AIDL权限问题"></a>AIDL权限问题</h3><p>控制client调用权限</p>
+<ol>
+<li>在onBind方法中控制</li>
+<li>在onTransact方法中控制</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/binder/" rel="tag"># binder</a>
+          
+            <a href="/tags/aidl/" rel="tag"># aidl</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/02/AIDL流程分析/" rel="next" title="AIDL流程分析">
+                <i class="fa fa-chevron-left"></i> AIDL流程分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/02/ThreadLocal分析/" rel="prev" title="ThreadLocal分析">
+                ThreadLocal分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">changePosition</p>
+              <p class="site-description motion-element" itemprop="description">知识体系树</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#结合AIDL分析Binder机制"><span class="nav-number">1.</span> <span class="nav-text">结合AIDL分析Binder机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AIDL使用流程"><span class="nav-number">1.1.</span> <span class="nav-text">AIDL使用流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#服务端Service"><span class="nav-number">1.1.1.</span> <span class="nav-text">服务端Service</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Service"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">Service</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#mBinder对象"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">mBinder对象</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#客户端绑定服务端Service"><span class="nav-number">1.1.2.</span> <span class="nav-text">客户端绑定服务端Service</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#获得要绑定的connection"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">获得要绑定的connection</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#绑定"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">绑定</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#由AIDL自动生成的类"><span class="nav-number">1.2.</span> <span class="nav-text">由AIDL自动生成的类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Server端的IBookManager接口"><span class="nav-number">1.2.1.</span> <span class="nav-text">Server端的IBookManager接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IBookManager接口中的Stub类"><span class="nav-number">1.2.2.</span> <span class="nav-text">IBookManager接口中的Stub类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Stub类中的asInterface方法"><span class="nav-number">1.2.3.</span> <span class="nav-text">Stub类中的asInterface方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Stub的onTransact方法"><span class="nav-number">1.2.4.</span> <span class="nav-text">Stub的onTransact方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#代理类Proxy"><span class="nav-number">1.2.5.</span> <span class="nav-text">代理类Proxy</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Binder中用到的方法"><span class="nav-number">1.3.</span> <span class="nav-text">Binder中用到的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#transact方法"><span class="nav-number">1.3.1.</span> <span class="nav-text">transact方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#上面分析完成后，开始执行add方法"><span class="nav-number">1.4.</span> <span class="nav-text">上面分析完成后，开始执行add方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工作原理"><span class="nav-number">1.5.</span> <span class="nav-text">工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AIDL编写时遇到的问题"><span class="nav-number">1.6.</span> <span class="nav-text">AIDL编写时遇到的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AIDL权限问题"><span class="nav-number">1.7.</span> <span class="nav-text">AIDL权限问题</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">changePosition</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

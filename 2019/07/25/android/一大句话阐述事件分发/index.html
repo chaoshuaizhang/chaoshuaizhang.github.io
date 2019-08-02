@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="事件分发,">
 
 
 
@@ -79,17 +79,18 @@
 
 
 
-<meta name="description" content="事件传递到Activity  AMS在启动Activity时，会在ActivityThread的performLaunchActivity方法中去执行activity.attach，在attach中会构造一个window实例（PhoneWindow类型）并把当前Activity实例传过去，便于后期回调，在构造Window过程中会产生一个DecorView，这就是应用的根布局（整个应用中应该只有一个">
+<meta name="description" content="一大句话阐述事件分发事件传递到Activity  AMS在启动Activity时，会在ActivityThread的performLaunchActivity方法中去执行activity.attach，在attach中会构造一个window实例（PhoneWindow类型）并把当前Activity实例传过去，便于后期回调，在构造Window过程中会产生一个DecorView，这就是应用的根布局（整">
+<meta name="keywords" content="事件分发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一大句话阐述事件分发">
 <meta property="og:url" content="http://yoursite.com/2019/07/25/android/一大句话阐述事件分发/index.html">
 <meta property="og:site_name" content="changePosition">
-<meta property="og:description" content="事件传递到Activity  AMS在启动Activity时，会在ActivityThread的performLaunchActivity方法中去执行activity.attach，在attach中会构造一个window实例（PhoneWindow类型）并把当前Activity实例传过去，便于后期回调，在构造Window过程中会产生一个DecorView，这就是应用的根布局（整个应用中应该只有一个">
+<meta property="og:description" content="一大句话阐述事件分发事件传递到Activity  AMS在启动Activity时，会在ActivityThread的performLaunchActivity方法中去执行activity.attach，在attach中会构造一个window实例（PhoneWindow类型）并把当前Activity实例传过去，便于后期回调，在构造Window过程中会产生一个DecorView，这就是应用的根布局（整">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-25T14:00:21.706Z">
+<meta property="og:updated_time" content="2019-07-28T08:23:58.203Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一大句话阐述事件分发">
-<meta name="twitter:description" content="事件传递到Activity  AMS在启动Activity时，会在ActivityThread的performLaunchActivity方法中去执行activity.attach，在attach中会构造一个window实例（PhoneWindow类型）并把当前Activity实例传过去，便于后期回调，在构造Window过程中会产生一个DecorView，这就是应用的根布局（整个应用中应该只有一个">
+<meta name="twitter:description" content="一大句话阐述事件分发事件传递到Activity  AMS在启动Activity时，会在ActivityThread的performLaunchActivity方法中去执行activity.attach，在attach中会构造一个window实例（PhoneWindow类型）并把当前Activity实例传过去，便于后期回调，在构造Window过程中会产生一个DecorView，这就是应用的根布局（整">
 
 
 
@@ -292,6 +293,28 @@
           </span>
 
           
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -319,7 +342,7 @@
       
 
       
-        <h3 id="事件传递到Activity"><a href="#事件传递到Activity" class="headerlink" title="事件传递到Activity"></a>事件传递到Activity</h3><blockquote>
+        <h2 id="一大句话阐述事件分发"><a href="#一大句话阐述事件分发" class="headerlink" title="一大句话阐述事件分发"></a>一大句话阐述事件分发</h2><h3 id="事件传递到Activity"><a href="#事件传递到Activity" class="headerlink" title="事件传递到Activity"></a>事件传递到Activity</h3><blockquote>
 <ol>
 <li>AMS在启动Activity时，会在ActivityThread的performLaunchActivity方法中去执行<code>activity.attach</code>，在attach中会构造一个window实例（PhoneWindow类型）并把当前Activity实例传过去，便于后期回调，在构造Window过程中会产生一个DecorView，这就是应用的根布局（整个应用中应该只有一个DecorView，那就是main Activity的，其它的Activity都是用的这一个）。在根布局显示时会再构造一个ViewRootImpl实例，并把ViewRootImpl、Window、DecorView相互关联起来，这时就可以接收外部输入事件了。</li>
 <li>当有Input事件时，事件会分发给WindowInputEventReceiver（ViewRootImpl的内部类），receiver接收到事件后最终会调用上述DecorView的dispatchTouchEvent方法，并在dispatch中通过上述传过来的Activity实例回调到Activity的dispatch中。</li>
@@ -348,6 +371,12 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/事件分发/" rel="tag"># 事件分发</a>
+          
+        </div>
       
 
       
@@ -447,7 +476,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">30</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -458,7 +487,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -469,7 +498,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">24</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -502,7 +531,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#事件传递到Activity"><span class="nav-number">1.</span> <span class="nav-text">事件传递到Activity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#View-ViewGroup的事件传递"><span class="nav-number">2.</span> <span class="nav-text">View / ViewGroup的事件传递</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一大句话阐述事件分发"><span class="nav-number">1.</span> <span class="nav-text">一大句话阐述事件分发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#事件传递到Activity"><span class="nav-number">1.1.</span> <span class="nav-text">事件传递到Activity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#View-ViewGroup的事件传递"><span class="nav-number">1.2.</span> <span class="nav-text">View / ViewGroup的事件传递</span></a></li></ol></li></ol></div>
             
 
           </div>

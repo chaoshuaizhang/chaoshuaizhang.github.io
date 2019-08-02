@@ -94,7 +94,7 @@
 <meta property="og:image" content="http://yoursite.com/2019/07/23/协议/TCP-IP协议/1563881598390.png">
 <meta property="og:image" content="http://yoursite.com/2019/07/23/协议/TCP-IP协议/1563852853811.png">
 <meta property="og:image" content="http://yoursite.com/2019/07/23/协议/TCP-IP协议/1563853023405.png">
-<meta property="og:updated_time" content="2019-07-28T06:15:51.411Z">
+<meta property="og:updated_time" content="2019-08-01T15:14:20.961Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP&#x2F;IP协议">
 <meta name="twitter:description" content="先介绍一下其中的TCP、UDP TCP/IP协议中包含多种协议，这里只介绍下TCP/UDP，后期再把ARP、IP等协议补充进来。  TCP与UDP的区别 这些参考自计算机网络教材-谢希仁版  TCP的连接、断开 下面为传输时会用到的一些状态  三次握手   第一次握手时客户端发送一个随机的序号seq=i、确认号SYN=1 第二次握手时服务端发送一个随机的序号j、确认号为上次的确认号+1，即i+1、">
@@ -412,7 +412,45 @@
 </ul>
 <h6 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h6><p>假设发送了8个，ACK了3个，期望再发3个，那么发送窗口会向右滑动3个，此时窗口里有5个已发送未ACK+3个待发送，此时客户端会继续等待服务端的ACK，直到得到ACK，如果超时则会把窗口中的数据全部重新发送一下。</p>
 <p><img src="/2019/07/23/协议/TCP-IP协议/./1563881598390.png" alt="@计算机网络-谢希仁"></p>
-<h4 id="同时打开"><a href="#同时打开" class="headerlink" title="同时打开"></a>同时打开</h4><p><img src="/2019/07/23/协议/TCP-IP协议/./1563852853811.png" alt="@出自TCP/IP详解第一卷"></p>
+<h4 id="拥塞控制"><a href="#拥塞控制" class="headerlink" title="拥塞控制"></a>拥塞控制</h4><h5 id="产生拥塞的原因"><a href="#产生拥塞的原因" class="headerlink" title="产生拥塞的原因"></a>产生拥塞的原因</h5><blockquote>
+<p>拥塞的本质原因是<strong>整个系统的各个部分性能不匹配，只有所有部分都平衡了，拥塞问题才会解决。</strong>所以简单的提高处理速度，增大输出链路的容量，增大系统之间的缓存大小，这些都是暂时的解决办法，一段时间后仍会出现拥塞。</p>
+</blockquote>
+<h5 id="拥塞控制和流量控制的区别"><a href="#拥塞控制和流量控制的区别" class="headerlink" title="拥塞控制和流量控制的区别"></a>拥塞控制和流量控制的区别</h5><blockquote>
+<p>个人的一些理解。</p>
+<ul>
+<li>拥塞: 链路的带宽太小，导致发送方发的太多，把链路撑爆。</li>
+<li>流量控制：发送方发的数据可以在链路上传输，但是接收方处理不过来，所以接收方需要告诉发送方传的慢点。</li>
+</ul>
+</blockquote>
+<h5 id="如何检测到发生了拥塞"><a href="#如何检测到发生了拥塞" class="headerlink" title="如何检测到发生了拥塞"></a>如何检测到发生了拥塞</h5><ul>
+<li>丢弃的分组数</li>
+<li>超时重传的分组数</li>
+<li>发送方未按时收到应当到达的确认报文</li>
+<li>…</li>
+</ul>
+<h5 id="拥塞控制的几种算法"><a href="#拥塞控制的几种算法" class="headerlink" title="拥塞控制的几种算法"></a>拥塞控制的几种算法</h5><h6 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h6><blockquote>
+<p>发送方维持一个拥塞窗口状态变量cwnd，窗口的大小取决于网络的拥塞度。发送方控制拥塞窗口的原则是：网络未发生拥塞，窗口就增大一些，发生拥塞，减小一些。</p>
+</blockquote>
+<h6 id="慢开始"><a href="#慢开始" class="headerlink" title="慢开始"></a>慢开始</h6><blockquote>
+<p>在开始发送数据时并不是立即把大量数据注入到网络，因为并不清楚网络的负荷。较好的方式是由小到大，依次提高数据注入量，这样就可以探测到网络的负荷。<br>具体的实现方式：刚开始发送报文时先把拥塞窗口cwnd设置为一个报文段MSS的数值，然后每收到一对新的报文段的确认后，拥塞窗口就增加一个MSS的数值。</p>
+</blockquote>
+<ol>
+<li>第一次发送一个，接收一个ACK，窗口1-&gt;2。</li>
+<li>第二次发送两个，接受两个ACK，窗口2-&gt;3-&gt;4</li>
+<li>第三次发送4个，接收四个ACK，窗口4-&gt;5-&gt;6-&gt;7-&gt;8</li>
+</ol>
+<blockquote>
+<p>所以每经过一个传输轮次，窗口cwnd大小就加倍。</p>
+</blockquote>
+<h6 id="拥塞避免"><a href="#拥塞避免" class="headerlink" title="拥塞避免"></a>拥塞避免</h6><blockquote>
+<p>上边的满开始其实也是有问题的，毕竟是指数递增。所以为防止它增长过快，有设置了一个慢开始门限ssthresh状态变量。<br>cwnd &lt; ssthresh时，使用慢开始<br>cwnd &gt; ssthresh时，使用拥塞避免<br>cwnd = ssthresh时，二者都可使用</p>
+</blockquote>
+<p>拥塞避免的思路是让拥塞窗口cwnd缓慢增大：</p>
+<ul>
+<li>每经过一个轮回，让cwnd+1而不是加倍，这样增长速度就慢很多了。</li>
+<li>当网络出现拥塞时，就要把ssthresh设为发生拥塞时的窗口cwnd的一半（不能小于2），cwnd设置为1，然后重新执行慢开始算法。</li>
+</ul>
+<h6 id="快重传"><a href="#快重传" class="headerlink" title="快重传"></a>快重传</h6><h6 id="快恢复"><a href="#快恢复" class="headerlink" title="快恢复"></a>快恢复</h6><h4 id="同时打开"><a href="#同时打开" class="headerlink" title="同时打开"></a>同时打开</h4><p><img src="/2019/07/23/协议/TCP-IP协议/./1563852853811.png" alt="@出自TCP/IP详解第一卷"></p>
 <blockquote>
 <p>此时双方没有明确的客户端、服务端之分，双方都是主动建立连接、又被动接收连接，<strong>此时比正常的三次握手多了一次握手</strong>。</p>
 </blockquote>
@@ -460,8 +498,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/07/25/android/View-ViewGroup的事件分发/" rel="prev" title="View/ViewGroup的事件分发">
-                View/ViewGroup的事件分发 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/07/24/android/事件如何分发到Activity/" rel="prev" title="事件如何分发到Activity">
+                事件如何分发到Activity <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -539,7 +577,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">30</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -550,7 +588,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -561,7 +599,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">24</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -594,7 +632,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#先介绍一下其中的TCP、UDP"><span class="nav-number">1.</span> <span class="nav-text">先介绍一下其中的TCP、UDP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP与UDP的区别"><span class="nav-number">1.1.</span> <span class="nav-text">TCP与UDP的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP的连接、断开"><span class="nav-number">1.2.</span> <span class="nav-text">TCP的连接、断开</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#三次握手"><span class="nav-number">1.2.1.</span> <span class="nav-text">三次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#为什么要三次？"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">为什么要三次？</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#一种情况"><span class="nav-number">1.2.1.1.1.</span> <span class="nav-text">一种情况</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#另一种情况"><span class="nav-number">1.2.1.1.2.</span> <span class="nav-text">另一种情况</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#握手失败怎么办？"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">握手失败怎么办？</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#假设第三次握手失败"><span class="nav-number">1.2.1.2.1.</span> <span class="nav-text">假设第三次握手失败</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四次挥手"><span class="nav-number">1.2.2.</span> <span class="nav-text">四次挥手</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#TIME-WAIT状态有什么用？"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">TIME_WAIT状态有什么用？</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#滑动窗口"><span class="nav-number">1.2.3.</span> <span class="nav-text">滑动窗口</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#举个例子"><span class="nav-number">1.2.3.0.1.</span> <span class="nav-text">举个例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#同时打开"><span class="nav-number">1.2.4.</span> <span class="nav-text">同时打开</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#同时关闭"><span class="nav-number">1.2.5.</span> <span class="nav-text">同时关闭</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#先介绍一下其中的TCP、UDP"><span class="nav-number">1.</span> <span class="nav-text">先介绍一下其中的TCP、UDP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP与UDP的区别"><span class="nav-number">1.1.</span> <span class="nav-text">TCP与UDP的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP的连接、断开"><span class="nav-number">1.2.</span> <span class="nav-text">TCP的连接、断开</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#三次握手"><span class="nav-number">1.2.1.</span> <span class="nav-text">三次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#为什么要三次？"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">为什么要三次？</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#一种情况"><span class="nav-number">1.2.1.1.1.</span> <span class="nav-text">一种情况</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#另一种情况"><span class="nav-number">1.2.1.1.2.</span> <span class="nav-text">另一种情况</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#握手失败怎么办？"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">握手失败怎么办？</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#假设第三次握手失败"><span class="nav-number">1.2.1.2.1.</span> <span class="nav-text">假设第三次握手失败</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四次挥手"><span class="nav-number">1.2.2.</span> <span class="nav-text">四次挥手</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#TIME-WAIT状态有什么用？"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">TIME_WAIT状态有什么用？</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#滑动窗口"><span class="nav-number">1.2.3.</span> <span class="nav-text">滑动窗口</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#举个例子"><span class="nav-number">1.2.3.0.1.</span> <span class="nav-text">举个例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拥塞控制"><span class="nav-number">1.2.4.</span> <span class="nav-text">拥塞控制</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#产生拥塞的原因"><span class="nav-number">1.2.4.1.</span> <span class="nav-text">产生拥塞的原因</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#拥塞控制和流量控制的区别"><span class="nav-number">1.2.4.2.</span> <span class="nav-text">拥塞控制和流量控制的区别</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#如何检测到发生了拥塞"><span class="nav-number">1.2.4.3.</span> <span class="nav-text">如何检测到发生了拥塞</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#拥塞控制的几种算法"><span class="nav-number">1.2.4.4.</span> <span class="nav-text">拥塞控制的几种算法</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#基本概念"><span class="nav-number">1.2.4.4.1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#慢开始"><span class="nav-number">1.2.4.4.2.</span> <span class="nav-text">慢开始</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#拥塞避免"><span class="nav-number">1.2.4.4.3.</span> <span class="nav-text">拥塞避免</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#快重传"><span class="nav-number">1.2.4.4.4.</span> <span class="nav-text">快重传</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#快恢复"><span class="nav-number">1.2.4.4.5.</span> <span class="nav-text">快恢复</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#同时打开"><span class="nav-number">1.2.5.</span> <span class="nav-text">同时打开</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#同时关闭"><span class="nav-number">1.2.6.</span> <span class="nav-text">同时关闭</span></a></li></ol></li></ol></div>
             
 
           </div>
