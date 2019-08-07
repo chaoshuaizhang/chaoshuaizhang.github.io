@@ -252,169 +252,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/17/android/Launcher是如何启动Activity的/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="changePosition">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/17/android/Launcher是如何启动Activity的/" itemprop="url">Launcher是如何启动Activity的</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-17T14:28:28+08:00">
-                2018-07-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/android/" itemprop="url" rel="index">
-                    <span itemprop="name">android</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Launcher的启动"><a href="#Launcher的启动" class="headerlink" title="Launcher的启动"></a>Launcher的启动</h3><blockquote>
-<p>大致分下面4步</p>
-</blockquote>
-<ol>
-<li>Android系统启动的最后一步就是启动Launcher</li>
-<li>Launcher是由AMS启动的，启动后会通过PMS获取到所有的已安装应用信息</li>
-<li><p>Launcher的自动，AMS的startHomeActivityLocked方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">startHomeActivityLocked</span><span class="params">(<span class="keyword">int</span> userId, String reason)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//通过这个方法启动launcher</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 启动时intent设置的参数和manifest文件中的一致</span></span><br><span class="line">&lt;action android:name=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span><br><span class="line">&lt;category android:name=<span class="string">"android.intent.category.HOME"</span> /&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Launcher应用就启动起来了，执行onCreate、onStart…等方法</p>
-</li>
-</ol>
-<h3 id="Launcher加载其它应用图标到桌面"><a href="#Launcher加载其它应用图标到桌面" class="headerlink" title="Launcher加载其它应用图标到桌面"></a>Launcher加载其它应用图标到桌面</h3><blockquote>
-<p>大致分下面3步</p>
-</blockquote>
-<ol>
-<li><p>开启一个线程，通过handler发送执行体</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startLoader</span><span class="params">(<span class="keyword">boolean</span> isLaunching, <span class="keyword">int</span> synchronousBindPage)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">synchronized</span> (mLock) &#123;</span><br><span class="line">		mDeferredBindRunnables.clear();</span><br><span class="line">		<span class="keyword">if</span> (mCallbacks != <span class="keyword">null</span> &amp;&amp; mCallbacks.get() != <span class="keyword">null</span>) &#123;</span><br><span class="line">			isLaunching = isLaunching || stopLoaderLocked();</span><br><span class="line">			mLoaderTask = <span class="keyword">new</span> LoaderTask(mApp, isLaunching);</span><br><span class="line">			<span class="keyword">if</span> (synchronousBindPage &gt; -<span class="number">1</span> &amp;&amp; mAllAppsLoaded &amp;&amp; mWorkspaceLoaded) &#123;</span><br><span class="line">				mLoaderTask.runBindSynchronousPage(synchronousBindPage);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				sWorkerThread.setPriority(Thread.NORM_PRIORITY);</span><br><span class="line">				<span class="comment">//这个sWorker是个handler对象，也就是说 mLoadTask是一个Runnable类型的对象</span></span><br><span class="line">				sWorker.post(mLoaderTask);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> HandlerThread sWorkerThread = <span class="keyword">new</span> HandlerThread(<span class="string">"launcher-loader"</span>);</span><br><span class="line"><span class="comment">//注意：这是一个静态代码块，一进入LauncherModel开启</span></span><br><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">	<span class="comment">//线程开启-开启一个looper</span></span><br><span class="line">	sWorkerThread.start();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//依赖上述创建的looper为创建一个handler</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Handler sWorker = <span class="keyword">new</span> Handler(sWorkerThread.getLooper());</span><br><span class="line">```	</span><br><span class="line"></span><br><span class="line"><span class="number">2</span>. 在执行体内部加载所有已安装的应用信息</span><br><span class="line">#### mLoadTask运行</span><br><span class="line"></span><br><span class="line">```java</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	keep_running: &#123;</span><br><span class="line">		loadAndBindWorkspace();</span><br><span class="line">		<span class="comment">//加载并绑定所有的app</span></span><br><span class="line">		<span class="comment">//内部使用的还是handler，回调处理需要在launcher显示的app列表</span></span><br><span class="line">		loadAndBindAllApps();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// Update the saved icons if necessary</span></span><br><span class="line">	<span class="comment">//更新桌面的图标(如果需要更新的话)</span></span><br><span class="line">	updateSavedIcon(mContext, (ShortcutInfo) key, sBgDbIconCache.get(key));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>加载上述的图标（快捷方式），显示在recyclerview上</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/02/java/ThreadLocal分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2061,6 +1898,187 @@ private IBinder mBinder = new IBookManager.Stub() {
 <li>不拦截的话，会先判断当前事件是不是down，不是的话说明已经有消费事件的目标view了，也就是mFirstTouchTarget，直接执行target的dispatch方法。是down事件的话会遍历其子view，找到消费事件的目标view，赋值为mFirstTouchTarget，最终执行mFirstTouchTarget的dispatch方法。</li>
 </ul>
 </blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/24/android/事件如何分发到Activity/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/24/android/事件如何分发到Activity/" itemprop="url">事件如何分发到Activity</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-24T14:59:27+08:00">
+                2018-03-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Activity的attach方法"><a href="#Activity的attach方法" class="headerlink" title="Activity的attach方法"></a>Activity的attach方法</h2><blockquote>
+<p>在ActivityThread中的H发送RESUME_ACTIVITY消息时，会在performResumeActivity中执行activity.attch</p>
+</blockquote>
+<h3 id="attach做了什么"><a href="#attach做了什么" class="headerlink" title="attach做了什么"></a>attach做了什么</h3><h5 id="1-在attach时创建一个window，并让当前Activity与Window建立关联"><a href="#1-在attach时创建一个window，并让当前Activity与Window建立关联" class="headerlink" title="1. 在attach时创建一个window，并让当前Activity与Window建立关联"></a>1. 在attach时创建一个window，并让当前Activity与Window建立关联</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//传入的this是当前activity</span></span><br><span class="line">mWindow = <span class="keyword">new</span> PhoneWindow(<span class="keyword">this</span>, window, activityConfigCallback);</span><br><span class="line"><span class="comment">//this是当前activity（这里很重要，最后会通过这个回调），设置CallBack，实现dispatchTouchEvent方法</span></span><br><span class="line">mWindow.setCallback(<span class="keyword">this</span>);</span><br></pre></td></tr></table></figure>
+<h5 id="2-PhoneWindow的构造方法"><a href="#2-PhoneWindow的构造方法" class="headerlink" title="2. PhoneWindow的构造方法"></a>2. PhoneWindow的构造方法</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">PhoneWindow</span><span class="params">(Context context, Window preservedWindow, ActivityConfigCallback activityConfigCallback)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//Only main activity windows use decor context, all the other </span></span><br><span class="line">	<span class="comment">//windows depend on whatever context that was given to them.</span></span><br><span class="line">	<span class="keyword">if</span> (preservedWindow != <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="comment">//得到main传过来的DecorView</span></span><br><span class="line">		mDecor = (DecorView) preservedWindow.getDecorView();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>很重要的一点：一个应用里边的DecorView只有一个。</p>
+</blockquote>
+<h5 id="3-执行完performResumeActivity后会继续在handleResume方法中调用activity的makeVisible方法"><a href="#3-执行完performResumeActivity后会继续在handleResume方法中调用activity的makeVisible方法" class="headerlink" title="3. 执行完performResumeActivity后会继续在handleResume方法中调用activity的makeVisible方法"></a>3. 执行完performResumeActivity后会继续在handleResume方法中调用activity的makeVisible方法</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Activity.java</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">makeVisible</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (!mWindowAdded) &#123;</span><br><span class="line">		<span class="comment">//追踪getWM最终看到得到的是一个</span></span><br><span class="line">		ViewManager wm = getWindowManager();</span><br><span class="line">		<span class="comment">//往当前窗口添加DecorView</span></span><br><span class="line">		wm.addView(mDecor, getWindow().getAttributes());</span><br><span class="line">		mWindowAdded = <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//显示decorView，也就是contentView也显示了</span></span><br><span class="line">	mDecor.setVisibility(View.VISIBLE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>所以这个时候contentView才是显示状态，也就是在onResume过程中才显示，才可交互。</p>
+</blockquote>
+<h5 id="4-看下addView方法"><a href="#4-看下addView方法" class="headerlink" title="4. 看下addView方法"></a>4. 看下addView方法</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//WindowManagerImpl.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addView</span><span class="params">(View view, ViewGroup.LayoutParams params)</span> </span>&#123;</span><br><span class="line">	mGlobal.addView(view, params, mContext.getDisplay(), mParentWindow);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="构造一个ViewRootImpl，并把root、decor、window建立关联"><a href="#构造一个ViewRootImpl，并把root、decor、window建立关联" class="headerlink" title="构造一个ViewRootImpl，并把root、decor、window建立关联"></a>构造一个ViewRootImpl，并把root、decor、window建立关联</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//WindowManagerGlobal.java</span></span><br><span class="line"><span class="comment">//参数view就是传过来的DecorView</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addView</span><span class="params">(View view, ViewGroup.LayoutParams params, Display display, Window parentWindow)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">final</span> WindowManager.LayoutParams wparams = (WindowManager.LayoutParams) params;</span><br><span class="line">	ViewRootImpl root;</span><br><span class="line">	<span class="keyword">synchronized</span> (mLock) &#123;</span><br><span class="line">		<span class="comment">//构造一个ViewRootImpl实例</span></span><br><span class="line">		root = <span class="keyword">new</span> ViewRootImpl(view.getContext(), display);</span><br><span class="line">		view.setLayoutParams(wparams);</span><br><span class="line">		mViews.add(view);</span><br><span class="line">		mRoots.add(root);</span><br><span class="line">		mParams.add(wparams);</span><br><span class="line">		<span class="comment">//ViewRootImpl实例与DecorView实例建立关联，下面会用到这个view</span></span><br><span class="line">		root.setView(view, wparams, panelParentView);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="5-在ViewRootImpl的add方法中会构造一个WindowInputEventReceiver实例，用于接收input事件"><a href="#5-在ViewRootImpl的add方法中会构造一个WindowInputEventReceiver实例，用于接收input事件" class="headerlink" title="5. 在ViewRootImpl的add方法中会构造一个WindowInputEventReceiver实例，用于接收input事件"></a>5. 在ViewRootImpl的add方法中会构造一个WindowInputEventReceiver实例，用于接收input事件</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mInputEventReceiver = <span class="keyword">new</span> WindowInputEventReceiver(mInputChannel, Looper.myLooper());</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>WindowInputEventReceiver是ViewRootImpl的内部类，从类名可以看出它就是接收输入事件的。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">WindowInputEventReceiver</span> <span class="keyword">extends</span> <span class="title">InputEventReceiver</span> </span>&#123;</span><br><span class="line">	<span class="comment">//当有事件输入时，父类会回调给onInputEvent方法</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onInputEvent</span><span class="params">(InputEvent event)</span></span>&#123;</span><br><span class="line">		enqueueInputEvent(event, <span class="keyword">this</span>, <span class="number">0</span>, <span class="keyword">true</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBatchedInputEventPending</span><span class="params">()</span>...</span></span><br><span class="line"><span class="function">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dispose</span><span class="params">()</span>...</span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>其父类InputEventReceiver有一个dispatchInputEvent方法用于分发接收到的事件</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//InputEventReceiver.java</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">dispatchInputEvent</span><span class="params">(<span class="keyword">int</span> seq, InputEvent event)</span> </span>&#123;</span><br><span class="line">	mSeqMap.put(event.getSequenceNumber(), seq);</span><br><span class="line">	<span class="comment">//会继续调用子类也就是上边WindowInputEventReceiver的onInputEvent方法</span></span><br><span class="line">	onInputEvent(event);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">enqueueInputEvent</span><span class="params">(InputEvent event, InputEventReceiver receiver, <span class="keyword">int</span> flags, <span class="keyword">boolean</span> processImmediately)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//从这里可以看出：Input事件也是一个一个的消息，是一个链表结构，一个一个发</span></span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">if</span> (processImmediately) &#123;</span><br><span class="line">		<span class="comment">//立即发消息</span></span><br><span class="line">		doProcessInputEvents();</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">//应该是延迟发消息（内部会调用handler在“合适的时间发送”）</span></span><br><span class="line">		scheduleProcessInputEvents();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">doProcessInputEvents</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="comment">// Deliver all pending input events in the queue.</span></span><br><span class="line">	<span class="comment">//循环发出队列中的全部消息</span></span><br><span class="line">	<span class="keyword">while</span> (mPendingInputEventHead != <span class="keyword">null</span>) &#123;</span><br><span class="line">		QueuedInputEvent q = mPendingInputEventHead;</span><br><span class="line">		mPendingInputEventHead = q.mNext;</span><br><span class="line">		<span class="comment">//通过这个方法分发事件</span></span><br><span class="line">		deliverInputEvent(q);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//交付（有点分发的意思）事件</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">deliverInputEvent</span><span class="params">(QueuedInputEvent q)</span> </span>&#123;</span><br><span class="line">	InputStage stage;</span><br><span class="line">	<span class="keyword">if</span> (q.shouldSendToSynthesizer()) &#123;</span><br><span class="line">		stage = mSyntheticInputStage;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		stage = q.shouldSkipIme() ? mFirstPostImeInputStage : mFirstInputStage;</span><br><span class="line">	&#125;</span><br><span class="line">	stage.deliver(q);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">deliver</span><span class="params">(QueuedInputEvent q)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//注意看这里有个onProcess方法，它是InputStage中的方法，但是InputStage是个抽象类，所以这里可能是调其子类的onProcess方法</span></span><br><span class="line">	apply(q, onProcess(q));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>InputStage的实现类：</p>
+<ul>
+<li>ViewPreImeInputStage</li>
+<li>EarlyPostImeInputStage</li>
+<li>ViewPostImeInputStage</li>
+<li>SyntheticInputStage<br><strong>我们的触摸事件走的应该是ViewPostImeInputStage这个</strong></li>
+</ul>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">onProcess</span><span class="params">(QueuedInputEvent q)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (q.mEvent <span class="keyword">instanceof</span> KeyEvent) &#123;</span><br><span class="line">		<span class="comment">//输入事件（如键盘）</span></span><br><span class="line">		<span class="keyword">return</span> processKeyEvent(q);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">//手指触摸事件</span></span><br><span class="line">		<span class="keyword">return</span> processPointerEvent(q);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="6-最终会调用decorView的dispatchPointerEvent分发"><a href="#6-最终会调用decorView的dispatchPointerEvent分发" class="headerlink" title="6. 最终会调用decorView的dispatchPointerEvent分发"></a>6. 最终会调用decorView的dispatchPointerEvent分发</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ViewRootImpl.java</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">processPointerEvent</span><span class="params">(QueuedInputEvent q)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">final</span> MotionEvent event = (MotionEvent)q.mEvent;</span><br><span class="line">	<span class="comment">//这个mView就是上边ViewRootImpl.setView设置的</span></span><br><span class="line">	<span class="keyword">boolean</span> handled = mView.dispatchPointerEvent(event);</span><br><span class="line">	<span class="keyword">return</span> handled ? FINISH_HANDLED : FORWARD;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="7-dispatchPointerEvent又会调用自己的dispatchTouchEvent，也就是decorview的dispatchTouchEvent"><a href="#7-dispatchPointerEvent又会调用自己的dispatchTouchEvent，也就是decorview的dispatchTouchEvent" class="headerlink" title="7. dispatchPointerEvent又会调用自己的dispatchTouchEvent，也就是decorview的dispatchTouchEvent"></a>7. dispatchPointerEvent又会调用自己的dispatchTouchEvent，也就是decorview的dispatchTouchEvent</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//View.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">dispatchPointerEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (event.isTouchEvent()) &#123;</span><br><span class="line">		<span class="comment">//执行DecorView的dispatchTouchEvent方法</span></span><br><span class="line">		<span class="keyword">return</span> dispatchTouchEvent(event);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="8-终于，在decorView的dispatch中拿到上边构造window时传的Activity实例回调其dispatch"><a href="#8-终于，在decorView的dispatch中拿到上边构造window时传的Activity实例回调其dispatch" class="headerlink" title="8. 终于，在decorView的dispatch中拿到上边构造window时传的Activity实例回调其dispatch"></a>8. 终于，在decorView的dispatch中拿到上边构造window时传的Activity实例回调其dispatch</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//这个cb就是Activity实例</span></span><br><span class="line">	<span class="keyword">final</span> Window.Callback cb = mWindow.getCallback();</span><br><span class="line">	<span class="comment">//调用activity的dispatchTouchEvent方法</span></span><br><span class="line">	<span class="keyword">return</span> cb != <span class="keyword">null</span> &amp;&amp; !mWindow.isDestroyed() &amp;&amp; mFeatureId &lt; <span class="number">0</span>? cb.dispatchTouchEvent(ev) : <span class="keyword">super</span>.dispatchTouchEvent(ev);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
           
         

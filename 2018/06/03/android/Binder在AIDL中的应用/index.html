@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="binder,aidl,进程间通信,服务绑定,">
+  <meta name="keywords" content="aidl,binder,进程间通信,服务绑定,">
 
 
 
@@ -80,7 +80,7 @@
 
 
 <meta name="description" content="先看一张图 这张图描述了AIDL进程间通信的大致流程。同时它也是服务绑定的过程，只不过涉及的一些类：ApplicationThread、IServiceConnection.aidl、InnerConnection、Handler等没有列出来。   服务端创建服务时构造一个binderpublic class BookManageService extends Service { //在服务端创建">
-<meta name="keywords" content="binder,aidl,进程间通信,服务绑定">
+<meta name="keywords" content="aidl,binder,进程间通信,服务绑定">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Binder在AIDL中的应用">
 <meta property="og:url" content="http://yoursite.com/2018/06/03/android/Binder在AIDL中的应用/index.html">
@@ -405,9 +405,9 @@ private IBinder mBinder = new IBookManager.Stub() {
       
         <div class="post-tags">
           
-            <a href="/tags/binder/" rel="tag"># binder</a>
-          
             <a href="/tags/aidl/" rel="tag"># aidl</a>
+          
+            <a href="/tags/binder/" rel="tag"># binder</a>
           
             <a href="/tags/进程间通信/" rel="tag"># 进程间通信</a>
           
