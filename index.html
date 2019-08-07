@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/03/android/Binder在AIDL中的应用/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/02/java/线程池分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="changePosition">
@@ -271,7 +271,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/08/03/android/Binder在AIDL中的应用/" itemprop="url">Binder在AIDL中的应用</a></h1>
+                <a class="post-title-link" href="/2019/03/02/java/线程池分析/" itemprop="url">线程池分析</a></h1>
         
 
         <div class="post-meta">
@@ -283,8 +283,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-03T17:36:04+08:00">
-                2019-08-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-02T19:28:26+08:00">
+                2019-03-02
               </time>
             
 
@@ -293,28 +293,6 @@
             
           </span>
 
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/android/" itemprop="url" rel="index">
-                    <span itemprop="name">android</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -345,51 +323,7 @@
       
         
           
-            <h1 id="先看一张图"><a href="#先看一张图" class="headerlink" title="先看一张图"></a>先看一张图</h1><blockquote>
-<p>这张图描述了AIDL进程间通信的大致流程。<br><strong>同时它也是服务绑定的过程，只不过涉及的一些类：ApplicationThread、IServiceConnection.aidl、InnerConnection、Handler等没有列出来。</strong></p>
-</blockquote>
-<p><img src="/2019/08/03/android/Binder在AIDL中的应用/./1564889071567.png" alt="Alt text"></p>
-<h1 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h1><h2 id="创建服务时构造一个binder"><a href="#创建服务时构造一个binder" class="headerlink" title="创建服务时构造一个binder"></a>创建服务时构造一个binder</h2><p>public class BookManageService extends Service {</p>
-<pre><code>//在服务端创建一个binder对象，当客户端绑定时，返回这个binder给客户端
-private IBinder mBinder = new IBookManager.Stub() {
-    @Override
-    public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
-        return super.onTransact(code, data, reply, flags);
-    }
-    //具体的实现类
-    @Override
-    public List&lt;Book&gt; getBookList() throws RemoteException {
-        return list;
-    }
-    @Override
-    public void addBook(Book book) throws RemoteException {
-        list.add(book);
-    }
-};
-</code></pre><p>}</p>
-<h3 id="new-Stub-时做了什么"><a href="#new-Stub-时做了什么" class="headerlink" title="new Stub()时做了什么"></a>new Stub()时做了什么</h3><blockquote>
-<p>new Stub时把DESCRIPTOR和具体的实现类做了关联，便于后期找到<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Stub</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="comment">//这个this就是当前的匿名内部类，后期根据这个DESCRIPTOR查找对应的IBookManager来操作相关方法</span></span><br><span class="line">	<span class="keyword">this</span>.attachInterface(<span class="keyword">this</span>, DESCRIPTOR);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//调用父类的attachInterface方法</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">attachInterface</span><span class="params">(IInterface owner, String descriptor)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//把当前的Stub-Binder的具体实现类赋值给mOwner</span></span><br><span class="line">	mOwner = owner;</span><br><span class="line">	mDescriptor = descriptor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<h3 id="把服务端构造的Binder返给客户端"><a href="#把服务端构造的Binder返给客户端" class="headerlink" title="把服务端构造的Binder返给客户端"></a>把服务端构造的Binder返给客户端</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//把服务端的Binder对象传给client端</span></span><br><span class="line">	<span class="keyword">return</span> mBinder;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h1><h2 id="绑定服务"><a href="#绑定服务" class="headerlink" title="绑定服务"></a>绑定服务</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bindService(intent, connection, Context.BIND_AUTO_CREATE);</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> ServiceConnection connection = <span class="keyword">new</span> ServiceConnection() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//【注意】相同进程时返回的service是服务端创建的那个binder，不同进城时返回的是服务端binder的代理binder-BiderProxy</span></span><br><span class="line">		<span class="comment">//客户端要想和服务端通信，需要把服务端的binder构造成一个服务端的操作实例</span></span><br><span class="line">		<span class="comment">//最终返回一个服务端操作实例的代理类，用代理类来调服务端相应的方法</span></span><br><span class="line">        bookManager = IBookManager.Stub.asInterface(service);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<ul>
-<li>客户端调用bookManager的方法时实际调用的是IBookManager.Stub的内部类Proxy相应的方法。</li>
-<li>activity发起绑定服务后，会经过一大圈最终回调到onServiceConnected，返回相应的binder，其中涉及到跨进程，handler消息机制等。</li>
-</ul>
-</blockquote>
-<h3 id="Stub类的asInterface方法"><a href="#Stub类的asInterface方法" class="headerlink" title="Stub类的asInterface方法"></a>Stub类的asInterface方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> net.shopin.myaidlserver.<span class="function">IBookManager <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//String DESCRIPTOR = "net.shopin.myaidlserver.IBookManager"</span></span><br><span class="line">	<span class="comment">//因为是跨进程，所以这里实际执行的是BinderProxy的queryLocalInterface方法</span></span><br><span class="line">	<span class="comment">//所以因为是跨进程，这里返回的一定是null</span></span><br><span class="line">	android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);</span><br><span class="line">	<span class="keyword">if</span> (((iin != <span class="keyword">null</span>) &amp;&amp; (iin <span class="keyword">instanceof</span> net.shopin.myaidlserver.IBookManager))) &#123;</span><br><span class="line">		<span class="keyword">return</span> ((net.shopin.myaidlserver.IBookManager) iin);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//不同进程的话，返回一个IBookManager的代理类，并传入服务端相应的binder实例</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> net.shopin.myaidlserver.IBookManager.Stub.Proxy(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="BinderProxy的queryLocalInterface方法"><a href="#BinderProxy的queryLocalInterface方法" class="headerlink" title="BinderProxy的queryLocalInterface方法"></a>BinderProxy的queryLocalInterface方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IInterface <span class="title">queryLocalInterface</span><span class="params">(String descriptor)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//内部没有实现，默认返回null</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="Binder的queryLocalInterface方法"><a href="#Binder的queryLocalInterface方法" class="headerlink" title="Binder的queryLocalInterface方法"></a>Binder的queryLocalInterface方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IInterface <span class="title">queryLocalInterface</span><span class="params">(String descriptor)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (mDescriptor.equals(descriptor)) &#123;</span><br><span class="line">		<span class="comment">//直接返回mOwner，mOwner在上边已经说了</span></span><br><span class="line">		<span class="keyword">return</span> mOwner;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="Proxy代理类"><a href="#Proxy代理类" class="headerlink" title="Proxy代理类"></a>Proxy代理类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> android.os.IBinder mRemote;</span><br><span class="line"></span><br><span class="line">	Proxy(android.os.IBinder remote) &#123;</span><br><span class="line">		<span class="comment">//服务端返回的binder实例或者是BinderProxy代理类</span></span><br><span class="line">		mRemote = remote;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//根据mRemote来调用相应的方法</span></span><br><span class="line">	getBookList()&#123;</span><br><span class="line">		mRemote.transact(Stub.TRANSACTION_getBookList, _data, _reply, <span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	addBook()&#123;</span><br><span class="line">		mRemote.transact(Stub.TRANSACTION_addBook, _data, _reply, <span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>客户端同样会自动生成一个Stub类，但是客户端不会用这个Stub实例，只会用Stub的静态内部类Proxy，通过这个Proxy对应到服务端的Stub类。</p>
-</blockquote>
-<blockquote>
-<p><strong>一个服务对应的有一个binder实例，服务端曝露出这个binder实例（或者是此binder的代理实例）给客户端，客户端根据这个binder实例生成相应的服务代理类，在服务代理类中通过服务端暴漏的那个binder或代理类调用目标方法，此时这个通信过程会交由内核层处理也就是/dev/binder来桥接，然后再返回到应用层，交由真正的服务端对应的方法处理。</strong><br>一次通信完成。</p>
-</blockquote>
-
+            
           
         
       
@@ -437,7 +371,7 @@ private IBinder mBinder = new IBookManager.Stub() {
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/03/android/Binder在启动Activity过程中的应用/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/03/android/Binder在启动Activity过程中的应用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="changePosition">
@@ -456,7 +390,7 @@ private IBinder mBinder = new IBookManager.Stub() {
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/08/03/android/Binder在启动Activity过程中的应用/" itemprop="url">Binder在启动Activity过程中的应用</a></h1>
+                <a class="post-title-link" href="/2019/01/03/android/Binder在启动Activity过程中的应用/" itemprop="url">Binder在启动Activity过程中的应用</a></h1>
         
 
         <div class="post-meta">
@@ -468,8 +402,8 @@ private IBinder mBinder = new IBookManager.Stub() {
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-03T17:35:50+08:00">
-                2019-08-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-03T17:35:50+08:00">
+                2019-01-03
               </time>
             
 
@@ -575,790 +509,6 @@ private IBinder mBinder = new IBookManager.Stub() {
 <p><strong>一个服务对应的有一个binder实例，服务端曝露出这个binder实例给客户端，客户端根据这个binder实例生成相应的服务代理类，在服务代理类中通过服务端暴漏的那个binder调用目标方法，此时这个通信过程会交由内核层处理也就是/dev/binder来桥接，然后再返回到应用层，交由真正的服务端对应的方法处理。</strong><br>一次通信完成。</p>
 </blockquote>
 
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/02/android/ListView的缓存机制/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="changePosition">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/02/android/ListView的缓存机制/" itemprop="url">ListView的缓存机制</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-02T14:26:44+08:00">
-                2019-08-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/01/android/Handler机制分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="changePosition">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/01/android/Handler机制分析/" itemprop="url">Handler机制分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-01T23:16:33+08:00">
-                2019-08-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/android/" itemprop="url" rel="index">
-                    <span itemprop="name">android</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Handler机制"><a href="#Handler机制" class="headerlink" title="Handler机制"></a>Handler机制</h3><h4 id="小的知识点"><a href="#小的知识点" class="headerlink" title="小的知识点"></a>小的知识点</h4><blockquote>
-<ul>
-<li>MessageQueue的数据结构–&gt;单向链表，注意不要被prevMsg迷惑了（并不是双向链表）。</li>
-<li>MessageQueue中的msg是按照优先级依次排列的，队头是最近要发生的msg。</li>
-<li>Handler的post(Runnable r，…)方法，看下代码便知道，post的参数r会赋值给callback，后期发消息（发消息的机制和上述的完全一致）时会检测这个callback是否为空，不为空的话就交给callback处理（其实它就是个回调方法而已），为空的话，则交给handleMessage处理（常用的就是重写这个方法，然后处理事件）。</li>
-</ul>
-</blockquote>
-<h4 id="Handler中消息的异步和同步"><a href="#Handler中消息的异步和同步" class="headerlink" title="Handler中消息的异步和同步"></a>Handler中消息的异步和同步</h4><blockquote>
-<p>同步或异步是基于Handler来说的：定义一个同步消息的handler、或一个异步消息的handler。</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Handler</span><span class="params">(Callback callback, <span class="keyword">boolean</span> async)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//Handler构造函数，最终会走到这里</span></span><br><span class="line">	<span class="comment">//第一个参数callback就不解释了</span></span><br><span class="line">	<span class="comment">//第二个参数async作用就是定义此handler是否发异步msg</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="Handler基本流程"><a href="#Handler基本流程" class="headerlink" title="Handler基本流程"></a>Handler基本流程</h4><h5 id="对于主线程的第一个Handler来说"><a href="#对于主线程的第一个Handler来说" class="headerlink" title="对于主线程的第一个Handler来说"></a>对于主线程的第一个Handler来说</h5><ol>
-<li><strong>构造主线程的Looper对象</strong>在ActivityThread中prepareMainLooper，此时会先调用prepare方法去构造（new）一个Looper，然后赋值给sMainLooper。<blockquote>
-<p>每个线程对应一个Looper。</p>
-</blockquote>
-</li>
-<li><strong>构造消息队列</strong>在main线程new Looper时，在Looper的构造方法里就初始化了一个消息队列（mPtr是指向消息队列的一个指针（位置））。</li>
-<li><strong>Looper循环取消息</strong>在ActivityThread的main方法结尾调用了Looper.loop()—&gt;走向一个死循环，循环queue里的消息，没有消息的话，则阻塞。</li>
-<li><strong>往MessageQueue中放消息</strong>queue中的消息就是handler.send的，handler的sendXXX方法最终会调用enqueueMessage（入队）方法（在入队前，设置了msg.target=this的操作，指明了这个接收这个消息的目标handler）。</li>
-<li>调用msg.target.dispatchMessage(msg)方法分发消息。</li>
-</ol>
-<h5 id="对于子线程来说"><a href="#对于子线程来说" class="headerlink" title="对于子线程来说"></a>对于子线程来说</h5><ul>
-<li>子线程不会直接去创建Handler，需要手动进行prepare和loop()，如果不prepare的话，会报错–&gt;因为在Handler的构造方法里会去取Looper对象。</li>
-</ul>
-<h4 id="结合源码分析主线程Handler的创建流程"><a href="#结合源码分析主线程Handler的创建流程" class="headerlink" title="结合源码分析主线程Handler的创建流程"></a>结合源码分析主线程Handler的创建流程</h4><h5 id="ActivityThread的main方法"><a href="#ActivityThread的main方法" class="headerlink" title="ActivityThread的main方法"></a>ActivityThread的main方法</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//初始化MainLooper</span></span><br><span class="line">Looper.prepareMainLooper();</span><br><span class="line"><span class="comment">//循环消息队列【TAG1-&gt;一直死循环，为什么不会ANR？】</span></span><br><span class="line">Looper.loop();</span><br><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Main thread loop unexpectedly exited"</span>);</span><br></pre></td></tr></table></figure>
-<h5 id="初始化prepareMainLooper"><a href="#初始化prepareMainLooper" class="headerlink" title="初始化prepareMainLooper"></a>初始化prepareMainLooper</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//mainLooper所做工作</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepareMainLooper</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	prepare(<span class="keyword">false</span>);</span><br><span class="line">	sMainLooper = myLooper();<span class="comment">//sThreadLocal.get()</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//prepare所做工作（参数quitAllowed表示是否允许退出）</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</span><br><span class="line">	sThreadLocal.set(<span class="keyword">new</span> Looper(quitAllowed));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//new Looper所做工作</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">Looper</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//初始化消息队列</span></span><br><span class="line">	<span class="comment">//【注意】参数quitAllowed最终传到了这里</span></span><br><span class="line">	mQueue = <span class="keyword">new</span> MessageQueue(quitAllowed);</span><br><span class="line">	mThread = Thread.currentThread();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="Looper-loop-方法（主要的操作）"><a href="#Looper-loop-方法（主要的操作）" class="headerlink" title="Looper.loop()方法（主要的操作）"></a>Looper.loop()方法（主要的操作）</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(;;)&#123;</span><br><span class="line">	<span class="comment">//【TAG2-&gt;为什么可能会阻塞？阻塞之后有什么影响？】</span></span><br><span class="line">	<span class="comment">//当队列中没有消息时，再循环取msg就没有意义了，</span></span><br><span class="line">	Message msg = queue.next();<span class="comment">// might block(说明是个可能阻塞的线程)</span></span><br><span class="line">	<span class="keyword">if</span>(msg == <span class="keyword">null</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	msg.target.dispatchMessage(msg);<span class="comment">//指定的Handler发指定的消息</span></span><br><span class="line">	msg.recycleUnchecked();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="Handler发送消息"><a href="#Handler发送消息" class="headerlink" title="Handler发送消息"></a>Handler发送消息</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">handler.sendMessage(message);</span><br><span class="line">....</span><br><span class="line"><span class="comment">//最终会把message放到消息队列中</span></span><br><span class="line">msg.target = <span class="keyword">this</span>;<span class="comment">//指明这个msg的target是谁（即哪个handler来处理这个消息）</span></span><br><span class="line"><span class="comment">//如果此Handler是发异步消息的，则会把每个入队的msg都设置setAsynchronous(true)</span></span><br><span class="line"><span class="keyword">if</span> (mAsynchronous) &#123;</span><br><span class="line">	msg.setAsynchronous(<span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//入队操作</span></span><br><span class="line"><span class="keyword">return</span> queue.enqueueMessage(msg, uptimeMillis);</span><br></pre></td></tr></table></figure>
-<h5 id="MessageQueue的enqueueMessage入队方法"><a href="#MessageQueue的enqueueMessage入队方法" class="headerlink" title="MessageQueue的enqueueMessage入队方法"></a>MessageQueue的enqueueMessage入队方法</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">enqueueMessage</span><span class="params">(Message msg, <span class="keyword">long</span> when)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">		msg.markInUse();</span><br><span class="line">		msg.when = when;</span><br><span class="line">		Message p = mMessages;</span><br><span class="line">		<span class="keyword">boolean</span> needWake;</span><br><span class="line">		<span class="comment">//这个when就是根据handler.sendMessageAtTime传入的时</span></span><br><span class="line">		<span class="comment">//间和当前时间（System.current..）计算出来的</span></span><br><span class="line">		<span class="keyword">if</span> (p == <span class="keyword">null</span> || when == <span class="number">0</span> || when &lt; p.when) &#123;</span><br><span class="line">			<span class="comment">//队列为空 || 不延时 || 当前的延时消息先于队尾的延时消息发生 的情况</span></span><br><span class="line">			<span class="comment">//也就是说如果插入的msg比队头的msg要早发生，这个插入的msg要作为新的队头（先进后出）</span></span><br><span class="line">			<span class="comment">//【也就是说：唤醒队列取消息的时间要提前了】</span></span><br><span class="line">			<span class="comment">// New head, wake up the event queue if blocked.</span></span><br><span class="line">			msg.next = p;</span><br><span class="line">			mMessages = msg;</span><br><span class="line">			needWake = mBlocked;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="comment">//比较出队的优先级，把msg插入到合适的位置</span></span><br><span class="line">			<span class="comment">// Inserted within the middle of the queue.  Usually we don't have to wake</span></span><br><span class="line">			<span class="comment">// up the event queue unless there is a barrier at the head of the queue</span></span><br><span class="line">			<span class="comment">// and the message is the earliest asynchronous message in the queue.</span></span><br><span class="line">			<span class="comment">/**</span></span><br><span class="line"><span class="comment">			* 上述的翻译：不需要唤醒队列，</span></span><br><span class="line"><span class="comment">			* 除非在队列头部有个屏障 并且 当前的消息msg是异步消息---needWake=true</span></span><br><span class="line"><span class="comment">			* */</span></span><br><span class="line">			needWake = mBlocked &amp;&amp; p.target == <span class="keyword">null</span> &amp;&amp; msg.isAsynchronous();</span><br><span class="line">			Message prev;</span><br><span class="line">			<span class="keyword">for</span> (;;) &#123;</span><br><span class="line">				<span class="comment">//下面的操作就是在队列中合适（优先级）的位置再</span></span><br><span class="line">				<span class="comment">//插入一个newMsg，并修改newMsg的指向</span></span><br><span class="line">				prev = p;</span><br><span class="line">				p = p.next;</span><br><span class="line">				<span class="keyword">if</span> (p == <span class="keyword">null</span> || when &lt; p.when) &#123;</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="comment">//【不理解】</span></span><br><span class="line">				<span class="comment">//如果需要唤醒 并且 p是异步消息---&gt;就不需要唤醒了，what？什么意思</span></span><br><span class="line">				<span class="keyword">if</span> (needWake &amp;&amp; p.isAsynchronous()) &#123;</span><br><span class="line">					needWake = <span class="keyword">false</span>;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			msg.next = p; <span class="comment">// invariant: p == prev.next</span></span><br><span class="line">			prev.next = msg;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// We can assume mPtr != 0 because mQuitting is false.</span></span><br><span class="line">		<span class="keyword">if</span> (needWake) &#123;</span><br><span class="line">			nativeWake(mPtr);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<ul>
-<li>上边已经把消息放到MessageQueue里了</li>
-<li>Handler线程通信有一点不要忽略：实现通信的前提是在A线程中调用B线程的Handler进行发送消息！<a href="https://www.cnblogs.com/smyhvae/p/4003922.html" target="_blank" rel="noopener">参考</a> 然后在A中发的消息被放进了B的消息队列中。B接收消息后再处理。</li>
-</ul>
-<hr>
-<h5 id="MessageQueue的next-方法"><a href="#MessageQueue的next-方法" class="headerlink" title="MessageQueue的next()方法"></a>MessageQueue的next()方法</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Message <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Return here if the message loop has already quit and been disposed.</span></span><br><span class="line">    <span class="comment">// This can happen if the application tries to restart a looper after quit</span></span><br><span class="line">    <span class="comment">// which is not supported.</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">long</span> ptr = mPtr;</span><br><span class="line">    <span class="keyword">if</span> (ptr == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> pendingIdleHandlerCount = -<span class="number">1</span>; <span class="comment">// -1 only during first iteration</span></span><br><span class="line">    <span class="keyword">int</span> nextPollTimeoutMillis = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="keyword">if</span> (nextPollTimeoutMillis != <span class="number">0</span>) &#123;</span><br><span class="line">            Binder.flushPendingCommands();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//如果没有消息机会阻塞在这里（nextPollTimeoutMillis:阻塞的时间，时间过后会被唤醒）</span></span><br><span class="line">        nativePollOnce(ptr, nextPollTimeoutMillis);</span><br><span class="line">        <span class="comment">//走到这里说明有消息---或者说已经被唤醒---</span></span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            <span class="comment">// Try to retrieve取回 the next message.  Return if found.</span></span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">long</span> now = SystemClock.uptimeMillis();</span><br><span class="line">            Message prevMsg = <span class="keyword">null</span>;</span><br><span class="line">            Message msg = mMessages;</span><br><span class="line">            <span class="comment">//1. 满足msg != null &amp;&amp; msg.target == null的消息就是同步屏障消息</span></span><br><span class="line">            <span class="keyword">if</span> (msg != <span class="keyword">null</span> &amp;&amp; msg.target == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">// Stalled by a barrier.  Find the next asynchronous message in the queue.</span></span><br><span class="line">                <span class="comment">//2. 一直循环直到找到一个消息：msg!=null并且是异步消息，跳出循环</span></span><br><span class="line">                <span class="comment">//3. 具体为什么在碰到同步屏障时找异步消息，可以看下下边关于barrier的中文注释</span></span><br><span class="line">                <span class="keyword">do</span> &#123;</span><br><span class="line">                    prevMsg = msg;</span><br><span class="line">                    msg = msg.next;</span><br><span class="line">                &#125; <span class="keyword">while</span> (msg != <span class="keyword">null</span> &amp;&amp; !msg.isAsynchronous());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//取到消息后---&gt;等待执行或执行</span></span><br><span class="line">            <span class="keyword">if</span> (msg != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (now &lt; msg.when) &#123;</span><br><span class="line">                    <span class="comment">// Next message is not ready.  </span></span><br><span class="line">                    <span class="comment">// Set a timeout to wake up when it is ready.</span></span><br><span class="line">                    nextPollTimeoutMillis = (<span class="keyword">int</span>) Math.min(msg.when - now, Integer.MAX_VALUE);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// Got a message.</span></span><br><span class="line">                    mBlocked = <span class="keyword">false</span>;</span><br><span class="line">                    <span class="keyword">if</span> (prevMsg != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        prevMsg.next = msg.next;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        mMessages = msg.next;</span><br><span class="line">                    &#125;</span><br><span class="line">                    msg.next = <span class="keyword">null</span>;</span><br><span class="line">                    <span class="keyword">if</span> (DEBUG) Log.v(TAG, <span class="string">"Returning message: "</span> + msg);</span><br><span class="line">                    msg.markInUse();</span><br><span class="line">                    <span class="comment">//返回要执行的msg</span></span><br><span class="line">                    <span class="keyword">return</span> msg;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// No more messages.</span></span><br><span class="line">                <span class="comment">//消息队列没消息了，此时就应该阻塞了。这个阻塞应该是释放资源的吧。</span></span><br><span class="line">                nextPollTimeoutMillis = -<span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//【 重要 】走到这里说明：消息延时执行 或 没有消息了 </span></span><br><span class="line">            <span class="comment">// Process the quit message now that all pending messages have been handled.</span></span><br><span class="line">            <span class="keyword">if</span> (mQuitting) &#123;</span><br><span class="line">                dispose();</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//既然暂时没有消息要执行了，那么可以做一些其它的操作：IdleHandler</span></span><br><span class="line">            <span class="comment">// If first time idle空闲, then get the number of idlers to run.</span></span><br><span class="line">            <span class="comment">//这个注释很清楚的解释了IdleHandler什么时候使用</span></span><br><span class="line">            <span class="comment">// Idle handles only run if the queue is empty or if the first message</span></span><br><span class="line">            <span class="comment">// in the queue (possibly a barrier) is due to be handled in the future.</span></span><br><span class="line">            <span class="keyword">if</span> (pendingIdleHandlerCount &lt; <span class="number">0</span></span><br><span class="line">                    &amp;&amp; (mMessages == <span class="keyword">null</span> || now &lt; mMessages.when)) &#123;</span><br><span class="line">                pendingIdleHandlerCount = mIdleHandlers.size();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (pendingIdleHandlerCount &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">// No idle handlers to run.  Loop and wait some more.</span></span><br><span class="line">                <span class="comment">// 阻塞</span></span><br><span class="line">                mBlocked = <span class="keyword">true</span>;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (mPendingIdleHandlers == <span class="keyword">null</span>) &#123;</span><br><span class="line">                mPendingIdleHandlers = <span class="keyword">new</span> IdleHandler[Math.max(pendingIdleHandlerCount, <span class="number">4</span>)];</span><br><span class="line">            &#125;</span><br><span class="line">            mPendingIdleHandlers = mIdleHandlers.toArray(mPendingIdleHandlers);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Run the idle handlers.</span></span><br><span class="line">        <span class="comment">// We only ever reach this code block during the first iteration.</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pendingIdleHandlerCount; i++) &#123;</span><br><span class="line">            <span class="keyword">final</span> IdleHandler idler = mPendingIdleHandlers[i];</span><br><span class="line">            mPendingIdleHandlers[i] = <span class="keyword">null</span>; <span class="comment">// release the reference to the handler</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">boolean</span> keep = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">	            <span class="comment">//1. 执行每个idleHandler中重写的queueIdle方法</span></span><br><span class="line">	            <span class="comment">//2. 关于queueIdle返回值下边会说</span></span><br><span class="line">                keep = idler.queueIdle();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                Log.wtf(TAG, <span class="string">"IdleHandler threw exception"</span>, t);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (!keep) &#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">                    mIdleHandlers.remove(idler);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Reset the idle handler count to 0 so we do not run them again.</span></span><br><span class="line">        pendingIdleHandlerCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// While calling an idle handler, a new message could have been delivered</span></span><br><span class="line">        <span class="comment">// so go back and look again for a pending message without waiting.</span></span><br><span class="line">        nextPollTimeoutMillis = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="延时消息的处理"><a href="#延时消息的处理" class="headerlink" title="延时消息的处理"></a>延时消息的处理</h5><p><strong>如果从队列中取消息时，消息还没有准备好怎么办（比如延时10分钟才执行）</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (now &lt; msg.when) &#123;<span class="comment">//消息还没准备好</span></span><br><span class="line">	<span class="comment">// Next message is not ready.  Set</span></span><br><span class="line">	<span class="comment">// a timeout to wake up when it is ready.</span></span><br><span class="line">	nextPollTimeoutMillis = (<span class="keyword">int</span>) Math.min(msg.when - now, Integer.MAX_VALUE);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	<span class="comment">// Got a message.</span></span><br><span class="line">	mBlocked = <span class="keyword">false</span>;</span><br><span class="line">	<span class="keyword">if</span> (prevMsg != <span class="keyword">null</span>) &#123;</span><br><span class="line">		prevMsg.next = msg.next;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		mMessages = msg.next;</span><br><span class="line">	&#125;</span><br><span class="line">	msg.next = <span class="keyword">null</span>;</span><br><span class="line">	<span class="keyword">if</span> (DEBUG) Log.v(TAG, <span class="string">"Returning message: "</span> + msg);</span><br><span class="line">	msg.markInUse();</span><br><span class="line">	<span class="keyword">return</span> msg;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h5 id="Looper退出循环"><a href="#Looper退出循环" class="headerlink" title="Looper退出循环"></a>Looper退出循环</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Looper中的quit方法</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">quit</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    mQueue.quit(<span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Looper的quitSafely方法</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">quitSafely</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    mQueue.quit(<span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//发现最终都走到了MessageQueue的quit方法</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">quit</span><span class="params">(<span class="keyword">boolean</span> safe)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//对于主线程来说，默认就是false！不可退出</span></span><br><span class="line">    <span class="keyword">if</span> (!mQuitAllowed) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Main thread not allowed to quit."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mQuitting) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        mQuitting = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">if</span> (safe) &#123;</span><br><span class="line">	        <span class="comment">//安全退出：会移除在当前时间点之后执行的message</span></span><br><span class="line">	        <span class="comment">//清除msg.when&gt;nowTime的msg。因为有可能一个消息正在执行还没执行完</span></span><br><span class="line">            removeAllFutureMessagesLocked();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            removeAllMessagesLocked();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// We can assume mPtr != 0 because mQuitting was previously false.</span></span><br><span class="line">        nativeWake(mPtr);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="nativeWake方法"><a href="#nativeWake方法" class="headerlink" title="nativeWake方法"></a>nativeWake方法</h4><p>先不写了</p>
-<h4 id="关于同步屏障"><a href="#关于同步屏障" class="headerlink" title="关于同步屏障"></a>关于同步屏障</h4><p><strong>不清楚，只好先帖注释了</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">向Looper的消息队列发布同步障碍。</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">1. 消息处理照常进行，直到消息队列遇到已发布的同步屏障。 遇到屏障时，队列中的后续同步消息将被暂停（阻止执行），直到通过调用&#123;@link #removeSyncBarrier&#125;并指定标识同步屏障的令牌来释放屏障。</span></span><br><span class="line"><span class="comment">2. 此方法用于立即推迟执行所有后续发布的同步消息，直到满足释放屏障的条件为止。异步消息（请参阅&#123;@link Message＃isAsynchronous&#125;免于屏障并继续照常处理。</span></span><br><span class="line"><span class="comment">3. 必须始终使用相同的令牌调用&#123;@link #removeSyncBarrier&#125;来匹配此调用，以确保消息队列恢复正常操作。否则应用程序可能会挂起！</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">postSyncBarrier</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> postSyncBarrier(SystemClock.uptimeMillis());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="IdleHandler接口"><a href="#IdleHandler接口" class="headerlink" title="IdleHandler接口"></a>IdleHandler接口</h4><p><strong>注释很清楚</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Callback interface for discovering when a thread is going to block</span></span><br><span class="line"><span class="comment"> * waiting for more messages.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">interface</span> <span class="title">IdleHandler</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Called when the message queue has run out of messages and will now</span></span><br><span class="line"><span class="comment">     * wait for more.  Return true to keep your idle handler active, false</span></span><br><span class="line"><span class="comment">     * to have it removed.  This may be called if there are still messages</span></span><br><span class="line"><span class="comment">     * pending in the queue, but they are all scheduled to be dispatched</span></span><br><span class="line"><span class="comment">     * after the current time.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="comment">//返回false：会在使用过后这个Idlehandler后把它移除，相当于是一次性的idle吧，true不移除</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">queueIdle</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="Message的构建"><a href="#Message的构建" class="headerlink" title="Message的构建"></a>Message的构建</h3><p><strong>传输消息，自然要先构造一个msg</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//方式1</span></span><br><span class="line"><span class="comment">//这种方式获得的 message 已经有一个目标handler ---&gt; this</span></span><br><span class="line"><span class="comment">//不需要再 setTarget(handler)</span></span><br><span class="line">Message message = handler.obtainMessage();</span><br><span class="line">message.what = <span class="number">1001</span>;</span><br><span class="line">handler.sendMessage(message);</span><br><span class="line"><span class="comment">//方式2</span></span><br><span class="line"><span class="comment">//这种方式获得的 message 没有目标handler</span></span><br><span class="line"><span class="comment">//需要再 setTarget(handler)，可以设置成另一个handler吗？</span></span><br><span class="line">Message obtainMsg = Message.obtain();</span><br><span class="line">obtainMsg.setTarget(handler);</span><br><span class="line">obtainMsg.what = <span class="number">2002</span>;</span><br><span class="line"><span class="comment">//但是这个方法执行下去会发现仍然会设置msg.target = this--&gt; 哪个handler调send就是哪个handler，所以上边不需要手动setTarget，即使设置成了别的handler也没用</span></span><br><span class="line">handler.sendMessage(message);</span><br></pre></td></tr></table></figure></p>
-<h4 id="一些感觉还不错的知识点"><a href="#一些感觉还不错的知识点" class="headerlink" title="一些感觉还不错的知识点"></a>一些感觉还不错的知识点</h4><blockquote>
-<ul>
-<li><a href="https://www.sohu.com/a/145311556_675634" target="_blank" rel="noopener">MessageQueue</a></li>
-<li><a href="https://www.zhihu.com/question/34652589" target="_blank" rel="noopener">为什么主线程不会因为Looper.loop()里的死循环卡死</a></li>
-</ul>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/25/android/View-ViewGroup的事件分发/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="changePosition">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/25/android/View-ViewGroup的事件分发/" itemprop="url">View/ViewGroup的事件分发</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-25T11:37:17+08:00">
-                2019-07-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/android/" itemprop="url" rel="index">
-                    <span itemprop="name">android</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="先看一张大致的流程图"><a href="#先看一张大致的流程图" class="headerlink" title="先看一张大致的流程图"></a>先看一张大致的流程图</h2><p><img src="/2019/07/25/android/View-ViewGroup的事件分发/./1564283863879.png" alt="Alt text"></p>
-<blockquote>
-<p>onIntercept、onTouchEvent都是在dispatch中调用的，以dispatch为入口在不同的情况下调用intercept、onTouchEvent，最终Activity根据其返回结果判断是否执行自己的Activity。</p>
-</blockquote>
-<h2 id="执行流程分析"><a href="#执行流程分析" class="headerlink" title="执行流程分析"></a>执行流程分析</h2><blockquote>
-<p>事件从进入Activity的dispatch方法开始，到出了Activity的dispatch方法结束。</p>
-</blockquote>
-<h3 id="事件交给Activity处理"><a href="#事件交给Activity处理" class="headerlink" title="事件交给Activity处理"></a>事件交给Activity处理</h3><blockquote>
-<p>Activity会先交给自己的view来处理，如果它们都不处理，Activity自己才处理。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Activity.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (ev.getAction() == MotionEvent.ACTION_DOWN) &#123;</span><br><span class="line">		<span class="comment">//我的理解：这个方法就是做一些类似beforeDone的事</span></span><br><span class="line">		onUserInteraction();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//直接调用window的superdispatch，经历一系列的转发，丢给Decorview，让它开始分发给自己的View，看谁消费。</span></span><br><span class="line">	<span class="keyword">if</span> (getWindow().superDispatchTouchEvent(ev)) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//如果没有View进行消费，那么就交给Activity自己处理！</span></span><br><span class="line">	<span class="keyword">return</span> onTouchEvent(ev);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<h6 id="phoneWondow"><a href="#phoneWondow" class="headerlink" title="phoneWondow"></a>phoneWondow</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//PhoneWindow.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">superDispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//在attach阶段已经实例化了一个DecorView了，这里调用decorview的superdispatch</span></span><br><span class="line">	<span class="keyword">return</span> mDecor.superDispatchTouchEvent(event);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h6 id="decorView"><a href="#decorView" class="headerlink" title="decorView"></a>decorView</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//DecorView.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">superDispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//DecorView是一个ViewGroup，这里会调用VG的dispatch</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">super</span>.dispatchTouchEvent(event);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>前边墨迹了这么长时间（没有一点业务逻辑的调用），我的理解就是为了把事件传给DecorView，然后让decorView分发给自己的子view。</p>
-</blockquote>
-<h3 id="事件分发到ViewGroup中"><a href="#事件分发到ViewGroup中" class="headerlink" title="事件分发到ViewGroup中"></a>事件分发到ViewGroup中</h3><blockquote>
-<p>ViewGroup的dispatch里有很多逻辑，同时它会和View的dispatch进行交互，它调用View的dispatch的原因是：</p>
-<ol>
-<li>当前ViewGroup要消费事件</li>
-<li>看子View是否消费事件<br>具体逻辑可以看下边的<code>dispatchTransformedTouchEvent</code>方法</li>
-</ol>
-</blockquote>
-<h4 id="dispatchTouchEvent方法"><a href="#dispatchTouchEvent方法" class="headerlink" title="dispatchTouchEvent方法"></a>dispatchTouchEvent方法</h4><blockquote>
-<p>ViewGroup的dispatch方法太长了，我分为了三步进行讲解<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">boolean</span> handled = <span class="keyword">false</span>;</span><br><span class="line">	<span class="comment">//第一步：处理down事件，并且得到当前ViewGroup是否拦截的结论</span></span><br><span class="line">	<span class="comment">//第二步：父ViewGroup不拦截，遍历子View，如果子View消费了，就把子View复制给mFirstTouchTarget（这些逻辑也只是在down时才会执行）</span></span><br><span class="line">	<span class="comment">//第三步：根据mFirstTouchTarget是否为null，事件交给当前ViewGroup处理还是子View处理</span></span><br><span class="line">	<span class="keyword">return</span> handled;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<h5 id="第一步：对down事件进行处理"><a href="#第一步：对down事件进行处理" class="headerlink" title="第一步：对down事件进行处理"></a>第一步：对down事件进行处理</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">int</span> action = ev.getAction();</span><br><span class="line"><span class="keyword">final</span> <span class="keyword">int</span> actionMasked = action &amp; MotionEvent.ACTION_MASK;</span><br><span class="line"><span class="comment">// Handle an initial down.</span></span><br><span class="line"><span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN) &#123;</span><br><span class="line">	<span class="comment">//如果是down事件的话，说明是新一轮的触摸事件来了，清除所有之前的标识。</span></span><br><span class="line">	<span class="comment">//重要的一点：置空mFirstTouchTarget</span></span><br><span class="line">	cancelAndClearTouchTargets(ev);</span><br><span class="line">	resetTouchState();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Check for interception.</span></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">boolean</span> intercepted;</span><br><span class="line"><span class="comment">//如果当前不是down事件，若mFirstTouchTarget==null，说明是ViewGroup自己消费down事件了，如果!=null，说明子view消费down事件了</span></span><br><span class="line"><span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN || mFirstTouchTarget != <span class="keyword">null</span>) &#123;</span><br><span class="line">	<span class="comment">//看下当前ViewGroup是否拦截事件</span></span><br><span class="line">	intercepted = onInterceptTouchEvent(ev);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	intercepted = <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="第二步：看子View是否消费事件"><a href="#第二步：看子View是否消费事件" class="headerlink" title="第二步：看子View是否消费事件"></a>第二步：看子View是否消费事件</h5><blockquote>
-<p>如果子View消费事件的话，在这里只会消费down事件，其它如move、up事件，在第三步消费<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">TouchTarget newTouchTarget = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">boolean</span> alreadyDispatchedToNewTouchTarget = <span class="keyword">false</span>;</span><br><span class="line"><span class="keyword">if</span> (!canceled &amp;&amp; !intercepted) &#123;</span><br><span class="line">	<span class="comment">//如果不进行拦截</span></span><br><span class="line">	View childWithAccessibilityFocus = ev.isTargetAccessibilityFocus() ? findChildWithAccessibilityFocus() : <span class="keyword">null</span>;</span><br><span class="line">	<span class="comment">//【注意1】这里ACTION_DOWN、ACTION_POINTER_DOWN、ACTION_HOVER_MOVE都会走到这里</span></span><br><span class="line">	<span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN || (split &amp;&amp; actionMasked == MotionEvent.ACTION_POINTER_DOWN) || actionMasked == MotionEvent.ACTION_HOVER_MOVE) &#123;</span><br><span class="line">		<span class="comment">//如果当前是down事件，说明这是第一次进入dispatch</span></span><br><span class="line">		<span class="keyword">final</span> <span class="keyword">int</span> childrenCount = mChildrenCount;</span><br><span class="line">		<span class="keyword">if</span> (newTouchTarget == <span class="keyword">null</span> &amp;&amp; childrenCount != <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = childrenCount - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">				<span class="keyword">final</span> <span class="keyword">int</span> childIndex = getAndVerifyPreorderedIndex(childrenCount, i, customOrder);</span><br><span class="line">				<span class="keyword">final</span> View child = getAndVerifyPreorderedView(preorderedList, children, childIndex);</span><br><span class="line">				<span class="comment">//第一次进来时newTouchTarget为null</span></span><br><span class="line">				newTouchTarget = getTouchTarget(child);</span><br><span class="line">				<span class="keyword">if</span> (newTouchTarget != <span class="keyword">null</span>) &#123;</span><br><span class="line">					newTouchTarget.pointerIdBits |= idBitsToAssign;</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line">				resetCancelNextUpFlag(child);</span><br><span class="line">				<span class="comment">//事件交由当前的child，看其是否处理</span></span><br><span class="line">				<span class="keyword">if</span> (dispatchTransformedTouchEvent(ev, <span class="keyword">false</span>, child, idBitsToAssign)) &#123;</span><br><span class="line">					<span class="comment">//如果当前的child消费了事件，就保存mFirstTouchTarget=child，并且此时newTouchTarget也是child</span></span><br><span class="line">					<span class="comment">//【注意2】这里会在mFirstTouchTarget前边（first是一个链表结构）添加一个child</span></span><br><span class="line">					<span class="comment">//只有down、ACTION_POINTER_DOWN、ACTION_HOVER_MOVE事件，这里的newTouchTarget才=null</span></span><br><span class="line">					newTouchTarget = addTouchTarget(child, idBitsToAssign);</span><br><span class="line">					alreadyDispatchedToNewTouchTarget = <span class="keyword">true</span>;</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<h5 id="第三步：决定是谁消费事件"><a href="#第三步：决定是谁消费事件" class="headerlink" title="第三步：决定是谁消费事件"></a>第三步：决定是谁消费事件</h5><blockquote>
-<p>注意：</p>
-<ul>
-<li>如果是子View消费事件的话，走到这里的时候，down事件已经被消费了（因为子View已经执行了<code>dispatchTransformedTouchEvent</code>方法），在这里只会再消费move、up等事件</li>
-<li>如果是ViewGroup自己消费的话，down、move、up都是第三步执行<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (mFirstTouchTarget == <span class="keyword">null</span>) &#123;</span><br><span class="line">	<span class="comment">// No touch targets so treat this as an ordinary view.</span></span><br><span class="line">	<span class="comment">//走到这里说明上述进行拦截了（如果不拦截的话，mFirstTouchTarget就不为空）</span></span><br><span class="line">	<span class="comment">//可以看到这里的child对象是null，也就是接下来会调用super.dispatch，而不是child.dispatch</span></span><br><span class="line">	<span class="comment">//handled = 当前viewgroup的onTouch或者onTouchEvent的返回值</span></span><br><span class="line">	handled = dispatchTransformedTouchEvent(ev, canceled, <span class="keyword">null</span>, TouchTarget.ALL_POINTER_IDS);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	<span class="comment">//走到这里说明上边是子View消费事件了，子View消费down事件后，move、up都会走到这里</span></span><br><span class="line">	TouchTarget predecessor = <span class="keyword">null</span>;</span><br><span class="line">	TouchTarget target = mFirstTouchTarget;</span><br><span class="line">	<span class="comment">//下边的循环不是很清楚，mFirstTouchTarget就是目标view，为什么还要循环查找呢？</span></span><br><span class="line">	<span class="comment">//难道是因为上述【注意1】的原因？除了DOWN之外的那俩事件也会走到【注意2】中，添加到mFirstTouchTarget，所以这里要循环查找真正消费事件的View？</span></span><br><span class="line">	<span class="keyword">while</span> (target != <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">final</span> TouchTarget next = target.next;</span><br><span class="line">		<span class="keyword">if</span> (alreadyDispatchedToNewTouchTarget &amp;&amp; target == newTouchTarget) &#123;</span><br><span class="line">			<span class="comment">//只有down时newTouchTarget才不为null，所以走到这里的应该是down事件</span></span><br><span class="line">			handled = <span class="keyword">true</span>;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">final</span> <span class="keyword">boolean</span> cancelChild = resetCancelNextUpFlag(target.child) || intercepted;</span><br><span class="line">			<span class="keyword">if</span> (dispatchTransformedTouchEvent(ev, cancelChild, target.child, target.pointerIdBits)) &#123;</span><br><span class="line">				handled = <span class="keyword">true</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (cancelChild) &#123;</span><br><span class="line">				<span class="keyword">if</span> (predecessor == <span class="keyword">null</span>) &#123;</span><br><span class="line">					mFirstTouchTarget = next;</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">					predecessor.next = next;</span><br><span class="line">				&#125;</span><br><span class="line">				target.recycle();</span><br><span class="line">				target = next;</span><br><span class="line">				<span class="keyword">continue</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		predecessor = target;</span><br><span class="line">		target = next;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</blockquote>
-<h4 id="onInterceptTouchEvent方法"><a href="#onInterceptTouchEvent方法" class="headerlink" title="onInterceptTouchEvent方法"></a>onInterceptTouchEvent方法</h4><blockquote>
-<p>只有ViewGroup才有intercept方法，View无法对时间进行拦截。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onInterceptTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (ev.isFromSource(InputDevice.SOURCE_MOUSE)</span><br><span class="line">			&amp;&amp; ev.getAction() == MotionEvent.ACTION_DOWN</span><br><span class="line">			&amp;&amp; ev.isButtonPressed(MotionEvent.BUTTON_PRIMARY)</span><br><span class="line">			&amp;&amp; isOnScrollbarThumb(ev.getX(), ev.getY())) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//可以认为，VG的intercept默认返回false</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<h4 id="dispatchTransformedTouchEvent方法"><a href="#dispatchTransformedTouchEvent方法" class="headerlink" title="dispatchTransformedTouchEvent方法"></a>dispatchTransformedTouchEvent方法</h4><blockquote>
-<p>不管父view拦不拦截事件，都会走到此方法：<br>父VG拦截：传入的child是null<br>父VG不拦截：传入的child是子view<br><strong>这个方法很重要：VG的dispatch通过这个方法来和View的dispatch交互</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">dispatchTransformedTouchEvent</span><span class="params">(MotionEvent event, <span class="keyword">boolean</span> cancel, View child, <span class="keyword">int</span> desiredPointerIdBits)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// Perform any necessary transformations and dispatch.</span></span><br><span class="line">	<span class="comment">//大致的代码就是：子View是null了，说明是ViewGroup拦截了，所以调用父View的dispatch</span></span><br><span class="line">	<span class="keyword">if</span> (child == <span class="keyword">null</span>) &#123;</span><br><span class="line">		handled = <span class="keyword">super</span>.dispatchTouchEvent(transformedEvent);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">//父ViewGroup不拦截，则继续分发，交由子View处理</span></span><br><span class="line">		handled = child.dispatchTouchEvent(transformedEvent);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> handled;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<h4 id="View的dispatchTouchEvent方法"><a href="#View的dispatchTouchEvent方法" class="headerlink" title="View的dispatchTouchEvent方法"></a>View的dispatchTouchEvent方法</h4><blockquote>
-<p>会在这个方法中检验是否执行onTouch、onTouchEvent、onClick、longClick</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">boolean</span> result = <span class="keyword">false</span>;</span><br><span class="line">	<span class="keyword">final</span> <span class="keyword">int</span> actionMasked = event.getActionMasked();</span><br><span class="line">	<span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN) &#123;</span><br><span class="line">		<span class="comment">//down事件之前如果在滑动，则立马停止</span></span><br><span class="line">		stopNestedScroll();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (onFilterTouchEventForSecurity(event)) &#123;</span><br><span class="line">		...</span><br><span class="line">		<span class="comment">//noinspection SimplifiableIfStatement</span></span><br><span class="line">		ListenerInfo li = mListenerInfo;</span><br><span class="line">		<span class="comment">//1. 这里会判断是否设置了onTouchListener监听</span></span><br><span class="line">		<span class="comment">//执行onTouch方法，如果onTouch返回为true，则不再执行onTouchEvent，并且dispatch的最终结果也是返回true</span></span><br><span class="line">		<span class="keyword">if</span> (li != <span class="keyword">null</span> &amp;&amp; li.mOnTouchListener != <span class="keyword">null</span> &amp;&amp; (mViewFlags &amp; ENABLED_MASK) == ENABLED &amp;&amp; li.mOnTouchListener.onTouch(<span class="keyword">this</span>, event)) &#123;</span><br><span class="line">			result = <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//如果onTouch返回false，则才会执行onTouchevent，并且dispatchTouchEvent的返回值和onTouchEvent一致</span></span><br><span class="line">		<span class="keyword">if</span> (!result &amp;&amp; onTouchEvent(event)) &#123;</span><br><span class="line">			result = <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="onTouchEvent方法"><a href="#onTouchEvent方法" class="headerlink" title="onTouchEvent方法"></a>onTouchEvent方法</h4><blockquote>
-<p>click在up事件中触发，longClick在down事件中触发<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (mTouchDelegate != <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="comment">//如果有代理view的话，交给代理view执行onTouchEvent</span></span><br><span class="line">		<span class="keyword">if</span> (mTouchDelegate.onTouchEvent(event)) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (clickable || (viewFlags &amp; TOOLTIP) == TOOLTIP) &#123;</span><br><span class="line">		<span class="keyword">switch</span> (action) &#123;</span><br><span class="line">			<span class="keyword">case</span> MotionEvent.ACTION_UP:</span><br><span class="line">				<span class="keyword">boolean</span> prepressed = (mPrivateFlags &amp; PFLAG_PREPRESSED) != <span class="number">0</span>;</span><br><span class="line">				<span class="keyword">if</span> ((mPrivateFlags &amp; PFLAG_PRESSED) != <span class="number">0</span> || prepressed) &#123;</span><br><span class="line">					<span class="keyword">boolean</span> focusTaken = <span class="keyword">false</span>;</span><br><span class="line">					<span class="keyword">if</span> (!mHasPerformedLongPress &amp;&amp; !mIgnoreNextUpEvent) &#123;</span><br><span class="line">						<span class="comment">// Only perform take click actions if we were in the pressed state</span></span><br><span class="line">						<span class="keyword">if</span> (!focusTaken) &#123;</span><br><span class="line">							<span class="keyword">if</span> (mPerformClick == <span class="keyword">null</span>) &#123;</span><br><span class="line">								<span class="comment">//PerformClick实现自Runnable接口</span></span><br><span class="line">								mPerformClick = <span class="keyword">new</span> PerformClick();</span><br><span class="line">							&#125;</span><br><span class="line">							<span class="comment">//先通过handler发送消息，失败的话，再通过接口回调</span></span><br><span class="line">							<span class="keyword">if</span> (!post(mPerformClick)) &#123;</span><br><span class="line">								performClick();</span><br><span class="line">							&#125;</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			<span class="keyword">case</span> MotionEvent.ACTION_DOWN:</span><br><span class="line">				<span class="comment">//longClick事件在这里执行</span></span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			<span class="keyword">case</span> MotionEvent.ACTION_MOVE:</span><br><span class="line">				<span class="comment">//从这里我们可以知道为什么点击按钮，但是滑动到其它View上时，click事件不触发的原因。</span></span><br><span class="line">				<span class="keyword">if</span> (!pointInView(x, y, mTouchSlop)) &#123;</span><br><span class="line">					<span class="comment">// Outside button</span></span><br><span class="line">					<span class="comment">// Remove any future long press/tap checks</span></span><br><span class="line">					removeTapCallback();</span><br><span class="line">					removeLongPressCallback();</span><br><span class="line">					<span class="keyword">if</span> ((mPrivateFlags &amp; PFLAG_PRESSED) != <span class="number">0</span>) &#123;</span><br><span class="line">						setPressed(<span class="keyword">false</span>);</span><br><span class="line">					&#125;</span><br><span class="line">					mPrivateFlags3 &amp;= ~PFLAG3_FINGER_DOWN;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<h4 id="dispatch分发完成"><a href="#dispatch分发完成" class="headerlink" title="dispatch分发完成"></a>dispatch分发完成</h4><blockquote>
-<p>Activity会根据view是否消费了事件来决定是否执行自己的onTouchEvent方法</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/17/android/Launcher是如何启动Activity的/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="changePosition">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/17/android/Launcher是如何启动Activity的/" itemprop="url">Launcher是如何启动Activity的</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-17T14:28:28+08:00">
-                2019-07-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/android/" itemprop="url" rel="index">
-                    <span itemprop="name">android</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Launcher的启动"><a href="#Launcher的启动" class="headerlink" title="Launcher的启动"></a>Launcher的启动</h3><blockquote>
-<p>大致分下面4步</p>
-</blockquote>
-<ol>
-<li>Android系统启动的最后一步就是启动Launcher</li>
-<li>Launcher是由AMS启动的，启动后会通过PMS获取到所有的已安装应用信息</li>
-<li><p>Launcher的自动，AMS的startHomeActivityLocked方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">startHomeActivityLocked</span><span class="params">(<span class="keyword">int</span> userId, String reason)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//通过这个方法启动launcher</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 启动时intent设置的参数和manifest文件中的一致</span></span><br><span class="line">&lt;action android:name=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span><br><span class="line">&lt;category android:name=<span class="string">"android.intent.category.HOME"</span> /&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Launcher应用就启动起来了，执行onCreate、onStart…等方法</p>
-</li>
-</ol>
-<h3 id="Launcher加载其它应用图标到桌面"><a href="#Launcher加载其它应用图标到桌面" class="headerlink" title="Launcher加载其它应用图标到桌面"></a>Launcher加载其它应用图标到桌面</h3><blockquote>
-<p>大致分下面3步</p>
-</blockquote>
-<ol>
-<li><p>开启一个线程，通过handler发送执行体</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startLoader</span><span class="params">(<span class="keyword">boolean</span> isLaunching, <span class="keyword">int</span> synchronousBindPage)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">synchronized</span> (mLock) &#123;</span><br><span class="line">		mDeferredBindRunnables.clear();</span><br><span class="line">		<span class="keyword">if</span> (mCallbacks != <span class="keyword">null</span> &amp;&amp; mCallbacks.get() != <span class="keyword">null</span>) &#123;</span><br><span class="line">			isLaunching = isLaunching || stopLoaderLocked();</span><br><span class="line">			mLoaderTask = <span class="keyword">new</span> LoaderTask(mApp, isLaunching);</span><br><span class="line">			<span class="keyword">if</span> (synchronousBindPage &gt; -<span class="number">1</span> &amp;&amp; mAllAppsLoaded &amp;&amp; mWorkspaceLoaded) &#123;</span><br><span class="line">				mLoaderTask.runBindSynchronousPage(synchronousBindPage);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				sWorkerThread.setPriority(Thread.NORM_PRIORITY);</span><br><span class="line">				<span class="comment">//这个sWorker是个handler对象，也就是说 mLoadTask是一个Runnable类型的对象</span></span><br><span class="line">				sWorker.post(mLoaderTask);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> HandlerThread sWorkerThread = <span class="keyword">new</span> HandlerThread(<span class="string">"launcher-loader"</span>);</span><br><span class="line"><span class="comment">//注意：这是一个静态代码块，一进入LauncherModel开启</span></span><br><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">	<span class="comment">//线程开启-开启一个looper</span></span><br><span class="line">	sWorkerThread.start();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//依赖上述创建的looper为创建一个handler</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Handler sWorker = <span class="keyword">new</span> Handler(sWorkerThread.getLooper());</span><br><span class="line">```	</span><br><span class="line"></span><br><span class="line"><span class="number">2</span>. 在执行体内部加载所有已安装的应用信息</span><br><span class="line">#### mLoadTask运行</span><br><span class="line"></span><br><span class="line">```java</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	keep_running: &#123;</span><br><span class="line">		loadAndBindWorkspace();</span><br><span class="line">		<span class="comment">//加载并绑定所有的app</span></span><br><span class="line">		<span class="comment">//内部使用的还是handler，回调处理需要在launcher显示的app列表</span></span><br><span class="line">		loadAndBindAllApps();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// Update the saved icons if necessary</span></span><br><span class="line">	<span class="comment">//更新桌面的图标(如果需要更新的话)</span></span><br><span class="line">	updateSavedIcon(mContext, (ShortcutInfo) key, sBgDbIconCache.get(key));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>加载上述的图标（快捷方式），显示在recyclerview上</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/02/java/线程池分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="changePosition">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/02/java/线程池分析/" itemprop="url">线程池分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-02T19:28:26+08:00">
-                2019-03-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
           
         
       
@@ -1856,6 +1006,854 @@ private IBinder mBinder = new IBookManager.Stub() {
 <li>开始写 / 读</li>
 </ol>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">()</span>  <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">	...<span class="comment">//省略一些代码：做一些基本判断，管道是否连接，是否关闭等</span></span><br><span class="line">    readSide = Thread.currentThread();</span><br><span class="line">    <span class="keyword">int</span> trials = <span class="number">2</span>;</span><br><span class="line">    <span class="comment">//循环</span></span><br><span class="line">    <span class="keyword">while</span> (in &lt; <span class="number">0</span>) &#123;</span><br><span class="line">	    <span class="comment">//closedByWriter是否被写者关闭，Writer在close时会调用Reader中的receivedLast()方法来</span></span><br><span class="line">	    <span class="comment">//设置closedByWriter=true，并notifyAll读者</span></span><br><span class="line">        <span class="keyword">if</span> (closedByWriter) &#123;</span><br><span class="line">            <span class="comment">/* closed by writer, return EOF */</span></span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="keyword">if</span> ((writeSide != <span class="keyword">null</span>) &amp;&amp; (!writeSide.isAlive()) &amp;&amp; (--trials &lt; <span class="number">0</span>)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Pipe broken"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/* might be a writer waiting */</span></span><br><span class="line">        notifyAll();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            wait(<span class="number">1000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException ex) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> java.io.InterruptedIOException();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> ret = buffer[out++];</span><br><span class="line">    <span class="keyword">if</span> (out &gt;= buffer.length) &#123;</span><br><span class="line">        out = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (in == out) &#123;</span><br><span class="line">        <span class="comment">/* now empty */</span></span><br><span class="line">        in = -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/11/android/RecyclerView分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/11/android/RecyclerView分析/" itemprop="url">RecyclerView分析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-11T14:27:05+08:00">
+                2018-08-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/02/android/ListView的缓存机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/02/android/ListView的缓存机制/" itemprop="url">ListView的缓存机制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-02T14:26:44+08:00">
+                2018-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/02/java/内部类Handler导致的内存泄漏/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/02/java/内部类Handler导致的内存泄漏/" itemprop="url">内部类Handler导致的内存泄漏</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-02T10:40:15+08:00">
+                2018-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="关于handler内存泄漏的警告"><a href="#关于handler内存泄漏的警告" class="headerlink" title="关于handler内存泄漏的警告"></a>关于handler内存泄漏的警告</h3><blockquote>
+<p>使用自定义handler会提示内存泄漏，这个引用链是：<code>activity-&gt;handler-&gt;message-&gt;queue-&gt;looper-&gt;sThreadLocal</code></p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (FIND_POTENTIAL_LEAKS) &#123;</span><br><span class="line">    <span class="keyword">final</span> Class&lt;? extends Handler&gt; klass = getClass();</span><br><span class="line">    <span class="keyword">if</span> ((klass.isAnonymousClass() || klass.isMemberClass() || klass.isLocalClass()) &amp;&amp; (klass.getModifiers() &amp; Modifier.STATIC) == <span class="number">0</span>) &#123;</span><br><span class="line">        Log.w(TAG, <span class="string">"The following Handler class should be static or leaks might occur: "</span> + klass.getCanonicalName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="改进方法"><a href="#改进方法" class="headerlink" title="改进方法"></a>改进方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyWeakHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> WeakReference&lt;WangPosCashierActivity&gt; weakReference;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">MyWeakHandler</span><span class="params">(WangPosCashierActivity activity)</span> </span>&#123;</span><br><span class="line">		weakReference = <span class="keyword">new</span> WeakReference&lt;&gt;(activity);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//调用外部类做一些事</span></span><br><span class="line">		weakReference.get().doSth();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>为什么静态内部类不会产生内存泄漏？<strong>因为它没有持有外部类的引用</strong></p>
+</blockquote>
+<h3 id="内部类和外部类的关系"><a href="#内部类和外部类的关系" class="headerlink" title="内部类和外部类的关系"></a>内部类和外部类的关系</h3><p><img src="/2018/08/02/java/内部类Handler导致的内存泄漏/./1564709600346.png" alt="Alt text"></p>
+<ul>
+<li>从上图的字节码文件可以看出：</li>
+</ul>
+<ol>
+<li>静态内部类不持有外部类的引用</li>
+<li>普通内部类持有了外部引用（所以它可以访问外部类的任何信息-通过那个引用访问）</li>
+</ol>
+<ul>
+<li>同时也可以引申出一些其他的结论：</li>
+</ul>
+<ol>
+<li>静态内部类和外部类就相当于是完全独立的，普通内部类和外部类是相互依赖的，只有拿着外部类才能创建内部类。</li>
+<li>普通内部类中不能声明静态变量、方法，但是可以声明静态常量。<blockquote>
+<p>个人理解：类中所有的静态变量、方法是在类加载时都要被加载到内存中，所以加载外部类时就会去加载内部类中的静态变量。<br><strong>那么问题就来了，普通内部类还没有被加载呢，它里边的静态变量却已经被加载了</strong>，这样是有问题的：类还没加载，但是类的变量却加载了。<br>同时也可以明白为什么静态内部类可以有静态变量：因为<strong>加载时静态内部类也会被加载，它里边的静态变量也会被加载，两者都被加载了</strong>，所以没什么问题。</p>
+</blockquote>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/28/android/Activity的setContentView加载机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/28/android/Activity的setContentView加载机制/" itemprop="url">Activity的setContentView加载机制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-28T16:13:44+08:00">
+                2018-07-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p><strong>本篇主要说一下View的显示流程。就要就是setContentView方法。</strong><br>setContentView是通过LayoutInflater把传入的资源id转换为一个View并添加到根布局中，所以我们先分析LayoutInflater的执行机制。</p>
+</blockquote>
+<h3 id="LayoutInflater用法"><a href="#LayoutInflater用法" class="headerlink" title="LayoutInflater用法"></a>LayoutInflater用法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//构造一个inflate对象</span></span><br><span class="line">LayoutInflater inflater = LayoutInflater.from(<span class="keyword">this</span>);</span><br><span class="line"><span class="comment">//根据布局等参数信息构造一个view</span></span><br><span class="line">View mainView = inflater.inflate(R.layout.activity_main, <span class="keyword">null</span>);</span><br></pre></td></tr></table></figure>
+<h4 id="from的实现"><a href="#from的实现" class="headerlink" title="from的实现"></a>from的实现</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LayoutInflater <span class="title">from</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//可以看出来form真正的实现也是context.getSystemService</span></span><br><span class="line">	LayoutInflater LayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);</span><br><span class="line">	<span class="keyword">if</span> (LayoutInflater == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> AssertionError(<span class="string">"LayoutInflater not found."</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> LayoutInflater;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="inflate方法的三个参数"><a href="#inflate方法的三个参数" class="headerlink" title="inflate方法的三个参数"></a>inflate方法的三个参数</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* resource：资源文件，最终经过一系列操作，转换为View</span></span><br><span class="line"><span class="comment">* root：父布局，如果attachToRoot是true的话，会把上述的view加在root中</span></span><br><span class="line"><span class="comment">* attachToRoot：就是是否添加到root中成为其子view</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> View <span class="title">inflate</span><span class="params">(@LayoutRes <span class="keyword">int</span> resource, @Nullable ViewGroup root, <span class="keyword">boolean</span> attachToRoot)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Resources res = getContext().getResources();</span><br><span class="line">    <span class="comment">//根据资源文件生成一个xml解析器（这个解析器已经包含了资源文件所有的内容了）</span></span><br><span class="line">    <span class="keyword">final</span> XmlResourceParser parser = res.getLayout(resource);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> inflate(parser, root, attachToRoot);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        parser.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="inflate的执行流程"><a href="#inflate的执行流程" class="headerlink" title="inflate的执行流程"></a>inflate的执行流程</h4><blockquote>
+<p>inflate的执行流程分为几个步骤：</p>
+<ol>
+<li>把资源文件实例化成为一个xml资源解析器。</li>
+<li>根据资源解析器构造一个View。</li>
+<li>判断view是否设置params，是否添加到root中。</li>
+<li>返回view<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> View <span class="title">inflate</span><span class="params">(XmlPullParser parser, @Nullable ViewGroup root, <span class="keyword">boolean</span> attachToRoot)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">synchronized</span> (mConstructorArgs) &#123;</span><br><span class="line">		<span class="keyword">final</span> Context inflaterContext = mContext;</span><br><span class="line">		<span class="comment">//从解析器中取出属性集合</span></span><br><span class="line">		<span class="keyword">final</span> AttributeSet attrs = Xml.asAttributeSet(parser);</span><br><span class="line">		Context lastContext = (Context) mConstructorArgs[<span class="number">0</span>];</span><br><span class="line">		mConstructorArgs[<span class="number">0</span>] = inflaterContext;</span><br><span class="line">		View result = root;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="comment">// Look for the root node.</span></span><br><span class="line">			<span class="keyword">int</span> type;</span><br><span class="line">			<span class="comment">//查找资源文件的根节点（即start节点）</span></span><br><span class="line">			<span class="keyword">while</span> ((type = parser.next()) != XmlPullParser.START_TAG &amp;&amp; type != XmlPullParser.END_DOCUMENT) &#123;</span><br><span class="line">				<span class="comment">// Empty</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (type != XmlPullParser.START_TAG) &#123;</span><br><span class="line">				<span class="keyword">throw</span> <span class="keyword">new</span> InflateException(parser.getPositionDescription() + <span class="string">": No start tag found!"</span>);</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">final</span> String name = parser.getName();</span><br><span class="line">			<span class="comment">//merge标签的处理</span></span><br><span class="line">			<span class="keyword">if</span> (TAG_MERGE.equals(name)) &#123;</span><br><span class="line">				<span class="keyword">if</span> (root == <span class="keyword">null</span> || !attachToRoot) &#123;</span><br><span class="line">					<span class="keyword">throw</span> <span class="keyword">new</span> InflateException(<span class="string">"&lt;merge /&gt; can be used only with a valid "</span></span><br><span class="line">							+ <span class="string">"ViewGroup root and attachToRoot=true"</span>);</span><br><span class="line">				&#125;</span><br><span class="line">				rInflate(parser, root, inflaterContext, attrs, <span class="keyword">false</span>);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="comment">//根据root(parent)等一些布局参数生成一个新的view（资源文件id最终也是肯定要转为view的）</span></span><br><span class="line">				<span class="keyword">final</span> View temp = createViewFromTag(root, name, inflaterContext, attrs);</span><br><span class="line">				<span class="comment">/**</span></span><br><span class="line"><span class="comment">				* 注意看LayoutParams的设置：</span></span><br><span class="line"><span class="comment">				* 如果attact是true，说明需要附加在父view中</span></span><br><span class="line"><span class="comment">				* 如果是false：说明不附加。如果root不为null，则使新view的params设置为root的params</span></span><br><span class="line"><span class="comment">				* 否则就不设置params</span></span><br><span class="line"><span class="comment">				*/</span></span><br><span class="line">				ViewGroup.LayoutParams params = <span class="keyword">null</span>;</span><br><span class="line">				<span class="keyword">if</span> (root != <span class="keyword">null</span>) &#123;</span><br><span class="line">					<span class="comment">// Create layout params that match root, if supplied</span></span><br><span class="line">					params = root.generateLayoutParams(attrs);</span><br><span class="line">					<span class="keyword">if</span> (!attachToRoot) &#123;</span><br><span class="line">						temp.setLayoutParams(params);</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="comment">// Inflate all children under temp against its context.</span></span><br><span class="line">				rInflateChildren(parser, temp, attrs, <span class="keyword">true</span>);</span><br><span class="line">				<span class="comment">//可以看到当attach=true时，做的操作是把生成的view塞到root中</span></span><br><span class="line">				<span class="keyword">if</span> (root != <span class="keyword">null</span> &amp;&amp; attachToRoot) &#123;</span><br><span class="line">					root.addView(temp, params);</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="comment">//当root是null或者attach=false时，直接返回生成的temp</span></span><br><span class="line">				<span class="keyword">if</span> (root == <span class="keyword">null</span> || !attachToRoot) &#123;</span><br><span class="line">					result = temp;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (XmlPullParserException e) &#123;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//返回结果：要么是添加了view的root，要么是view本身</span></span><br><span class="line">		<span class="keyword">return</span> result;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</blockquote>
+<blockquote>
+<p>OK，inflate过程结束，inflate过程中对merge标签做了处理—merge不能单独使用，必须有接纳它的容器。</p>
+</blockquote>
+<h3 id="setContentView"><a href="#setContentView" class="headerlink" title="setContentView"></a>setContentView</h3><blockquote>
+<p>我们这里只分析set资源id的情况，它和setContentView(view…)的区别在于它需要使用layoutInflater把id变为View实例。</p>
+</blockquote>
+<blockquote>
+<p>流程：<br>第一步：执行setContentView<br>第二步：设置decorView<br>第三步：设置主页面内容，从（mContentParent）</p>
+<blockquote>
+<p>设置主布局内容是挺复杂的，根据我们设置的各个属性去配置我们需要的布局</p>
+</blockquote>
+</blockquote>
+<h4 id="布局层级"><a href="#布局层级" class="headerlink" title="布局层级"></a>布局层级</h4><blockquote>
+<p>可能不是很清晰，但是可以看个大概</p>
+</blockquote>
+<p><img src="/2018/07/28/android/Activity的setContentView加载机制/./1552469205539.png" alt="Alt text"></p>
+<h4 id="setContentView-id"><a href="#setContentView-id" class="headerlink" title="setContentView(id)"></a>setContentView(id)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setContentView</span><span class="params">(<span class="keyword">int</span> layoutResID)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (mContentParent == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="comment">//安装DecorView</span></span><br><span class="line">		installDecor();</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (!hasFeature(FEATURE_CONTENT_TRANSITIONS)) &#123;</span><br><span class="line">		mContentParent.removeAllViews();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (hasFeature(FEATURE_CONTENT_TRANSITIONS)) &#123;</span><br><span class="line">		<span class="keyword">final</span> Scene newScene = Scene.getSceneForLayout(mContentParent, layoutResID,</span><br><span class="line">				getContext());</span><br><span class="line">		transitionTo(newScene);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">//对于这块儿，为什么没有拿返回值呢？</span></span><br><span class="line">		<span class="comment">//从上边的inflate的源码可以看出：当mContentParent不为空时，attach会</span></span><br><span class="line">		<span class="comment">//设置为true，然后会把对应的布局文件添加到mContentParent中，</span></span><br><span class="line">		<span class="comment">//所以这里不需要拿到view</span></span><br><span class="line">		mLayoutInflater.inflate(layoutResID, mContentParent);</span><br><span class="line">	&#125;</span><br><span class="line">	mContentParent.requestApplyInsets();</span><br><span class="line">	<span class="keyword">final</span> Callback cb = getCallback();</span><br><span class="line">	<span class="keyword">if</span> (cb != <span class="keyword">null</span> &amp;&amp; !isDestroyed()) &#123;</span><br><span class="line">		cb.onContentChanged();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>mLayoutInflater.inflate(layoutResID, mContentParent)</code>由上面inflate的分析知道，最终生成了一个view并加载到了mContentParent中</p>
+</blockquote>
+<h3 id="下面对DecorView、ContentParent、resId的联系进行分析"><a href="#下面对DecorView、ContentParent、resId的联系进行分析" class="headerlink" title="下面对DecorView、ContentParent、resId的联系进行分析"></a>下面对DecorView、ContentParent、resId的联系进行分析</h3><h4 id="installDecor"><a href="#installDecor" class="headerlink" title="installDecor()"></a>installDecor()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">installDecor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (mDecor == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="comment">//此处就是简单生成一个DecorView(context)，由事</span></span><br><span class="line">		<span class="comment">//件分发机制可以知道这个Decor是主Activity的。</span></span><br><span class="line">		mDecor = generateDecor();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (mContentParent == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="comment">//得到主内容布局</span></span><br><span class="line">		mContentParent = generateLayout(mDecor);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="generateLayout-decorview"><a href="#generateLayout-decorview" class="headerlink" title="generateLayout(decorview)"></a>generateLayout(decorview)</h4><blockquote>
+<p>根据一些参数设置不同的布局风格，并添加到DecorView中，但是DecorView的层级有很多，这块儿只是在Decor中加了一个View</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> ViewGroup <span class="title">generateLayout</span><span class="params">(DecorView decor)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// Apply data from current theme.</span></span><br><span class="line">	<span class="comment">//得到一些主题资源信息，下边开始设置</span></span><br><span class="line">	TypedArray a = getWindowStyle();</span><br><span class="line">	<span class="keyword">final</span> Context context = getContext();</span><br><span class="line">	<span class="comment">// Inflate the window decor.</span></span><br><span class="line">	<span class="keyword">int</span> layoutResource;</span><br><span class="line">	<span class="comment">//获得一些给Activity设置的特性</span></span><br><span class="line">	<span class="keyword">int</span> features = getLocalFeatures();</span><br><span class="line">	<span class="comment">//根据这些特性生成设置对应的layoutResource</span></span><br><span class="line">	mDecor.startChanging();</span><br><span class="line">	View in = mLayoutInflater.inflate(layoutResource, <span class="keyword">null</span>);</span><br><span class="line">	<span class="comment">//把上述的view添加到decor中</span></span><br><span class="line">	decor.addView(in, <span class="keyword">new</span> ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));</span><br><span class="line">	<span class="comment">//设置根布局（根布局是DecorView的子View）</span></span><br><span class="line">	mContentRoot = (ViewGroup) in;</span><br><span class="line">	<span class="comment">//得到跟布局中的“主内容布局---我们添加的所有布局都会在这里”</span></span><br><span class="line">	<span class="comment">//下面这个findViewById通过看源码发现：是在decorview的布局文件中找的，也就是</span></span><br><span class="line">	<span class="comment">//从上述的mContentRoot中找的。（下边看这个详细的代码实现）</span></span><br><span class="line">	ViewGroup contentParent = (ViewGroup)findViewById(ID_ANDROID_CONTENT);</span><br><span class="line">	<span class="comment">// Remaining setup -- of background and title -- that only applies</span></span><br><span class="line">	<span class="comment">// to top-level windows.</span></span><br><span class="line">	<span class="keyword">if</span> (getContainer() == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="comment">//设置DecorView的一些属性</span></span><br><span class="line">		mDecor.setXXX();</span><br><span class="line">	&#125;</span><br><span class="line">	mDecor.finishChanging();</span><br><span class="line">	<span class="comment">//返回decorview中的content---即framelayout</span></span><br><span class="line">	<span class="keyword">return</span> contentParent;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="可以发现，contentParent是从DecorView中根据id-content获得的"><a href="#可以发现，contentParent是从DecorView中根据id-content获得的" class="headerlink" title="可以发现，contentParent是从DecorView中根据id=content获得的"></a>可以发现，contentParent是从DecorView中根据id=content获得的</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> &lt;T extends View&gt; <span class="function">T <span class="title">findViewById</span><span class="params">(@IdRes <span class="keyword">int</span> id)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// id = ID_ANDROID_CONTENT = com.android.internal.R.id.content</span></span><br><span class="line">    <span class="keyword">return</span> getDecorView().findViewById(id);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/23/协议/TCP-IP协议/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/23/协议/TCP-IP协议/" itemprop="url">TCP/IP协议</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-23T09:06:47+08:00">
+                2018-07-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/协议/" itemprop="url" rel="index">
+                    <span itemprop="name">协议</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="先介绍一下其中的TCP、UDP"><a href="#先介绍一下其中的TCP、UDP" class="headerlink" title="先介绍一下其中的TCP、UDP"></a>先介绍一下其中的TCP、UDP</h2><blockquote>
+<p>TCP/IP协议中包含多种协议，这里只介绍下TCP/UDP，后期再把ARP、IP等协议补充进来。</p>
+</blockquote>
+<h3 id="TCP与UDP的区别"><a href="#TCP与UDP的区别" class="headerlink" title="TCP与UDP的区别"></a>TCP与UDP的区别</h3><blockquote>
+<p>这些参考自计算机网络教材-谢希仁版</p>
+</blockquote>
+<h3 id="TCP的连接、断开"><a href="#TCP的连接、断开" class="headerlink" title="TCP的连接、断开"></a>TCP的连接、断开</h3><blockquote>
+<p>下面为传输时会用到的一些状态<br><img src="/2018/07/23/协议/TCP-IP协议/./1563859396682.png" alt="@摘自TCP/IP详解"></p>
+</blockquote>
+<h4 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h4><p><img src="/2018/07/23/协议/TCP-IP协议/./1563849314546.png" alt="Alt text"></p>
+<blockquote>
+<ul>
+<li>第一次握手时客户端发送一个随机的序号seq=i、确认号SYN=1</li>
+<li>第二次握手时服务端发送一个随机的序号j、确认号为上次的确认号+1，即i+1、ACK表示应答信号、SYN表示同步信号</li>
+<li>第三次握手时客户端发送一个序号（这个序号是客户端第一次发的序号i+1）、一个确认号：上边的序号+1</li>
+</ul>
+</blockquote>
+<h5 id="为什么要三次？"><a href="#为什么要三次？" class="headerlink" title="为什么要三次？"></a>为什么要三次？</h5><blockquote>
+<p>下面分几种情况来分析。</p>
+</blockquote>
+<h6 id="一种情况"><a href="#一种情况" class="headerlink" title="一种情况"></a>一种情况</h6><ul>
+<li>服务端收到第一次握手：客户端发送能力、服务端接收能力都OK</li>
+<li>客户端收到第二次握手：<strong>客户端自己发送能力、客户端自己接收能力、服务端接收能力、服务端发送能力OK</strong></li>
+<li>服务端收到第三次握手：<strong>客户端发送能力、客户端接收能力、服务端发送能力、服务端接收能力都OK</strong><blockquote>
+<p>可以看到在第二次握手后，客户端已经完全知道大家都OK了，但是还需要再发送一个让服务端知道他的发送能力也OK。</p>
+</blockquote>
+</li>
+</ul>
+<h6 id="另一种情况"><a href="#另一种情况" class="headerlink" title="另一种情况"></a>另一种情况</h6><blockquote>
+<p>关于握手时消息超时的，这块儿需要再捋一下。</p>
+</blockquote>
+<h5 id="握手失败怎么办？"><a href="#握手失败怎么办？" class="headerlink" title="握手失败怎么办？"></a>握手失败怎么办？</h5><h6 id="假设第三次握手失败"><a href="#假设第三次握手失败" class="headerlink" title="假设第三次握手失败"></a>假设第三次握手失败</h6><blockquote>
+<p>当客户端第三次握手发的消息丢了之后会导致握手失败，我们要做的就是在服务端设置一个<strong>超时计时器</strong>，在服务端发出消息之后，如果在超时时间到了之后还没接收到客户端的反馈消息，则服务端会重新发出一个消息，<strong>重传次数</strong>默认是5，如果重传次数到了之后还没响应，则服务端主动断开连接，由上图所知，此时客户端已经是ESTABLISHED状态。此时客户端如果给服务端发消息。服务端<strong>会响应RST-重新连接</strong>。<br><img src="/2018/07/23/协议/TCP-IP协议/./1563859011501.png" alt="@我们的服务器默认重传次数是2"></p>
+</blockquote>
+<h4 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h4><blockquote>
+<p>建立一个连接需要三次握手，而终止一个连接要经过4次握手。这由TCP的半关闭（half-close）造成的。既然一个TCP连接是全双工（即数据在两个方向上能同时传递），因此每个方向必须单独地进行关闭。这原则就是当一方完成它的数据发送任务后就能发送一个FIN来终止这个方向连接。当一端收到一个FIN，它必须通知应用层另一端几经终止了那个方向的数据传送。发送FIN通常是应用层进行关闭的结果。</p>
+</blockquote>
+<p><img src="/2018/07/23/协议/TCP-IP协议/./1563879213309.png" alt="Alt text"></p>
+<ul>
+<li>连接时：双方只是对握手信号做个响应，不发送有用的数据包</li>
+<li>断开时：因为是在传输的过程中，突然有一端要断开了（假设客户端请求断开），此时服务端应该怎么办？因为可能有一些数据包还没给客户端发送完毕，但是又要立即反馈客户端的断开请求，怎么办？先回复一个消息：我收到了你的断开请求。继续发送数据包（<strong>此时客户端处于半关闭状态，不会发消息，但可以接收并响应消息</strong>），发送完毕后，发送一个断开请求，收到客户端响应后关闭连接。<blockquote>
+<p>收到一个FIN只意味着在这一方向上没有数据流动。一个TCP连接在收到一个FIN后仍能发送数据。这也就是为什么要四次挥手的原因。</p>
+</blockquote>
+</li>
+</ul>
+<h5 id="TIME-WAIT状态有什么用？"><a href="#TIME-WAIT状态有什么用？" class="headerlink" title="TIME_WAIT状态有什么用？"></a>TIME_WAIT状态有什么用？</h5><blockquote>
+<p>个人的理解+网上的各种资料查找。不一定对</p>
+</blockquote>
+<ul>
+<li>接收FIN之前传入的消息（有可能那些消息传输太慢，或者超时重传什么的）。</li>
+<li>假如没有TIME_WAIT，一旦接收到服务端的FIN后，又立马与其它服务连接上了，那如果上个服务现在才到，岂不是：上个连接的数据包发到了这个连接上？（这种情况感觉不大可能，它肯定知道是不是自己的数据包吧）</li>
+</ul>
+<h4 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h4><blockquote>
+<p>出现滑动窗口的原因是：提高TCP的吞吐量，不要接收一个响应一个。更快传输无外乎每次传的多一点，但这里又产生了一个问题：传的多了，次序怎么保证？有包丢失了怎么整？</p>
+</blockquote>
+<p>滑动窗口分为接收窗口和发送窗口。它是传输层进行流控的一种协议，服务端的一次ACK至少包含两个信息：</p>
+<ul>
+<li>期望得到的下一个包的序号（滑动窗口传输需要对所有的包排好顺序）。</li>
+<li>自己还能接收多少个包。</li>
+</ul>
+<h6 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h6><p>假设发送了8个，ACK了3个，期望再发3个，那么发送窗口会向右滑动3个，此时窗口里有5个已发送未ACK+3个待发送，此时客户端会继续等待服务端的ACK，直到得到ACK，如果超时则会把窗口中的数据全部重新发送一下。</p>
+<p><img src="/2018/07/23/协议/TCP-IP协议/./1563881598390.png" alt="@计算机网络-谢希仁"></p>
+<h4 id="拥塞控制"><a href="#拥塞控制" class="headerlink" title="拥塞控制"></a>拥塞控制</h4><h5 id="产生拥塞的原因"><a href="#产生拥塞的原因" class="headerlink" title="产生拥塞的原因"></a>产生拥塞的原因</h5><blockquote>
+<p>拥塞的本质原因是<strong>整个系统的各个部分性能不匹配，只有所有部分都平衡了，拥塞问题才会解决。</strong>所以简单的提高处理速度，增大输出链路的容量，增大系统之间的缓存大小，这些都是暂时的解决办法，一段时间后仍会出现拥塞。</p>
+</blockquote>
+<h5 id="拥塞控制和流量控制的区别"><a href="#拥塞控制和流量控制的区别" class="headerlink" title="拥塞控制和流量控制的区别"></a>拥塞控制和流量控制的区别</h5><blockquote>
+<p>个人的一些理解。</p>
+<ul>
+<li>拥塞: 链路的带宽太小，导致发送方发的太多，把链路撑爆。</li>
+<li>流量控制：发送方发的数据可以在链路上传输，但是接收方处理不过来，所以接收方需要告诉发送方传的慢点。</li>
+</ul>
+</blockquote>
+<h5 id="如何检测到发生了拥塞"><a href="#如何检测到发生了拥塞" class="headerlink" title="如何检测到发生了拥塞"></a>如何检测到发生了拥塞</h5><ul>
+<li>丢弃的分组数</li>
+<li>超时重传的分组数</li>
+<li>发送方未按时收到应当到达的确认报文</li>
+<li>…</li>
+</ul>
+<h5 id="拥塞控制的几种算法"><a href="#拥塞控制的几种算法" class="headerlink" title="拥塞控制的几种算法"></a>拥塞控制的几种算法</h5><h6 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h6><blockquote>
+<p>发送方维持一个拥塞窗口状态变量cwnd，窗口的大小取决于网络的拥塞度。发送方控制拥塞窗口的原则是：网络未发生拥塞，窗口就增大一些，发生拥塞，减小一些。</p>
+</blockquote>
+<h6 id="慢开始"><a href="#慢开始" class="headerlink" title="慢开始"></a>慢开始</h6><blockquote>
+<p>在开始发送数据时并不是立即把大量数据注入到网络，因为并不清楚网络的负荷。较好的方式是由小到大，依次提高数据注入量，这样就可以探测到网络的负荷。<br>具体的实现方式：刚开始发送报文时先把拥塞窗口cwnd设置为一个报文段MSS的数值，然后每收到一对新的报文段的确认后，拥塞窗口就增加一个MSS的数值。</p>
+</blockquote>
+<ol>
+<li>第一次发送一个，接收一个ACK，窗口1-&gt;2。</li>
+<li>第二次发送两个，接受两个ACK，窗口2-&gt;3-&gt;4</li>
+<li>第三次发送4个，接收四个ACK，窗口4-&gt;5-&gt;6-&gt;7-&gt;8</li>
+</ol>
+<blockquote>
+<p>所以每经过一个传输轮次，窗口cwnd大小就加倍。</p>
+</blockquote>
+<h6 id="拥塞避免"><a href="#拥塞避免" class="headerlink" title="拥塞避免"></a>拥塞避免</h6><blockquote>
+<p>上边的满开始其实也是有问题的，毕竟是指数递增。所以为防止它增长过快，有设置了一个慢开始门限ssthresh状态变量。<br>cwnd &lt; ssthresh时，使用慢开始<br>cwnd &gt; ssthresh时，使用拥塞避免<br>cwnd = ssthresh时，二者都可使用</p>
+</blockquote>
+<p>拥塞避免的思路是让拥塞窗口cwnd缓慢增大：</p>
+<ul>
+<li>每经过一个轮回，让cwnd+1而不是加倍，这样增长速度就慢很多了。</li>
+<li>当网络出现拥塞时，就要把ssthresh设为发生拥塞时的窗口cwnd的一半（不能小于2），cwnd设置为1，然后重新执行慢开始算法。</li>
+</ul>
+<h6 id="快重传"><a href="#快重传" class="headerlink" title="快重传"></a>快重传</h6><h6 id="快恢复"><a href="#快恢复" class="headerlink" title="快恢复"></a>快恢复</h6><h4 id="同时打开"><a href="#同时打开" class="headerlink" title="同时打开"></a>同时打开</h4><p><img src="/2018/07/23/协议/TCP-IP协议/./1563852853811.png" alt="@出自TCP/IP详解第一卷"></p>
+<blockquote>
+<p>此时双方没有明确的客户端、服务端之分，双方都是主动建立连接、又被动接收连接，<strong>此时比正常的三次握手多了一次握手</strong>。</p>
+</blockquote>
+<h4 id="同时关闭"><a href="#同时关闭" class="headerlink" title="同时关闭"></a>同时关闭</h4><p><img src="/2018/07/23/协议/TCP-IP协议/./1563853023405.png" alt="@出自TCP/IP详解第一卷"></p>
+<blockquote>
+<p>此时一方收到Fin信号后，直接发送一个响应，并断开。（同时关闭说明双方都没有要发送的消息了）</p>
+</blockquote>
 
           
         

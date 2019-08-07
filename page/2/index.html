@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/11/android/RecyclerView分析/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/17/android/Launcher是如何启动Activity的/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="changePosition">
@@ -271,7 +271,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/08/11/android/RecyclerView分析/" itemprop="url">RecyclerView分析</a></h1>
+                <a class="post-title-link" href="/2018/07/17/android/Launcher是如何启动Activity的/" itemprop="url">Launcher是如何启动Activity的</a></h1>
         
 
         <div class="post-meta">
@@ -283,305 +283,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-11T14:27:05+08:00">
-                2018-08-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/02/java/内部类Handler导致的内存泄漏/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="changePosition">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/02/java/内部类Handler导致的内存泄漏/" itemprop="url">内部类Handler导致的内存泄漏</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-02T10:40:15+08:00">
-                2018-08-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/android/" itemprop="url" rel="index">
-                    <span itemprop="name">android</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/android/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="关于handler内存泄漏的警告"><a href="#关于handler内存泄漏的警告" class="headerlink" title="关于handler内存泄漏的警告"></a>关于handler内存泄漏的警告</h3><blockquote>
-<p>使用自定义handler会提示内存泄漏，这个引用链是：<code>activity-&gt;handler-&gt;message-&gt;queue-&gt;looper-&gt;sThreadLocal</code></p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (FIND_POTENTIAL_LEAKS) &#123;</span><br><span class="line">    <span class="keyword">final</span> Class&lt;? extends Handler&gt; klass = getClass();</span><br><span class="line">    <span class="keyword">if</span> ((klass.isAnonymousClass() || klass.isMemberClass() || klass.isLocalClass()) &amp;&amp; (klass.getModifiers() &amp; Modifier.STATIC) == <span class="number">0</span>) &#123;</span><br><span class="line">        Log.w(TAG, <span class="string">"The following Handler class should be static or leaks might occur: "</span> + klass.getCanonicalName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="改进方法"><a href="#改进方法" class="headerlink" title="改进方法"></a>改进方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyWeakHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> WeakReference&lt;WangPosCashierActivity&gt; weakReference;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">MyWeakHandler</span><span class="params">(WangPosCashierActivity activity)</span> </span>&#123;</span><br><span class="line">		weakReference = <span class="keyword">new</span> WeakReference&lt;&gt;(activity);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//调用外部类做一些事</span></span><br><span class="line">		weakReference.get().doSth();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>为什么静态内部类不会产生内存泄漏？<strong>因为它没有持有外部类的引用</strong></p>
-</blockquote>
-<h3 id="内部类和外部类的关系"><a href="#内部类和外部类的关系" class="headerlink" title="内部类和外部类的关系"></a>内部类和外部类的关系</h3><p><img src="/2018/08/02/java/内部类Handler导致的内存泄漏/./1564709600346.png" alt="Alt text"></p>
-<ul>
-<li>从上图的字节码文件可以看出：</li>
-</ul>
-<ol>
-<li>静态内部类不持有外部类的引用</li>
-<li>普通内部类持有了外部引用（所以它可以访问外部类的任何信息-通过那个引用访问）</li>
-</ol>
-<ul>
-<li>同时也可以引申出一些其他的结论：</li>
-</ul>
-<ol>
-<li>静态内部类和外部类就相当于是完全独立的，普通内部类和外部类是相互依赖的，只有拿着外部类才能创建内部类。</li>
-<li>普通内部类中不能声明静态变量、方法，但是可以声明静态常量。<blockquote>
-<p>个人理解：类中所有的静态变量、方法是在类加载时都要被加载到内存中，所以加载外部类时就会去加载内部类中的静态变量。<br><strong>那么问题就来了，普通内部类还没有被加载呢，它里边的静态变量却已经被加载了</strong>，这样是有问题的：类还没加载，但是类的变量却加载了。<br>同时也可以明白为什么静态内部类可以有静态变量：因为<strong>加载时静态内部类也会被加载，它里边的静态变量也会被加载，两者都被加载了</strong>，所以没什么问题。</p>
-</blockquote>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/28/android/Activity的setContentView加载机制/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="changePosition">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/28/android/Activity的setContentView加载机制/" itemprop="url">Activity的setContentView加载机制</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-28T16:13:44+08:00">
-                2018-07-28
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-17T14:28:28+08:00">
+                2018-07-17
               </time>
             
 
@@ -642,297 +345,28 @@
       
         
           
-            <blockquote>
-<p><strong>本篇主要说一下View的显示流程。就要就是setContentView方法。</strong><br>setContentView是通过LayoutInflater把传入的资源id转换为一个View并添加到根布局中，所以我们先分析LayoutInflater的执行机制。</p>
-</blockquote>
-<h3 id="LayoutInflater用法"><a href="#LayoutInflater用法" class="headerlink" title="LayoutInflater用法"></a>LayoutInflater用法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//构造一个inflate对象</span></span><br><span class="line">LayoutInflater inflater = LayoutInflater.from(<span class="keyword">this</span>);</span><br><span class="line"><span class="comment">//根据布局等参数信息构造一个view</span></span><br><span class="line">View mainView = inflater.inflate(R.layout.activity_main, <span class="keyword">null</span>);</span><br></pre></td></tr></table></figure>
-<h4 id="from的实现"><a href="#from的实现" class="headerlink" title="from的实现"></a>from的实现</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LayoutInflater <span class="title">from</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//可以看出来form真正的实现也是context.getSystemService</span></span><br><span class="line">	LayoutInflater LayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);</span><br><span class="line">	<span class="keyword">if</span> (LayoutInflater == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> AssertionError(<span class="string">"LayoutInflater not found."</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> LayoutInflater;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="inflate方法的三个参数"><a href="#inflate方法的三个参数" class="headerlink" title="inflate方法的三个参数"></a>inflate方法的三个参数</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* resource：资源文件，最终经过一系列操作，转换为View</span></span><br><span class="line"><span class="comment">* root：父布局，如果attachToRoot是true的话，会把上述的view加在root中</span></span><br><span class="line"><span class="comment">* attachToRoot：就是是否添加到root中成为其子view</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> View <span class="title">inflate</span><span class="params">(@LayoutRes <span class="keyword">int</span> resource, @Nullable ViewGroup root, <span class="keyword">boolean</span> attachToRoot)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Resources res = getContext().getResources();</span><br><span class="line">    <span class="comment">//根据资源文件生成一个xml解析器（这个解析器已经包含了资源文件所有的内容了）</span></span><br><span class="line">    <span class="keyword">final</span> XmlResourceParser parser = res.getLayout(resource);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> inflate(parser, root, attachToRoot);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        parser.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="inflate的执行流程"><a href="#inflate的执行流程" class="headerlink" title="inflate的执行流程"></a>inflate的执行流程</h4><blockquote>
-<p>inflate的执行流程分为几个步骤：</p>
-<ol>
-<li>把资源文件实例化成为一个xml资源解析器。</li>
-<li>根据资源解析器构造一个View。</li>
-<li>判断view是否设置params，是否添加到root中。</li>
-<li>返回view<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> View <span class="title">inflate</span><span class="params">(XmlPullParser parser, @Nullable ViewGroup root, <span class="keyword">boolean</span> attachToRoot)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">synchronized</span> (mConstructorArgs) &#123;</span><br><span class="line">		<span class="keyword">final</span> Context inflaterContext = mContext;</span><br><span class="line">		<span class="comment">//从解析器中取出属性集合</span></span><br><span class="line">		<span class="keyword">final</span> AttributeSet attrs = Xml.asAttributeSet(parser);</span><br><span class="line">		Context lastContext = (Context) mConstructorArgs[<span class="number">0</span>];</span><br><span class="line">		mConstructorArgs[<span class="number">0</span>] = inflaterContext;</span><br><span class="line">		View result = root;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="comment">// Look for the root node.</span></span><br><span class="line">			<span class="keyword">int</span> type;</span><br><span class="line">			<span class="comment">//查找资源文件的根节点（即start节点）</span></span><br><span class="line">			<span class="keyword">while</span> ((type = parser.next()) != XmlPullParser.START_TAG &amp;&amp; type != XmlPullParser.END_DOCUMENT) &#123;</span><br><span class="line">				<span class="comment">// Empty</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (type != XmlPullParser.START_TAG) &#123;</span><br><span class="line">				<span class="keyword">throw</span> <span class="keyword">new</span> InflateException(parser.getPositionDescription() + <span class="string">": No start tag found!"</span>);</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">final</span> String name = parser.getName();</span><br><span class="line">			<span class="comment">//merge标签的处理</span></span><br><span class="line">			<span class="keyword">if</span> (TAG_MERGE.equals(name)) &#123;</span><br><span class="line">				<span class="keyword">if</span> (root == <span class="keyword">null</span> || !attachToRoot) &#123;</span><br><span class="line">					<span class="keyword">throw</span> <span class="keyword">new</span> InflateException(<span class="string">"&lt;merge /&gt; can be used only with a valid "</span></span><br><span class="line">							+ <span class="string">"ViewGroup root and attachToRoot=true"</span>);</span><br><span class="line">				&#125;</span><br><span class="line">				rInflate(parser, root, inflaterContext, attrs, <span class="keyword">false</span>);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="comment">//根据root(parent)等一些布局参数生成一个新的view（资源文件id最终也是肯定要转为view的）</span></span><br><span class="line">				<span class="keyword">final</span> View temp = createViewFromTag(root, name, inflaterContext, attrs);</span><br><span class="line">				<span class="comment">/**</span></span><br><span class="line"><span class="comment">				* 注意看LayoutParams的设置：</span></span><br><span class="line"><span class="comment">				* 如果attact是true，说明需要附加在父view中</span></span><br><span class="line"><span class="comment">				* 如果是false：说明不附加。如果root不为null，则使新view的params设置为root的params</span></span><br><span class="line"><span class="comment">				* 否则就不设置params</span></span><br><span class="line"><span class="comment">				*/</span></span><br><span class="line">				ViewGroup.LayoutParams params = <span class="keyword">null</span>;</span><br><span class="line">				<span class="keyword">if</span> (root != <span class="keyword">null</span>) &#123;</span><br><span class="line">					<span class="comment">// Create layout params that match root, if supplied</span></span><br><span class="line">					params = root.generateLayoutParams(attrs);</span><br><span class="line">					<span class="keyword">if</span> (!attachToRoot) &#123;</span><br><span class="line">						temp.setLayoutParams(params);</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="comment">// Inflate all children under temp against its context.</span></span><br><span class="line">				rInflateChildren(parser, temp, attrs, <span class="keyword">true</span>);</span><br><span class="line">				<span class="comment">//可以看到当attach=true时，做的操作是把生成的view塞到root中</span></span><br><span class="line">				<span class="keyword">if</span> (root != <span class="keyword">null</span> &amp;&amp; attachToRoot) &#123;</span><br><span class="line">					root.addView(temp, params);</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="comment">//当root是null或者attach=false时，直接返回生成的temp</span></span><br><span class="line">				<span class="keyword">if</span> (root == <span class="keyword">null</span> || !attachToRoot) &#123;</span><br><span class="line">					result = temp;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (XmlPullParserException e) &#123;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//返回结果：要么是添加了view的root，要么是view本身</span></span><br><span class="line">		<span class="keyword">return</span> result;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-</blockquote>
-<blockquote>
-<p>OK，inflate过程结束，inflate过程中对merge标签做了处理—merge不能单独使用，必须有接纳它的容器。</p>
-</blockquote>
-<h3 id="setContentView"><a href="#setContentView" class="headerlink" title="setContentView"></a>setContentView</h3><blockquote>
-<p>我们这里只分析set资源id的情况，它和setContentView(view…)的区别在于它需要使用layoutInflater把id变为View实例。</p>
-</blockquote>
-<blockquote>
-<p>流程：<br>第一步：执行setContentView<br>第二步：设置decorView<br>第三步：设置主页面内容，从（mContentParent）</p>
-<blockquote>
-<p>设置主布局内容是挺复杂的，根据我们设置的各个属性去配置我们需要的布局</p>
-</blockquote>
-</blockquote>
-<h4 id="布局层级"><a href="#布局层级" class="headerlink" title="布局层级"></a>布局层级</h4><blockquote>
-<p>可能不是很清晰，但是可以看个大概</p>
-</blockquote>
-<p><img src="/2018/07/28/android/Activity的setContentView加载机制/./1552469205539.png" alt="Alt text"></p>
-<h4 id="setContentView-id"><a href="#setContentView-id" class="headerlink" title="setContentView(id)"></a>setContentView(id)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setContentView</span><span class="params">(<span class="keyword">int</span> layoutResID)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (mContentParent == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="comment">//安装DecorView</span></span><br><span class="line">		installDecor();</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (!hasFeature(FEATURE_CONTENT_TRANSITIONS)) &#123;</span><br><span class="line">		mContentParent.removeAllViews();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (hasFeature(FEATURE_CONTENT_TRANSITIONS)) &#123;</span><br><span class="line">		<span class="keyword">final</span> Scene newScene = Scene.getSceneForLayout(mContentParent, layoutResID,</span><br><span class="line">				getContext());</span><br><span class="line">		transitionTo(newScene);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">//对于这块儿，为什么没有拿返回值呢？</span></span><br><span class="line">		<span class="comment">//从上边的inflate的源码可以看出：当mContentParent不为空时，attach会</span></span><br><span class="line">		<span class="comment">//设置为true，然后会把对应的布局文件添加到mContentParent中，</span></span><br><span class="line">		<span class="comment">//所以这里不需要拿到view</span></span><br><span class="line">		mLayoutInflater.inflate(layoutResID, mContentParent);</span><br><span class="line">	&#125;</span><br><span class="line">	mContentParent.requestApplyInsets();</span><br><span class="line">	<span class="keyword">final</span> Callback cb = getCallback();</span><br><span class="line">	<span class="keyword">if</span> (cb != <span class="keyword">null</span> &amp;&amp; !isDestroyed()) &#123;</span><br><span class="line">		cb.onContentChanged();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p><code>mLayoutInflater.inflate(layoutResID, mContentParent)</code>由上面inflate的分析知道，最终生成了一个view并加载到了mContentParent中</p>
-</blockquote>
-<h3 id="下面对DecorView、ContentParent、resId的联系进行分析"><a href="#下面对DecorView、ContentParent、resId的联系进行分析" class="headerlink" title="下面对DecorView、ContentParent、resId的联系进行分析"></a>下面对DecorView、ContentParent、resId的联系进行分析</h3><h4 id="installDecor"><a href="#installDecor" class="headerlink" title="installDecor()"></a>installDecor()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">installDecor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (mDecor == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="comment">//此处就是简单生成一个DecorView(context)，由事</span></span><br><span class="line">		<span class="comment">//件分发机制可以知道这个Decor是主Activity的。</span></span><br><span class="line">		mDecor = generateDecor();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (mContentParent == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="comment">//得到主内容布局</span></span><br><span class="line">		mContentParent = generateLayout(mDecor);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="generateLayout-decorview"><a href="#generateLayout-decorview" class="headerlink" title="generateLayout(decorview)"></a>generateLayout(decorview)</h4><blockquote>
-<p>根据一些参数设置不同的布局风格，并添加到DecorView中，但是DecorView的层级有很多，这块儿只是在Decor中加了一个View</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> ViewGroup <span class="title">generateLayout</span><span class="params">(DecorView decor)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// Apply data from current theme.</span></span><br><span class="line">	<span class="comment">//得到一些主题资源信息，下边开始设置</span></span><br><span class="line">	TypedArray a = getWindowStyle();</span><br><span class="line">	<span class="keyword">final</span> Context context = getContext();</span><br><span class="line">	<span class="comment">// Inflate the window decor.</span></span><br><span class="line">	<span class="keyword">int</span> layoutResource;</span><br><span class="line">	<span class="comment">//获得一些给Activity设置的特性</span></span><br><span class="line">	<span class="keyword">int</span> features = getLocalFeatures();</span><br><span class="line">	<span class="comment">//根据这些特性生成设置对应的layoutResource</span></span><br><span class="line">	mDecor.startChanging();</span><br><span class="line">	View in = mLayoutInflater.inflate(layoutResource, <span class="keyword">null</span>);</span><br><span class="line">	<span class="comment">//把上述的view添加到decor中</span></span><br><span class="line">	decor.addView(in, <span class="keyword">new</span> ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));</span><br><span class="line">	<span class="comment">//设置根布局（根布局是DecorView的子View）</span></span><br><span class="line">	mContentRoot = (ViewGroup) in;</span><br><span class="line">	<span class="comment">//得到跟布局中的“主内容布局---我们添加的所有布局都会在这里”</span></span><br><span class="line">	<span class="comment">//下面这个findViewById通过看源码发现：是在decorview的布局文件中找的，也就是</span></span><br><span class="line">	<span class="comment">//从上述的mContentRoot中找的。（下边看这个详细的代码实现）</span></span><br><span class="line">	ViewGroup contentParent = (ViewGroup)findViewById(ID_ANDROID_CONTENT);</span><br><span class="line">	<span class="comment">// Remaining setup -- of background and title -- that only applies</span></span><br><span class="line">	<span class="comment">// to top-level windows.</span></span><br><span class="line">	<span class="keyword">if</span> (getContainer() == <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="comment">//设置DecorView的一些属性</span></span><br><span class="line">		mDecor.setXXX();</span><br><span class="line">	&#125;</span><br><span class="line">	mDecor.finishChanging();</span><br><span class="line">	<span class="comment">//返回decorview中的content---即framelayout</span></span><br><span class="line">	<span class="keyword">return</span> contentParent;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="可以发现，contentParent是从DecorView中根据id-content获得的"><a href="#可以发现，contentParent是从DecorView中根据id-content获得的" class="headerlink" title="可以发现，contentParent是从DecorView中根据id=content获得的"></a>可以发现，contentParent是从DecorView中根据id=content获得的</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> &lt;T extends View&gt; <span class="function">T <span class="title">findViewById</span><span class="params">(@IdRes <span class="keyword">int</span> id)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// id = ID_ANDROID_CONTENT = com.android.internal.R.id.content</span></span><br><span class="line">    <span class="keyword">return</span> getDecorView().findViewById(id);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/23/协议/TCP-IP协议/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="changePosition">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/23/协议/TCP-IP协议/" itemprop="url">TCP/IP协议</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-23T09:06:47+08:00">
-                2018-07-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/协议/" itemprop="url" rel="index">
-                    <span itemprop="name">协议</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="先介绍一下其中的TCP、UDP"><a href="#先介绍一下其中的TCP、UDP" class="headerlink" title="先介绍一下其中的TCP、UDP"></a>先介绍一下其中的TCP、UDP</h2><blockquote>
-<p>TCP/IP协议中包含多种协议，这里只介绍下TCP/UDP，后期再把ARP、IP等协议补充进来。</p>
-</blockquote>
-<h3 id="TCP与UDP的区别"><a href="#TCP与UDP的区别" class="headerlink" title="TCP与UDP的区别"></a>TCP与UDP的区别</h3><blockquote>
-<p>这些参考自计算机网络教材-谢希仁版</p>
-</blockquote>
-<h3 id="TCP的连接、断开"><a href="#TCP的连接、断开" class="headerlink" title="TCP的连接、断开"></a>TCP的连接、断开</h3><blockquote>
-<p>下面为传输时会用到的一些状态<br><img src="/2018/07/23/协议/TCP-IP协议/./1563859396682.png" alt="@摘自TCP/IP详解"></p>
-</blockquote>
-<h4 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h4><p><img src="/2018/07/23/协议/TCP-IP协议/./1563849314546.png" alt="Alt text"></p>
-<blockquote>
-<ul>
-<li>第一次握手时客户端发送一个随机的序号seq=i、确认号SYN=1</li>
-<li>第二次握手时服务端发送一个随机的序号j、确认号为上次的确认号+1，即i+1、ACK表示应答信号、SYN表示同步信号</li>
-<li>第三次握手时客户端发送一个序号（这个序号是客户端第一次发的序号i+1）、一个确认号：上边的序号+1</li>
-</ul>
-</blockquote>
-<h5 id="为什么要三次？"><a href="#为什么要三次？" class="headerlink" title="为什么要三次？"></a>为什么要三次？</h5><blockquote>
-<p>下面分几种情况来分析。</p>
-</blockquote>
-<h6 id="一种情况"><a href="#一种情况" class="headerlink" title="一种情况"></a>一种情况</h6><ul>
-<li>服务端收到第一次握手：客户端发送能力、服务端接收能力都OK</li>
-<li>客户端收到第二次握手：<strong>客户端自己发送能力、客户端自己接收能力、服务端接收能力、服务端发送能力OK</strong></li>
-<li>服务端收到第三次握手：<strong>客户端发送能力、客户端接收能力、服务端发送能力、服务端接收能力都OK</strong><blockquote>
-<p>可以看到在第二次握手后，客户端已经完全知道大家都OK了，但是还需要再发送一个让服务端知道他的发送能力也OK。</p>
-</blockquote>
-</li>
-</ul>
-<h6 id="另一种情况"><a href="#另一种情况" class="headerlink" title="另一种情况"></a>另一种情况</h6><blockquote>
-<p>关于握手时消息超时的，这块儿需要再捋一下。</p>
-</blockquote>
-<h5 id="握手失败怎么办？"><a href="#握手失败怎么办？" class="headerlink" title="握手失败怎么办？"></a>握手失败怎么办？</h5><h6 id="假设第三次握手失败"><a href="#假设第三次握手失败" class="headerlink" title="假设第三次握手失败"></a>假设第三次握手失败</h6><blockquote>
-<p>当客户端第三次握手发的消息丢了之后会导致握手失败，我们要做的就是在服务端设置一个<strong>超时计时器</strong>，在服务端发出消息之后，如果在超时时间到了之后还没接收到客户端的反馈消息，则服务端会重新发出一个消息，<strong>重传次数</strong>默认是5，如果重传次数到了之后还没响应，则服务端主动断开连接，由上图所知，此时客户端已经是ESTABLISHED状态。此时客户端如果给服务端发消息。服务端<strong>会响应RST-重新连接</strong>。<br><img src="/2018/07/23/协议/TCP-IP协议/./1563859011501.png" alt="@我们的服务器默认重传次数是2"></p>
-</blockquote>
-<h4 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h4><blockquote>
-<p>建立一个连接需要三次握手，而终止一个连接要经过4次握手。这由TCP的半关闭（half-close）造成的。既然一个TCP连接是全双工（即数据在两个方向上能同时传递），因此每个方向必须单独地进行关闭。这原则就是当一方完成它的数据发送任务后就能发送一个FIN来终止这个方向连接。当一端收到一个FIN，它必须通知应用层另一端几经终止了那个方向的数据传送。发送FIN通常是应用层进行关闭的结果。</p>
-</blockquote>
-<p><img src="/2018/07/23/协议/TCP-IP协议/./1563879213309.png" alt="Alt text"></p>
-<ul>
-<li>连接时：双方只是对握手信号做个响应，不发送有用的数据包</li>
-<li>断开时：因为是在传输的过程中，突然有一端要断开了（假设客户端请求断开），此时服务端应该怎么办？因为可能有一些数据包还没给客户端发送完毕，但是又要立即反馈客户端的断开请求，怎么办？先回复一个消息：我收到了你的断开请求。继续发送数据包（<strong>此时客户端处于半关闭状态，不会发消息，但可以接收并响应消息</strong>），发送完毕后，发送一个断开请求，收到客户端响应后关闭连接。<blockquote>
-<p>收到一个FIN只意味着在这一方向上没有数据流动。一个TCP连接在收到一个FIN后仍能发送数据。这也就是为什么要四次挥手的原因。</p>
-</blockquote>
-</li>
-</ul>
-<h5 id="TIME-WAIT状态有什么用？"><a href="#TIME-WAIT状态有什么用？" class="headerlink" title="TIME_WAIT状态有什么用？"></a>TIME_WAIT状态有什么用？</h5><blockquote>
-<p>个人的理解+网上的各种资料查找。不一定对</p>
-</blockquote>
-<ul>
-<li>接收FIN之前传入的消息（有可能那些消息传输太慢，或者超时重传什么的）。</li>
-<li>假如没有TIME_WAIT，一旦接收到服务端的FIN后，又立马与其它服务连接上了，那如果上个服务现在才到，岂不是：上个连接的数据包发到了这个连接上？（这种情况感觉不大可能，它肯定知道是不是自己的数据包吧）</li>
-</ul>
-<h4 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h4><blockquote>
-<p>出现滑动窗口的原因是：提高TCP的吞吐量，不要接收一个响应一个。更快传输无外乎每次传的多一点，但这里又产生了一个问题：传的多了，次序怎么保证？有包丢失了怎么整？</p>
-</blockquote>
-<p>滑动窗口分为接收窗口和发送窗口。它是传输层进行流控的一种协议，服务端的一次ACK至少包含两个信息：</p>
-<ul>
-<li>期望得到的下一个包的序号（滑动窗口传输需要对所有的包排好顺序）。</li>
-<li>自己还能接收多少个包。</li>
-</ul>
-<h6 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h6><p>假设发送了8个，ACK了3个，期望再发3个，那么发送窗口会向右滑动3个，此时窗口里有5个已发送未ACK+3个待发送，此时客户端会继续等待服务端的ACK，直到得到ACK，如果超时则会把窗口中的数据全部重新发送一下。</p>
-<p><img src="/2018/07/23/协议/TCP-IP协议/./1563881598390.png" alt="@计算机网络-谢希仁"></p>
-<h4 id="拥塞控制"><a href="#拥塞控制" class="headerlink" title="拥塞控制"></a>拥塞控制</h4><h5 id="产生拥塞的原因"><a href="#产生拥塞的原因" class="headerlink" title="产生拥塞的原因"></a>产生拥塞的原因</h5><blockquote>
-<p>拥塞的本质原因是<strong>整个系统的各个部分性能不匹配，只有所有部分都平衡了，拥塞问题才会解决。</strong>所以简单的提高处理速度，增大输出链路的容量，增大系统之间的缓存大小，这些都是暂时的解决办法，一段时间后仍会出现拥塞。</p>
-</blockquote>
-<h5 id="拥塞控制和流量控制的区别"><a href="#拥塞控制和流量控制的区别" class="headerlink" title="拥塞控制和流量控制的区别"></a>拥塞控制和流量控制的区别</h5><blockquote>
-<p>个人的一些理解。</p>
-<ul>
-<li>拥塞: 链路的带宽太小，导致发送方发的太多，把链路撑爆。</li>
-<li>流量控制：发送方发的数据可以在链路上传输，但是接收方处理不过来，所以接收方需要告诉发送方传的慢点。</li>
-</ul>
-</blockquote>
-<h5 id="如何检测到发生了拥塞"><a href="#如何检测到发生了拥塞" class="headerlink" title="如何检测到发生了拥塞"></a>如何检测到发生了拥塞</h5><ul>
-<li>丢弃的分组数</li>
-<li>超时重传的分组数</li>
-<li>发送方未按时收到应当到达的确认报文</li>
-<li>…</li>
-</ul>
-<h5 id="拥塞控制的几种算法"><a href="#拥塞控制的几种算法" class="headerlink" title="拥塞控制的几种算法"></a>拥塞控制的几种算法</h5><h6 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h6><blockquote>
-<p>发送方维持一个拥塞窗口状态变量cwnd，窗口的大小取决于网络的拥塞度。发送方控制拥塞窗口的原则是：网络未发生拥塞，窗口就增大一些，发生拥塞，减小一些。</p>
-</blockquote>
-<h6 id="慢开始"><a href="#慢开始" class="headerlink" title="慢开始"></a>慢开始</h6><blockquote>
-<p>在开始发送数据时并不是立即把大量数据注入到网络，因为并不清楚网络的负荷。较好的方式是由小到大，依次提高数据注入量，这样就可以探测到网络的负荷。<br>具体的实现方式：刚开始发送报文时先把拥塞窗口cwnd设置为一个报文段MSS的数值，然后每收到一对新的报文段的确认后，拥塞窗口就增加一个MSS的数值。</p>
+            <h3 id="Launcher的启动"><a href="#Launcher的启动" class="headerlink" title="Launcher的启动"></a>Launcher的启动</h3><blockquote>
+<p>大致分下面4步</p>
 </blockquote>
 <ol>
-<li>第一次发送一个，接收一个ACK，窗口1-&gt;2。</li>
-<li>第二次发送两个，接受两个ACK，窗口2-&gt;3-&gt;4</li>
-<li>第三次发送4个，接收四个ACK，窗口4-&gt;5-&gt;6-&gt;7-&gt;8</li>
+<li>Android系统启动的最后一步就是启动Launcher</li>
+<li>Launcher是由AMS启动的，启动后会通过PMS获取到所有的已安装应用信息</li>
+<li><p>Launcher的自动，AMS的startHomeActivityLocked方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">startHomeActivityLocked</span><span class="params">(<span class="keyword">int</span> userId, String reason)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//通过这个方法启动launcher</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 启动时intent设置的参数和manifest文件中的一致</span></span><br><span class="line">&lt;action android:name=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span><br><span class="line">&lt;category android:name=<span class="string">"android.intent.category.HOME"</span> /&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Launcher应用就启动起来了，执行onCreate、onStart…等方法</p>
+</li>
 </ol>
-<blockquote>
-<p>所以每经过一个传输轮次，窗口cwnd大小就加倍。</p>
+<h3 id="Launcher加载其它应用图标到桌面"><a href="#Launcher加载其它应用图标到桌面" class="headerlink" title="Launcher加载其它应用图标到桌面"></a>Launcher加载其它应用图标到桌面</h3><blockquote>
+<p>大致分下面3步</p>
 </blockquote>
-<h6 id="拥塞避免"><a href="#拥塞避免" class="headerlink" title="拥塞避免"></a>拥塞避免</h6><blockquote>
-<p>上边的满开始其实也是有问题的，毕竟是指数递增。所以为防止它增长过快，有设置了一个慢开始门限ssthresh状态变量。<br>cwnd &lt; ssthresh时，使用慢开始<br>cwnd &gt; ssthresh时，使用拥塞避免<br>cwnd = ssthresh时，二者都可使用</p>
-</blockquote>
-<p>拥塞避免的思路是让拥塞窗口cwnd缓慢增大：</p>
-<ul>
-<li>每经过一个轮回，让cwnd+1而不是加倍，这样增长速度就慢很多了。</li>
-<li>当网络出现拥塞时，就要把ssthresh设为发生拥塞时的窗口cwnd的一半（不能小于2），cwnd设置为1，然后重新执行慢开始算法。</li>
-</ul>
-<h6 id="快重传"><a href="#快重传" class="headerlink" title="快重传"></a>快重传</h6><h6 id="快恢复"><a href="#快恢复" class="headerlink" title="快恢复"></a>快恢复</h6><h4 id="同时打开"><a href="#同时打开" class="headerlink" title="同时打开"></a>同时打开</h4><p><img src="/2018/07/23/协议/TCP-IP协议/./1563852853811.png" alt="@出自TCP/IP详解第一卷"></p>
-<blockquote>
-<p>此时双方没有明确的客户端、服务端之分，双方都是主动建立连接、又被动接收连接，<strong>此时比正常的三次握手多了一次握手</strong>。</p>
-</blockquote>
-<h4 id="同时关闭"><a href="#同时关闭" class="headerlink" title="同时关闭"></a>同时关闭</h4><p><img src="/2018/07/23/协议/TCP-IP协议/./1563853023405.png" alt="@出自TCP/IP详解第一卷"></p>
-<blockquote>
-<p>此时一方收到Fin信号后，直接发送一个响应，并断开。（同时关闭说明双方都没有要发送的消息了）</p>
-</blockquote>
+<ol>
+<li><p>开启一个线程，通过handler发送执行体</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startLoader</span><span class="params">(<span class="keyword">boolean</span> isLaunching, <span class="keyword">int</span> synchronousBindPage)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">synchronized</span> (mLock) &#123;</span><br><span class="line">		mDeferredBindRunnables.clear();</span><br><span class="line">		<span class="keyword">if</span> (mCallbacks != <span class="keyword">null</span> &amp;&amp; mCallbacks.get() != <span class="keyword">null</span>) &#123;</span><br><span class="line">			isLaunching = isLaunching || stopLoaderLocked();</span><br><span class="line">			mLoaderTask = <span class="keyword">new</span> LoaderTask(mApp, isLaunching);</span><br><span class="line">			<span class="keyword">if</span> (synchronousBindPage &gt; -<span class="number">1</span> &amp;&amp; mAllAppsLoaded &amp;&amp; mWorkspaceLoaded) &#123;</span><br><span class="line">				mLoaderTask.runBindSynchronousPage(synchronousBindPage);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				sWorkerThread.setPriority(Thread.NORM_PRIORITY);</span><br><span class="line">				<span class="comment">//这个sWorker是个handler对象，也就是说 mLoadTask是一个Runnable类型的对象</span></span><br><span class="line">				sWorker.post(mLoaderTask);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> HandlerThread sWorkerThread = <span class="keyword">new</span> HandlerThread(<span class="string">"launcher-loader"</span>);</span><br><span class="line"><span class="comment">//注意：这是一个静态代码块，一进入LauncherModel开启</span></span><br><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">	<span class="comment">//线程开启-开启一个looper</span></span><br><span class="line">	sWorkerThread.start();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//依赖上述创建的looper为创建一个handler</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Handler sWorker = <span class="keyword">new</span> Handler(sWorkerThread.getLooper());</span><br><span class="line">```	</span><br><span class="line"></span><br><span class="line"><span class="number">2</span>. 在执行体内部加载所有已安装的应用信息</span><br><span class="line">#### mLoadTask运行</span><br><span class="line"></span><br><span class="line">```java</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	keep_running: &#123;</span><br><span class="line">		loadAndBindWorkspace();</span><br><span class="line">		<span class="comment">//加载并绑定所有的app</span></span><br><span class="line">		<span class="comment">//内部使用的还是handler，回调处理需要在launcher显示的app列表</span></span><br><span class="line">		loadAndBindAllApps();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// Update the saved icons if necessary</span></span><br><span class="line">	<span class="comment">//更新桌面的图标(如果需要更新的话)</span></span><br><span class="line">	updateSavedIcon(mContext, (ShortcutInfo) key, sBgDbIconCache.get(key));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>加载上述的图标（快捷方式），显示在recyclerview上</p>
+</li>
+</ol>
 
           
         
@@ -1806,6 +1240,191 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/03/android/Binder在AIDL中的应用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/03/android/Binder在AIDL中的应用/" itemprop="url">Binder在AIDL中的应用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-03T17:36:04+08:00">
+                2018-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="先看一张图"><a href="#先看一张图" class="headerlink" title="先看一张图"></a>先看一张图</h1><blockquote>
+<p>这张图描述了AIDL进程间通信的大致流程。<br><strong>同时它也是服务绑定的过程，只不过涉及的一些类：ApplicationThread、IServiceConnection.aidl、InnerConnection、Handler等没有列出来。</strong></p>
+</blockquote>
+<p><img src="/2018/06/03/android/Binder在AIDL中的应用/./1564889071567.png" alt="Alt text"></p>
+<h1 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h1><h2 id="创建服务时构造一个binder"><a href="#创建服务时构造一个binder" class="headerlink" title="创建服务时构造一个binder"></a>创建服务时构造一个binder</h2><p>public class BookManageService extends Service {</p>
+<pre><code>//在服务端创建一个binder对象，当客户端绑定时，返回这个binder给客户端
+private IBinder mBinder = new IBookManager.Stub() {
+    @Override
+    public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+        return super.onTransact(code, data, reply, flags);
+    }
+    //具体的实现类
+    @Override
+    public List&lt;Book&gt; getBookList() throws RemoteException {
+        return list;
+    }
+    @Override
+    public void addBook(Book book) throws RemoteException {
+        list.add(book);
+    }
+};
+</code></pre><p>}</p>
+<h3 id="new-Stub-时做了什么"><a href="#new-Stub-时做了什么" class="headerlink" title="new Stub()时做了什么"></a>new Stub()时做了什么</h3><blockquote>
+<p>new Stub时把DESCRIPTOR和具体的实现类做了关联，便于后期找到<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Stub</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="comment">//这个this就是当前的匿名内部类，后期根据这个DESCRIPTOR查找对应的IBookManager来操作相关方法</span></span><br><span class="line">	<span class="keyword">this</span>.attachInterface(<span class="keyword">this</span>, DESCRIPTOR);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//调用父类的attachInterface方法</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">attachInterface</span><span class="params">(IInterface owner, String descriptor)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//把当前的Stub-Binder的具体实现类赋值给mOwner</span></span><br><span class="line">	mOwner = owner;</span><br><span class="line">	mDescriptor = descriptor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="把服务端构造的Binder返给客户端"><a href="#把服务端构造的Binder返给客户端" class="headerlink" title="把服务端构造的Binder返给客户端"></a>把服务端构造的Binder返给客户端</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//把服务端的Binder对象传给client端</span></span><br><span class="line">	<span class="keyword">return</span> mBinder;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h1><h2 id="绑定服务"><a href="#绑定服务" class="headerlink" title="绑定服务"></a>绑定服务</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bindService(intent, connection, Context.BIND_AUTO_CREATE);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> ServiceConnection connection = <span class="keyword">new</span> ServiceConnection() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//【注意】相同进程时返回的service是服务端创建的那个binder，不同进城时返回的是服务端binder的代理binder-BiderProxy</span></span><br><span class="line">		<span class="comment">//客户端要想和服务端通信，需要把服务端的binder构造成一个服务端的操作实例</span></span><br><span class="line">		<span class="comment">//最终返回一个服务端操作实例的代理类，用代理类来调服务端相应的方法</span></span><br><span class="line">        bookManager = IBookManager.Stub.asInterface(service);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>客户端调用bookManager的方法时实际调用的是IBookManager.Stub的内部类Proxy相应的方法。</li>
+<li>activity发起绑定服务后，会经过一大圈最终回调到onServiceConnected，返回相应的binder，其中涉及到跨进程，handler消息机制等。</li>
+</ul>
+</blockquote>
+<h3 id="Stub类的asInterface方法"><a href="#Stub类的asInterface方法" class="headerlink" title="Stub类的asInterface方法"></a>Stub类的asInterface方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> net.shopin.myaidlserver.<span class="function">IBookManager <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//String DESCRIPTOR = "net.shopin.myaidlserver.IBookManager"</span></span><br><span class="line">	<span class="comment">//因为是跨进程，所以这里实际执行的是BinderProxy的queryLocalInterface方法</span></span><br><span class="line">	<span class="comment">//所以因为是跨进程，这里返回的一定是null</span></span><br><span class="line">	android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);</span><br><span class="line">	<span class="keyword">if</span> (((iin != <span class="keyword">null</span>) &amp;&amp; (iin <span class="keyword">instanceof</span> net.shopin.myaidlserver.IBookManager))) &#123;</span><br><span class="line">		<span class="keyword">return</span> ((net.shopin.myaidlserver.IBookManager) iin);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//不同进程的话，返回一个IBookManager的代理类，并传入服务端相应的binder实例</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> net.shopin.myaidlserver.IBookManager.Stub.Proxy(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="BinderProxy的queryLocalInterface方法"><a href="#BinderProxy的queryLocalInterface方法" class="headerlink" title="BinderProxy的queryLocalInterface方法"></a>BinderProxy的queryLocalInterface方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IInterface <span class="title">queryLocalInterface</span><span class="params">(String descriptor)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//内部没有实现，默认返回null</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Binder的queryLocalInterface方法"><a href="#Binder的queryLocalInterface方法" class="headerlink" title="Binder的queryLocalInterface方法"></a>Binder的queryLocalInterface方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IInterface <span class="title">queryLocalInterface</span><span class="params">(String descriptor)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (mDescriptor.equals(descriptor)) &#123;</span><br><span class="line">		<span class="comment">//直接返回mOwner，mOwner在上边已经说了</span></span><br><span class="line">		<span class="keyword">return</span> mOwner;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Proxy代理类"><a href="#Proxy代理类" class="headerlink" title="Proxy代理类"></a>Proxy代理类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> android.os.IBinder mRemote;</span><br><span class="line"></span><br><span class="line">	Proxy(android.os.IBinder remote) &#123;</span><br><span class="line">		<span class="comment">//服务端返回的binder实例或者是BinderProxy代理类</span></span><br><span class="line">		mRemote = remote;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//根据mRemote来调用相应的方法</span></span><br><span class="line">	getBookList()&#123;</span><br><span class="line">		mRemote.transact(Stub.TRANSACTION_getBookList, _data, _reply, <span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	addBook()&#123;</span><br><span class="line">		mRemote.transact(Stub.TRANSACTION_addBook, _data, _reply, <span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>客户端同样会自动生成一个Stub类，但是客户端不会用这个Stub实例，只会用Stub的静态内部类Proxy，通过这个Proxy对应到服务端的Stub类。</p>
+</blockquote>
+<blockquote>
+<p><strong>一个服务对应的有一个binder实例，服务端曝露出这个binder实例（或者是此binder的代理实例）给客户端，客户端根据这个binder实例生成相应的服务代理类，在服务代理类中通过服务端暴漏的那个binder或代理类调用目标方法，此时这个通信过程会交由内核层处理也就是/dev/binder来桥接，然后再返回到应用层，交由真正的服务端对应的方法处理。</strong><br>一次通信完成。</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/02/android/AIDL流程分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2060,6 +1679,387 @@
 <hr>
 <blockquote>
 <p>后台学习推荐书籍<br>spring in action 第四版<br>springboot 揭秘  配合博客<br>dubbo 官网<br>《大型网站技术架构：核心原理与案例分析》<br>《大型网站系统与Java中间件实践》<br>大型分布式网站架构设计与实践<br>SOA理解<br>redis<br>redis开发与运维</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/02/android/Binder机制分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/02/android/Binder机制分析/" itemprop="url">Binder机制分析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-02T14:29:37+08:00">
+                2018-04-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="结合AIDL分析Binder机制"><a href="#结合AIDL分析Binder机制" class="headerlink" title="结合AIDL分析Binder机制"></a>结合AIDL分析Binder机制</h2><h3 id="AIDL使用流程"><a href="#AIDL使用流程" class="headerlink" title="AIDL使用流程"></a>AIDL使用流程</h3><blockquote>
+<ol>
+<li>aidl文件—&gt;直接用as生成aidl文件就行，他会默认生成一个aidl文件夹，创建Book.java在java下的包下，而Book.aidl在aidl下的包下，注意这两个包名必须一致—&gt;这点as会帮我们做。</li>
+<li>aidl demo server-d:\myprjs\aidl\client\MyApplication</li>
+<li>aidl demo client-d:\myprjs\aidl\server\MyAidlServer</li>
+</ol>
+</blockquote>
+<h4 id="服务端Service"><a href="#服务端Service" class="headerlink" title="服务端Service"></a>服务端Service</h4><h5 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BookManageService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"CLIENT_ERROR_LOG"</span>;</span><br><span class="line">    <span class="keyword">private</span> CopyOnWriteArrayList&lt;Book&gt; list = <span class="keyword">new</span> CopyOnWriteArrayList&lt;&gt;();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//下面分析mBinder</span></span><br><span class="line">    <span class="keyword">private</span> IBinder mBinder = <span class="keyword">new</span> IBookManager.Stub() &#123;&#125;;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate();</span><br><span class="line">		<span class="comment">//service在create时先添加一本书</span></span><br><span class="line">        list.add(<span class="keyword">new</span> Book(<span class="number">1001</span>, <span class="string">"谁许传"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 在客户端与服务端建立连接时传给客户端</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//把服务端的Binder对象传给client端</span></span><br><span class="line">        <span class="keyword">return</span> mBinder;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="mBinder对象"><a href="#mBinder对象" class="headerlink" title="mBinder对象"></a>mBinder对象</h5><blockquote>
+<p>我们在.aidl中定义的那些操作，真正的执行体在这里<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 创建这个Binder就是为了暴露给客户端</span></span><br><span class="line"><span class="comment"> * 客户端拿到server端的binder执行add，get方法时，经过一系列转换，最后走的就是这里。</span></span><br><span class="line"><span class="comment"> * IBookManager.aidl的这4个方法都执行在binder线程中</span></span><br><span class="line"><span class="comment"> * 注意mBinder是如何生成的：mBinder指向了一个匿名内部类（注意这个匿名内部类，下边的分析会提到）</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> IBinder mBinder = <span class="keyword">new</span> IBookManager.Stub() &#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, Parcel data, Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> List&lt;Book&gt; <span class="title">getBookList</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> list;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(Book book)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">		<span class="comment">//添加是在client的主线程中add的，但是这里走到了binder线程</span></span><br><span class="line">		list.add(book);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="客户端绑定服务端Service"><a href="#客户端绑定服务端Service" class="headerlink" title="客户端绑定服务端Service"></a>客户端绑定服务端Service</h4><h5 id="获得要绑定的connection"><a href="#获得要绑定的connection" class="headerlink" title="获得要绑定的connection"></a>获得要绑定的connection</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//client端定义的connection</span></span><br><span class="line"><span class="keyword">private</span> ServiceConnection connection = <span class="keyword">new</span> ServiceConnection() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;</span><br><span class="line">	    <span class="comment">//根据server端的binder对象调用AIDL中的Stub类的asInterface方法</span></span><br><span class="line">	    <span class="comment">//最终返回的是一个Proxy对象-实现了IBookManager接口（因为不是在同一进程，所以会用代理实现跨进程通信）</span></span><br><span class="line">	    <span class="comment">//相当于是本地的Proxy代理了远程的Binder，生成了一个Manager对象(即IInterface的实现类，里边有Binder)，但最终执行时肯定还是要通过被代理对象的。</span></span><br><span class="line">	    <span class="comment">//【注意：】上述的service对象实际是BinderProxy类型的对象</span></span><br><span class="line">        bookManager = IBookManager.Stub.asInterface(service);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName name)</span> </span>&#123;</span><br><span class="line">        Log.e(TAG, <span class="string">"onServiceDisconnected: "</span> + name.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h5 id="绑定"><a href="#绑定" class="headerlink" title="绑定"></a>绑定</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.setAction(<span class="string">"net.shopin.aidlservice"</span>);</span><br><span class="line">intent.setPackage(<span class="string">"net.shopin.myaidlserver"</span>);</span><br><span class="line"><span class="comment">//与服务端建立连接</span></span><br><span class="line"><span class="comment">//这边有个小问题：在api&gt;21时，上述的intent不仅要加action，还要加package</span></span><br><span class="line">bindService(intent, connection, Context.BIND_AUTO_CREATE);</span><br></pre></td></tr></table></figure>
+<h3 id="由AIDL自动生成的类"><a href="#由AIDL自动生成的类" class="headerlink" title="由AIDL自动生成的类"></a>由AIDL自动生成的类</h3><h4 id="Server端的IBookManager接口"><a href="#Server端的IBookManager接口" class="headerlink" title="Server端的IBookManager接口"></a>Server端的IBookManager接口</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IBookManager</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">IInterface</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Stub</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">Binder</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span></span>&#123;</span><br><span class="line">		<span class="comment">//下边分析Stub类</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	* 下面的方法就是我们在.aidl文件中定义的。</span></span><br><span class="line"><span class="comment">	* 可以肯定：必须会有一个类来实现这些方法，不然我们定义的操作没有执行体！</span></span><br><span class="line"><span class="comment">	* 那么是谁呢？就看谁实现了IBookManager接口===&gt;Stub类</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line">	<span class="keyword">public</span> java.util.<span class="function">List&lt;Book&gt; <span class="title">getBookList</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(Book book)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="IBookManager接口中的Stub类"><a href="#IBookManager接口中的Stub类" class="headerlink" title="IBookManager接口中的Stub类"></a>IBookManager接口中的Stub类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Local-side IPC implementation stub class.</span></span><br><span class="line"><span class="comment"> * 注意：Stub继承Binder，实现IBookManager，但它是一个抽象类，并且也是自动生成的-说明我们定义的那些操作的执行体肯定不在这里边-肯定在Stub的子类中-就是我们在Service中为了生成mBinder而定义的那个匿名内部类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Stub</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">Binder</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String DESCRIPTOR = <span class="string">"net.shopin.myaidlserver.IBookManager"</span>;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * Server端的Service构造Binder对象时会走到这里生成一个Stub()实例</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Stub</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">		注意：开始把当前的this（stub对象）和DESCRIPTOR建立关联</span></span><br><span class="line"><span class="comment">		所以后期：执行binder.queryLocalInterface(DESCRIPTOR)时，</span></span><br><span class="line"><span class="comment">		就是根据这里attach的对应关系来查找的</span></span><br><span class="line"><span class="comment">		*/</span></span><br><span class="line">		<span class="keyword">this</span>.attachInterface(<span class="keyword">this</span>, DESCRIPTOR);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> net.shopin.myaidlserver.<span class="function">IBookManager <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//具体代码下边分析</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, Parcel data, Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">		<span class="comment">//下边分析</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">		<span class="comment">//下边分析</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_getBookList = (IBinder.FIRST_CALL_TRANSACTION + <span class="number">0</span>);</span><br><span class="line">	<span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_addBook = (IBinder.FIRST_CALL_TRANSACTION + <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Stub类中的asInterface方法"><a href="#Stub类中的asInterface方法" class="headerlink" title="Stub类中的asInterface方法"></a>Stub类中的asInterface方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Cast an IBinder object into an net.shopin.myaidlserver.IBookManager interface, generating a proxy if needed.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> net.shopin.myaidlserver.<span class="function">IBookManager <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> ((obj == <span class="keyword">null</span>)) &#123;</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">//DESCRIPTOR就是包名+类名（string类型）</span></span><br><span class="line">       IInterface iin = obj.queryLocalInterface(DESCRIPTOR);</span><br><span class="line">       <span class="comment">//那么问题是：什么时候if条件不成立？</span></span><br><span class="line">       <span class="comment">//注意queryLocalInterface方法：在本地（指的就是当前进程）查找是否有DESCRIPTOR对应的IInterface</span></span><br><span class="line">       <span class="comment">//在Server端时，obj.queryLocalInterface是可以找到对应的DESCRIPTOR，因为此时Binder对象所处的进程和调用者所处的是同一个进程（这里的调用者指的就是bookManager.addBook操作所处的进程），但是当把server端的service设置为remote进程时，调用者和binder对象所处的就不是同一个进程了(此时，Binder就成为一个远程对象了)！</span></span><br><span class="line">       <span class="keyword">if</span> (((iin != <span class="keyword">null</span>) &amp;&amp; (iin <span class="keyword">instanceof</span> net.shopin.myaidlserver.IBookManager))) &#123;</span><br><span class="line">           <span class="keyword">return</span> ((net.shopin.myaidlserver.IBookManager) iin);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">//既然不在同一个进程，那如何获取到远程的(binder)对象实例来操作呢？</span></span><br><span class="line">       <span class="comment">//通过代理（和java的代理实现方式不一样）返回对应的IBookManager实现类（也就是Proxy类），也就是说以后操作IBookManager类的各个方法都是先操作Proxy，最后才到被代理对象了</span></span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> net.shopin.myaidlserver.IBookManager.Stub.Proxy(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Stub的onTransact方法"><a href="#Stub的onTransact方法" class="headerlink" title="Stub的onTransact方法"></a>Stub的onTransact方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* 这是Stub类中的onTransact方法，不同进程通信时才会走这里！</span></span><br><span class="line"><span class="comment">* 同一进程通信时（比如当前应用注册当前的Service(没有设置remote)，使用AIDL通信，直接就会走到Service中的匿名内部类中，不会经过这一系列的操作）</span></span><br><span class="line"><span class="comment">* */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, android.os.Parcel data, android.os.Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">	<span class="comment">//方法中的参数就是client调用transact方法时传过来的</span></span><br><span class="line">	<span class="keyword">switch</span> (code) &#123;</span><br><span class="line">		<span class="keyword">case</span> INTERFACE_TRANSACTION: &#123;</span><br><span class="line">			reply.writeString(DESCRIPTOR);</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">case</span> TRANSACTION_getBookList: &#123;</span><br><span class="line">			data.enforceInterface(DESCRIPTOR);</span><br><span class="line">			List&lt;Book&gt; _result = <span class="keyword">this</span>.getBookList();</span><br><span class="line">			reply.writeNoException();</span><br><span class="line">			reply.writeTypedList(_result);</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">case</span> TRANSACTION_addBook: &#123;</span><br><span class="line">			data.enforceInterface(DESCRIPTOR);</span><br><span class="line">			net.shopin.myaidlserver.Book _arg0;</span><br><span class="line">			<span class="keyword">if</span> ((<span class="number">0</span> != data.readInt())) &#123;</span><br><span class="line">				_arg0 = net.shopin.myaidlserver.Book.CREATOR.createFromParcel(data);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				_arg0 = <span class="keyword">null</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="comment">//注意下边的this.getBookList()，调的就是子类（那个匿名内部类）的getBookList方法</span></span><br><span class="line">			<span class="keyword">this</span>.addBook(_arg0);</span><br><span class="line">			reply.writeNoException();</span><br><span class="line">			<span class="comment">//注意这里直接返回了，并没有再调到Binder的onTransact</span></span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="代理类Proxy"><a href="#代理类Proxy" class="headerlink" title="代理类Proxy"></a>代理类Proxy</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> android.os.IBinder mRemote;</span><br><span class="line">    <span class="comment">//这个remote是在client中构建ServiceConnection时，onServiceConnected方法传来的，实际上还是Server的Service传来的Binder对象---&gt;也就是IBookManager.Stub()</span></span><br><span class="line">    Proxy(android.os.IBinder remote) &#123;</span><br><span class="line">	    <span class="comment">//当执行this.asBinder()时，会把这个binder对象返回</span></span><br><span class="line">        mRemote = remote;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> android.os.<span class="function">IBinder <span class="title">asBinder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mRemote;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(net.shopin.myaidlserver.Book book)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">        android.os.Parcel _data = android.os.Parcel.obtain();</span><br><span class="line">        android.os.Parcel _reply = android.os.Parcel.obtain();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">	        <span class="comment">//写入类名，类似于标记吧，只要类名一致都可以反序列化</span></span><br><span class="line">            _data.writeInterfaceToken(DESCRIPTOR);</span><br><span class="line">            <span class="keyword">if</span> ((book != <span class="keyword">null</span>)) &#123;</span><br><span class="line">                _data.writeInt(<span class="number">1</span>);</span><br><span class="line">                book.writeToParcel(_data, <span class="number">0</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                _data.writeInt(<span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//此处执行IBookManager.Stub()的transact方法</span></span><br><span class="line">            <span class="comment">//可以发现：此处真正执行的addBook方法，最终还是通过一个转换</span></span><br><span class="line">            <span class="comment">//mRemote.transact(Stub.TRANSACTION_addBook来实现的。</span></span><br><span class="line">            <span class="comment">//那么mRemote是谁呢？就是onServiceConnected传回来的Server端的IBinder，但是transact是父类Binder的方法，下边分析</span></span><br><span class="line">            mRemote.transact(Stub.TRANSACTION_addBook, _data, _reply, <span class="number">0</span>);</span><br><span class="line">            _reply.readException();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            _reply.recycle();</span><br><span class="line">            _data.recycle();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Binder中用到的方法"><a href="#Binder中用到的方法" class="headerlink" title="Binder中用到的方法"></a>Binder中用到的方法</h3><h4 id="transact方法"><a href="#transact方法" class="headerlink" title="transact方法"></a>transact方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 上述Proxy中的mRemote.transact方法最终执行Binder中的transact方法（这点通</span></span><br><span class="line"><span class="comment">* 过debug还未发现！），在该方法中依旧会调用onTransact方法-因为在Stub（Binder</span></span><br><span class="line"><span class="comment">* 的子类）中重写了(自动生成)onTransact方法，所以会先执行Stub类的onTransact</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">transact</span><span class="params">(<span class="keyword">int</span> code, Parcel data, Parcel reply,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (data != <span class="keyword">null</span>) &#123;</span><br><span class="line">        data.setDataPosition(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//执行onTransact方法（先执行我们在service中重写的onTransact方法[根据需要选择是否重写]，再执行Stub中自动生成的onTransact方法===&gt;完成跨进程通信）</span></span><br><span class="line">    <span class="keyword">boolean</span> r = onTransact(code, data, reply, flags);</span><br><span class="line">    <span class="keyword">if</span> (reply != <span class="keyword">null</span>) &#123;</span><br><span class="line">        reply.setDataPosition(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> r;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="上面分析完成后，开始执行add方法"><a href="#上面分析完成后，开始执行add方法" class="headerlink" title="上面分析完成后，开始执行add方法"></a>上面分析完成后，开始执行add方法</h3><p>bookManager.addBook(book);<br>客户端用manager add了book，那么真正的执行体在哪呢？<br><img src="/2018/04/02/android/Binder机制分析/./1546689948194.png" alt="Alt text"></p>
+<ol>
+<li>回想上边：manager如何生成的？根据Proxy和远程的IBinder生成的</li>
+<li><p>当执行add方法时，执行的是Proxy中的add方法<br><img src="/2018/04/02/android/Binder机制分析/./1546690064092.png" alt="Alt text"></p>
+</li>
+<li><p>观察上边client中Proxy的add方法…最终执行的还是IBinder<br>的transact方法—&gt;也就是Binder（注意：这个Binder指的是remote）的transact方法—&gt;最终会映射到Binder进程（dev/binder）</p>
+<blockquote>
+<p>第三步有些疑惑：通过debug并没有看到client执行mRemote时，server端有执行Binder的transact方法（难道是远程调用的原因？不清楚），直接执行的是onTransact！这点很奇怪，难道不是：<font color="#AA8800">client执行transact—&gt;server端的Binder.java的transact—&gt;server端实现IBinder.java的子类的onTransact？？？</font><br><font color="#FF0000">事实不太清楚，但大致的执行流程肯定是：<br>remote.transact执行后会通过binder机制（和dev/binder有关了）来远程映射到server端的onTransact方法，远程的onTransact通过其参数（data、code）找到对应的方法，进行相应的操作。<br></font><br><img src="/2018/04/02/android/Binder机制分析/./1546697701352.png" alt="Alt text"></p>
+</blockquote>
+</li>
+</ol>
+<p><img src="/2018/04/02/android/Binder机制分析/./1546697857391.png" alt="Alt text"></p>
+<ol start="5">
+<li>OK，一次读/写完成</li>
+</ol>
+<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p>为什么可以实现跨进程通信？原理是什么？</p>
+<p><img src="/2018/04/02/android/Binder机制分析/./1546618047950.png" alt="Alt text"><br><img src="/2018/04/02/android/Binder机制分析/./1546618062864.png" alt="Alt text"><br>如上图所示：server的service打印出的线程名是 9692_2，但可以看出进程是9692（是myaidlserver应用的），那么到底是Binder进程是哪个进程号？难道是因为没有设置service的remote？因为设置之后就表示是单独进程了！<br><img src="/2018/04/02/android/Binder机制分析/./1546620099505.png" alt="Alt text"><br><strong>如上图所示，确实是这样，设置其为单独的服务，并且设置名字后，发现果然成为了一个单独的服务！</strong></p>
+<p>那么到底什么是Binder进程？client与server通信时，说的是靠Binder进程从中调解，但事实是 靠的是 开启的那个service所在的那个进程？</p>
+<blockquote>
+<font color="#FF0000"><strong>注意</strong>：不要说Binder进程，Binder就是Binder，它是进程间通信时创建的一个对象，是一个桥梁，它是系统层面的一个进程！Binder内部维护了一个Binder线程池</font>
+</blockquote>
+<h3 id="AIDL编写时遇到的问题"><a href="#AIDL编写时遇到的问题" class="headerlink" title="AIDL编写时遇到的问题"></a>AIDL编写时遇到的问题</h3><ol>
+<li>关于找不到Book.java文件的问题<blockquote>
+<p>把Book.aidl放在了aidl包下，Book.java也放在了aidl包下就找不到了，原因是as只会去java下边找java文件，解决办法：</p>
+</blockquote>
+</li>
+</ol>
+<ul>
+<li><p>方案1：build文件修改</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sourceSets &#123;</span><br><span class="line">    main &#123;</span><br><span class="line">        java.srcDirs = [<span class="string">'src/main/java'</span>, <span class="string">'src/main/aidl'</span>]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>方案2：把aidl放在as创建的aidl包下，把java放在java包下</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">第一种方案</th>
+<th style="text-align:center">第二种方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><img src="/2018/04/02/android/Binder机制分析/./1536638215799.png" alt="Alt text"></td>
+<td style="text-align:center"><img src="/2018/04/02/android/Binder机制分析/./1536641847499.png" alt="Alt text"></td>
+</tr>
+</tbody>
+</table>
+<ol start="2">
+<li><p>对于往客户端放置aidl文件时有些问题</p>
+<blockquote>
+<p>在as中，aidl文件只能放在系统生成的aidl文件夹下(应该是这样的)，而系统生成的aidl文件夹的包名是和java文件夹下的包名是一样的，所以直接把服务端的aidl文件放在aidl文件夹下肯定不行—因为包名不一致，如果尝试把aidl下的包名改成和服务端一致的，也不行，会导致java下面的包也会随之改变。其实解决办法就是在net.shopin下新建一个myaidlserver包，如下图，新建一个包A，这样就保证了server和client的aid包名一直。让然此时也可以把myaidlclient包删除了。至于B，如果是按照上述第二种方案解决的，则也要在java下新建同样的包来存放java文件了。<br><img src="/2018/04/02/android/Binder机制分析/./1536648684435.png" alt="Alt text"></p>
+</blockquote>
+</li>
+<li><p>连接service时报错</p>
+<blockquote>
+<p>Service Intent must be explicit: Intent { act=net.shopin.aidlservice }，可以看下ContextImpl源码，看下service和contextimpl什么关系</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="AIDL权限问题"><a href="#AIDL权限问题" class="headerlink" title="AIDL权限问题"></a>AIDL权限问题</h3><p>控制client调用权限</p>
+<ol>
+<li>在onBind方法中控制</li>
+<li>在onTransact方法中控制</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/25/android/一大句话阐述事件分发/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/25/android/一大句话阐述事件分发/" itemprop="url">一大句话阐述事件分发</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-25T11:37:07+08:00">
+                2018-03-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="一大句话阐述事件分发"><a href="#一大句话阐述事件分发" class="headerlink" title="一大句话阐述事件分发"></a>一大句话阐述事件分发</h2><h3 id="事件传递到Activity"><a href="#事件传递到Activity" class="headerlink" title="事件传递到Activity"></a>事件传递到Activity</h3><blockquote>
+<ol>
+<li>AMS在启动Activity时，会在ActivityThread的performLaunchActivity方法中去执行<code>activity.attach</code>，在attach中会构造一个window实例（PhoneWindow类型）并把当前Activity实例传过去，便于后期回调，在构造Window过程中会产生一个DecorView，这就是应用的根布局（整个应用中应该只有一个DecorView，那就是main Activity的，其它的Activity都是用的这一个）。在根布局显示时会再构造一个ViewRootImpl实例，并把ViewRootImpl、Window、DecorView相互关联起来，这时就可以接收外部输入事件了。</li>
+<li>当有Input事件时，事件会分发给WindowInputEventReceiver（ViewRootImpl的内部类），receiver接收到事件后最终会调用上述DecorView的dispatchTouchEvent方法，并在dispatch中通过上述传过来的Activity实例回调到Activity的dispatch中。</li>
+</ol>
+</blockquote>
+<h3 id="View-ViewGroup的事件传递"><a href="#View-ViewGroup的事件传递" class="headerlink" title="View / ViewGroup的事件传递"></a>View / ViewGroup的事件传递</h3><blockquote>
+<ol>
+<li>在Activity的dispatch中会直接调用Window的superDispatch，然后调DecorView的superDispatch，最终走到ViewGroup的dispatch中（这个过程都是直接调用，没有任何逻辑，我的理解这里就是为了能把Activity接收的事件丢出来，丢给Activity自己的contentView），在VG中先判断onIntrcept是否拦截：</li>
+</ol>
+<ul>
+<li>拦截的话会直接执行View的dispatch方法，并且在dispatch中判断是否有touch事件，以及touch事件的返回值—如果为true则直接view的dispatch直接返回true，否则执行onTouchEvent，并执行onClick，dispatch最终的返回值由onTouchEvent决定。</li>
+<li>不拦截的话，会先判断当前事件是不是down，不是的话说明已经有消费事件的目标view了，也就是mFirstTouchTarget，直接执行target的dispatch方法。是down事件的话会遍历其子view，找到消费事件的目标view，赋值为mFirstTouchTarget，最终执行mFirstTouchTarget的dispatch方法。</li>
+</ul>
 </blockquote>
 
           

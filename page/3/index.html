@@ -252,387 +252,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/02/android/Binder机制分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="changePosition">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/02/android/Binder机制分析/" itemprop="url">Binder机制分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-02T14:29:37+08:00">
-                2018-04-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/android/" itemprop="url" rel="index">
-                    <span itemprop="name">android</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="结合AIDL分析Binder机制"><a href="#结合AIDL分析Binder机制" class="headerlink" title="结合AIDL分析Binder机制"></a>结合AIDL分析Binder机制</h2><h3 id="AIDL使用流程"><a href="#AIDL使用流程" class="headerlink" title="AIDL使用流程"></a>AIDL使用流程</h3><blockquote>
-<ol>
-<li>aidl文件—&gt;直接用as生成aidl文件就行，他会默认生成一个aidl文件夹，创建Book.java在java下的包下，而Book.aidl在aidl下的包下，注意这两个包名必须一致—&gt;这点as会帮我们做。</li>
-<li>aidl demo server-d:\myprjs\aidl\client\MyApplication</li>
-<li>aidl demo client-d:\myprjs\aidl\server\MyAidlServer</li>
-</ol>
-</blockquote>
-<h4 id="服务端Service"><a href="#服务端Service" class="headerlink" title="服务端Service"></a>服务端Service</h4><h5 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BookManageService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"CLIENT_ERROR_LOG"</span>;</span><br><span class="line">    <span class="keyword">private</span> CopyOnWriteArrayList&lt;Book&gt; list = <span class="keyword">new</span> CopyOnWriteArrayList&lt;&gt;();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//下面分析mBinder</span></span><br><span class="line">    <span class="keyword">private</span> IBinder mBinder = <span class="keyword">new</span> IBookManager.Stub() &#123;&#125;;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate();</span><br><span class="line">		<span class="comment">//service在create时先添加一本书</span></span><br><span class="line">        list.add(<span class="keyword">new</span> Book(<span class="number">1001</span>, <span class="string">"谁许传"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 在客户端与服务端建立连接时传给客户端</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//把服务端的Binder对象传给client端</span></span><br><span class="line">        <span class="keyword">return</span> mBinder;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="mBinder对象"><a href="#mBinder对象" class="headerlink" title="mBinder对象"></a>mBinder对象</h5><blockquote>
-<p>我们在.aidl中定义的那些操作，真正的执行体在这里<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 创建这个Binder就是为了暴露给客户端</span></span><br><span class="line"><span class="comment"> * 客户端拿到server端的binder执行add，get方法时，经过一系列转换，最后走的就是这里。</span></span><br><span class="line"><span class="comment"> * IBookManager.aidl的这4个方法都执行在binder线程中</span></span><br><span class="line"><span class="comment"> * 注意mBinder是如何生成的：mBinder指向了一个匿名内部类（注意这个匿名内部类，下边的分析会提到）</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> IBinder mBinder = <span class="keyword">new</span> IBookManager.Stub() &#123;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, Parcel data, Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> List&lt;Book&gt; <span class="title">getBookList</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> list;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(Book book)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">		<span class="comment">//添加是在client的主线程中add的，但是这里走到了binder线程</span></span><br><span class="line">		list.add(book);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<h4 id="客户端绑定服务端Service"><a href="#客户端绑定服务端Service" class="headerlink" title="客户端绑定服务端Service"></a>客户端绑定服务端Service</h4><h5 id="获得要绑定的connection"><a href="#获得要绑定的connection" class="headerlink" title="获得要绑定的connection"></a>获得要绑定的connection</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//client端定义的connection</span></span><br><span class="line"><span class="keyword">private</span> ServiceConnection connection = <span class="keyword">new</span> ServiceConnection() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;</span><br><span class="line">	    <span class="comment">//根据server端的binder对象调用AIDL中的Stub类的asInterface方法</span></span><br><span class="line">	    <span class="comment">//最终返回的是一个Proxy对象-实现了IBookManager接口（因为不是在同一进程，所以会用代理实现跨进程通信）</span></span><br><span class="line">	    <span class="comment">//相当于是本地的Proxy代理了远程的Binder，生成了一个Manager对象(即IInterface的实现类，里边有Binder)，但最终执行时肯定还是要通过被代理对象的。</span></span><br><span class="line">	    <span class="comment">//【注意：】上述的service对象实际是BinderProxy类型的对象</span></span><br><span class="line">        bookManager = IBookManager.Stub.asInterface(service);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName name)</span> </span>&#123;</span><br><span class="line">        Log.e(TAG, <span class="string">"onServiceDisconnected: "</span> + name.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h5 id="绑定"><a href="#绑定" class="headerlink" title="绑定"></a>绑定</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.setAction(<span class="string">"net.shopin.aidlservice"</span>);</span><br><span class="line">intent.setPackage(<span class="string">"net.shopin.myaidlserver"</span>);</span><br><span class="line"><span class="comment">//与服务端建立连接</span></span><br><span class="line"><span class="comment">//这边有个小问题：在api&gt;21时，上述的intent不仅要加action，还要加package</span></span><br><span class="line">bindService(intent, connection, Context.BIND_AUTO_CREATE);</span><br></pre></td></tr></table></figure>
-<h3 id="由AIDL自动生成的类"><a href="#由AIDL自动生成的类" class="headerlink" title="由AIDL自动生成的类"></a>由AIDL自动生成的类</h3><h4 id="Server端的IBookManager接口"><a href="#Server端的IBookManager接口" class="headerlink" title="Server端的IBookManager接口"></a>Server端的IBookManager接口</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IBookManager</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">IInterface</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Stub</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">Binder</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span></span>&#123;</span><br><span class="line">		<span class="comment">//下边分析Stub类</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	* 下面的方法就是我们在.aidl文件中定义的。</span></span><br><span class="line"><span class="comment">	* 可以肯定：必须会有一个类来实现这些方法，不然我们定义的操作没有执行体！</span></span><br><span class="line"><span class="comment">	* 那么是谁呢？就看谁实现了IBookManager接口===&gt;Stub类</span></span><br><span class="line"><span class="comment">	*/</span></span><br><span class="line">	<span class="keyword">public</span> java.util.<span class="function">List&lt;Book&gt; <span class="title">getBookList</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(Book book)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="IBookManager接口中的Stub类"><a href="#IBookManager接口中的Stub类" class="headerlink" title="IBookManager接口中的Stub类"></a>IBookManager接口中的Stub类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Local-side IPC implementation stub class.</span></span><br><span class="line"><span class="comment"> * 注意：Stub继承Binder，实现IBookManager，但它是一个抽象类，并且也是自动生成的-说明我们定义的那些操作的执行体肯定不在这里边-肯定在Stub的子类中-就是我们在Service中为了生成mBinder而定义的那个匿名内部类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Stub</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">Binder</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String DESCRIPTOR = <span class="string">"net.shopin.myaidlserver.IBookManager"</span>;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * Server端的Service构造Binder对象时会走到这里生成一个Stub()实例</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Stub</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">		注意：开始把当前的this（stub对象）和DESCRIPTOR建立关联</span></span><br><span class="line"><span class="comment">		所以后期：执行binder.queryLocalInterface(DESCRIPTOR)时，</span></span><br><span class="line"><span class="comment">		就是根据这里attach的对应关系来查找的</span></span><br><span class="line"><span class="comment">		*/</span></span><br><span class="line">		<span class="keyword">this</span>.attachInterface(<span class="keyword">this</span>, DESCRIPTOR);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> net.shopin.myaidlserver.<span class="function">IBookManager <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//具体代码下边分析</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, Parcel data, Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">		<span class="comment">//下边分析</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">		<span class="comment">//下边分析</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_getBookList = (IBinder.FIRST_CALL_TRANSACTION + <span class="number">0</span>);</span><br><span class="line">	<span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_addBook = (IBinder.FIRST_CALL_TRANSACTION + <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="Stub类中的asInterface方法"><a href="#Stub类中的asInterface方法" class="headerlink" title="Stub类中的asInterface方法"></a>Stub类中的asInterface方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Cast an IBinder object into an net.shopin.myaidlserver.IBookManager interface, generating a proxy if needed.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> net.shopin.myaidlserver.<span class="function">IBookManager <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> ((obj == <span class="keyword">null</span>)) &#123;</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">//DESCRIPTOR就是包名+类名（string类型）</span></span><br><span class="line">       IInterface iin = obj.queryLocalInterface(DESCRIPTOR);</span><br><span class="line">       <span class="comment">//那么问题是：什么时候if条件不成立？</span></span><br><span class="line">       <span class="comment">//注意queryLocalInterface方法：在本地（指的就是当前进程）查找是否有DESCRIPTOR对应的IInterface</span></span><br><span class="line">       <span class="comment">//在Server端时，obj.queryLocalInterface是可以找到对应的DESCRIPTOR，因为此时Binder对象所处的进程和调用者所处的是同一个进程（这里的调用者指的就是bookManager.addBook操作所处的进程），但是当把server端的service设置为remote进程时，调用者和binder对象所处的就不是同一个进程了(此时，Binder就成为一个远程对象了)！</span></span><br><span class="line">       <span class="keyword">if</span> (((iin != <span class="keyword">null</span>) &amp;&amp; (iin <span class="keyword">instanceof</span> net.shopin.myaidlserver.IBookManager))) &#123;</span><br><span class="line">           <span class="keyword">return</span> ((net.shopin.myaidlserver.IBookManager) iin);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">//既然不在同一个进程，那如何获取到远程的(binder)对象实例来操作呢？</span></span><br><span class="line">       <span class="comment">//通过代理（和java的代理实现方式不一样）返回对应的IBookManager实现类（也就是Proxy类），也就是说以后操作IBookManager类的各个方法都是先操作Proxy，最后才到被代理对象了</span></span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> net.shopin.myaidlserver.IBookManager.Stub.Proxy(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="Stub的onTransact方法"><a href="#Stub的onTransact方法" class="headerlink" title="Stub的onTransact方法"></a>Stub的onTransact方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* 这是Stub类中的onTransact方法，不同进程通信时才会走这里！</span></span><br><span class="line"><span class="comment">* 同一进程通信时（比如当前应用注册当前的Service(没有设置remote)，使用AIDL通信，直接就会走到Service中的匿名内部类中，不会经过这一系列的操作）</span></span><br><span class="line"><span class="comment">* */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, android.os.Parcel data, android.os.Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">	<span class="comment">//方法中的参数就是client调用transact方法时传过来的</span></span><br><span class="line">	<span class="keyword">switch</span> (code) &#123;</span><br><span class="line">		<span class="keyword">case</span> INTERFACE_TRANSACTION: &#123;</span><br><span class="line">			reply.writeString(DESCRIPTOR);</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">case</span> TRANSACTION_getBookList: &#123;</span><br><span class="line">			data.enforceInterface(DESCRIPTOR);</span><br><span class="line">			List&lt;Book&gt; _result = <span class="keyword">this</span>.getBookList();</span><br><span class="line">			reply.writeNoException();</span><br><span class="line">			reply.writeTypedList(_result);</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">case</span> TRANSACTION_addBook: &#123;</span><br><span class="line">			data.enforceInterface(DESCRIPTOR);</span><br><span class="line">			net.shopin.myaidlserver.Book _arg0;</span><br><span class="line">			<span class="keyword">if</span> ((<span class="number">0</span> != data.readInt())) &#123;</span><br><span class="line">				_arg0 = net.shopin.myaidlserver.Book.CREATOR.createFromParcel(data);</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				_arg0 = <span class="keyword">null</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="comment">//注意下边的this.getBookList()，调的就是子类（那个匿名内部类）的getBookList方法</span></span><br><span class="line">			<span class="keyword">this</span>.addBook(_arg0);</span><br><span class="line">			reply.writeNoException();</span><br><span class="line">			<span class="comment">//注意这里直接返回了，并没有再调到Binder的onTransact</span></span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="代理类Proxy"><a href="#代理类Proxy" class="headerlink" title="代理类Proxy"></a>代理类Proxy</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">implements</span> <span class="title">net</span>.<span class="title">shopin</span>.<span class="title">myaidlserver</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> android.os.IBinder mRemote;</span><br><span class="line">    <span class="comment">//这个remote是在client中构建ServiceConnection时，onServiceConnected方法传来的，实际上还是Server的Service传来的Binder对象---&gt;也就是IBookManager.Stub()</span></span><br><span class="line">    Proxy(android.os.IBinder remote) &#123;</span><br><span class="line">	    <span class="comment">//当执行this.asBinder()时，会把这个binder对象返回</span></span><br><span class="line">        mRemote = remote;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> android.os.<span class="function">IBinder <span class="title">asBinder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mRemote;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(net.shopin.myaidlserver.Book book)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">        android.os.Parcel _data = android.os.Parcel.obtain();</span><br><span class="line">        android.os.Parcel _reply = android.os.Parcel.obtain();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">	        <span class="comment">//写入类名，类似于标记吧，只要类名一致都可以反序列化</span></span><br><span class="line">            _data.writeInterfaceToken(DESCRIPTOR);</span><br><span class="line">            <span class="keyword">if</span> ((book != <span class="keyword">null</span>)) &#123;</span><br><span class="line">                _data.writeInt(<span class="number">1</span>);</span><br><span class="line">                book.writeToParcel(_data, <span class="number">0</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                _data.writeInt(<span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//此处执行IBookManager.Stub()的transact方法</span></span><br><span class="line">            <span class="comment">//可以发现：此处真正执行的addBook方法，最终还是通过一个转换</span></span><br><span class="line">            <span class="comment">//mRemote.transact(Stub.TRANSACTION_addBook来实现的。</span></span><br><span class="line">            <span class="comment">//那么mRemote是谁呢？就是onServiceConnected传回来的Server端的IBinder，但是transact是父类Binder的方法，下边分析</span></span><br><span class="line">            mRemote.transact(Stub.TRANSACTION_addBook, _data, _reply, <span class="number">0</span>);</span><br><span class="line">            _reply.readException();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            _reply.recycle();</span><br><span class="line">            _data.recycle();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Binder中用到的方法"><a href="#Binder中用到的方法" class="headerlink" title="Binder中用到的方法"></a>Binder中用到的方法</h3><h4 id="transact方法"><a href="#transact方法" class="headerlink" title="transact方法"></a>transact方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 上述Proxy中的mRemote.transact方法最终执行Binder中的transact方法（这点通</span></span><br><span class="line"><span class="comment">* 过debug还未发现！），在该方法中依旧会调用onTransact方法-因为在Stub（Binder</span></span><br><span class="line"><span class="comment">* 的子类）中重写了(自动生成)onTransact方法，所以会先执行Stub类的onTransact</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">transact</span><span class="params">(<span class="keyword">int</span> code, Parcel data, Parcel reply,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (data != <span class="keyword">null</span>) &#123;</span><br><span class="line">        data.setDataPosition(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//执行onTransact方法（先执行我们在service中重写的onTransact方法[根据需要选择是否重写]，再执行Stub中自动生成的onTransact方法===&gt;完成跨进程通信）</span></span><br><span class="line">    <span class="keyword">boolean</span> r = onTransact(code, data, reply, flags);</span><br><span class="line">    <span class="keyword">if</span> (reply != <span class="keyword">null</span>) &#123;</span><br><span class="line">        reply.setDataPosition(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> r;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="上面分析完成后，开始执行add方法"><a href="#上面分析完成后，开始执行add方法" class="headerlink" title="上面分析完成后，开始执行add方法"></a>上面分析完成后，开始执行add方法</h3><p>bookManager.addBook(book);<br>客户端用manager add了book，那么真正的执行体在哪呢？<br><img src="/2018/04/02/android/Binder机制分析/./1546689948194.png" alt="Alt text"></p>
-<ol>
-<li>回想上边：manager如何生成的？根据Proxy和远程的IBinder生成的</li>
-<li><p>当执行add方法时，执行的是Proxy中的add方法<br><img src="/2018/04/02/android/Binder机制分析/./1546690064092.png" alt="Alt text"></p>
-</li>
-<li><p>观察上边client中Proxy的add方法…最终执行的还是IBinder<br>的transact方法—&gt;也就是Binder（注意：这个Binder指的是remote）的transact方法—&gt;最终会映射到Binder进程（dev/binder）</p>
-<blockquote>
-<p>第三步有些疑惑：通过debug并没有看到client执行mRemote时，server端有执行Binder的transact方法（难道是远程调用的原因？不清楚），直接执行的是onTransact！这点很奇怪，难道不是：<font color="#AA8800">client执行transact—&gt;server端的Binder.java的transact—&gt;server端实现IBinder.java的子类的onTransact？？？</font><br><font color="#FF0000">事实不太清楚，但大致的执行流程肯定是：<br>remote.transact执行后会通过binder机制（和dev/binder有关了）来远程映射到server端的onTransact方法，远程的onTransact通过其参数（data、code）找到对应的方法，进行相应的操作。<br></font><br><img src="/2018/04/02/android/Binder机制分析/./1546697701352.png" alt="Alt text"></p>
-</blockquote>
-</li>
-</ol>
-<p><img src="/2018/04/02/android/Binder机制分析/./1546697857391.png" alt="Alt text"></p>
-<ol start="5">
-<li>OK，一次读/写完成</li>
-</ol>
-<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p>为什么可以实现跨进程通信？原理是什么？</p>
-<p><img src="/2018/04/02/android/Binder机制分析/./1546618047950.png" alt="Alt text"><br><img src="/2018/04/02/android/Binder机制分析/./1546618062864.png" alt="Alt text"><br>如上图所示：server的service打印出的线程名是 9692_2，但可以看出进程是9692（是myaidlserver应用的），那么到底是Binder进程是哪个进程号？难道是因为没有设置service的remote？因为设置之后就表示是单独进程了！<br><img src="/2018/04/02/android/Binder机制分析/./1546620099505.png" alt="Alt text"><br><strong>如上图所示，确实是这样，设置其为单独的服务，并且设置名字后，发现果然成为了一个单独的服务！</strong></p>
-<p>那么到底什么是Binder进程？client与server通信时，说的是靠Binder进程从中调解，但事实是 靠的是 开启的那个service所在的那个进程？</p>
-<blockquote>
-<font color="#FF0000"><strong>注意</strong>：不要说Binder进程，Binder就是Binder，它是进程间通信时创建的一个对象，是一个桥梁，它是系统层面的一个进程！Binder内部维护了一个Binder线程池</font>
-</blockquote>
-<h3 id="AIDL编写时遇到的问题"><a href="#AIDL编写时遇到的问题" class="headerlink" title="AIDL编写时遇到的问题"></a>AIDL编写时遇到的问题</h3><ol>
-<li>关于找不到Book.java文件的问题<blockquote>
-<p>把Book.aidl放在了aidl包下，Book.java也放在了aidl包下就找不到了，原因是as只会去java下边找java文件，解决办法：</p>
-</blockquote>
-</li>
-</ol>
-<ul>
-<li><p>方案1：build文件修改</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sourceSets &#123;</span><br><span class="line">    main &#123;</span><br><span class="line">        java.srcDirs = [<span class="string">'src/main/java'</span>, <span class="string">'src/main/aidl'</span>]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>方案2：把aidl放在as创建的aidl包下，把java放在java包下</p>
-</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">第一种方案</th>
-<th style="text-align:center">第二种方案</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center"><img src="/2018/04/02/android/Binder机制分析/./1536638215799.png" alt="Alt text"></td>
-<td style="text-align:center"><img src="/2018/04/02/android/Binder机制分析/./1536641847499.png" alt="Alt text"></td>
-</tr>
-</tbody>
-</table>
-<ol start="2">
-<li><p>对于往客户端放置aidl文件时有些问题</p>
-<blockquote>
-<p>在as中，aidl文件只能放在系统生成的aidl文件夹下(应该是这样的)，而系统生成的aidl文件夹的包名是和java文件夹下的包名是一样的，所以直接把服务端的aidl文件放在aidl文件夹下肯定不行—因为包名不一致，如果尝试把aidl下的包名改成和服务端一致的，也不行，会导致java下面的包也会随之改变。其实解决办法就是在net.shopin下新建一个myaidlserver包，如下图，新建一个包A，这样就保证了server和client的aid包名一直。让然此时也可以把myaidlclient包删除了。至于B，如果是按照上述第二种方案解决的，则也要在java下新建同样的包来存放java文件了。<br><img src="/2018/04/02/android/Binder机制分析/./1536648684435.png" alt="Alt text"></p>
-</blockquote>
-</li>
-<li><p>连接service时报错</p>
-<blockquote>
-<p>Service Intent must be explicit: Intent { act=net.shopin.aidlservice }，可以看下ContextImpl源码，看下service和contextimpl什么关系</p>
-</blockquote>
-</li>
-</ol>
-<h3 id="AIDL权限问题"><a href="#AIDL权限问题" class="headerlink" title="AIDL权限问题"></a>AIDL权限问题</h3><p>控制client调用权限</p>
-<ol>
-<li>在onBind方法中控制</li>
-<li>在onTransact方法中控制</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/25/android/一大句话阐述事件分发/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="changePosition">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="changePosition">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/25/android/一大句话阐述事件分发/" itemprop="url">一大句话阐述事件分发</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-25T11:37:07+08:00">
-                2018-03-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/android/" itemprop="url" rel="index">
-                    <span itemprop="name">android</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="一大句话阐述事件分发"><a href="#一大句话阐述事件分发" class="headerlink" title="一大句话阐述事件分发"></a>一大句话阐述事件分发</h2><h3 id="事件传递到Activity"><a href="#事件传递到Activity" class="headerlink" title="事件传递到Activity"></a>事件传递到Activity</h3><blockquote>
-<ol>
-<li>AMS在启动Activity时，会在ActivityThread的performLaunchActivity方法中去执行<code>activity.attach</code>，在attach中会构造一个window实例（PhoneWindow类型）并把当前Activity实例传过去，便于后期回调，在构造Window过程中会产生一个DecorView，这就是应用的根布局（整个应用中应该只有一个DecorView，那就是main Activity的，其它的Activity都是用的这一个）。在根布局显示时会再构造一个ViewRootImpl实例，并把ViewRootImpl、Window、DecorView相互关联起来，这时就可以接收外部输入事件了。</li>
-<li>当有Input事件时，事件会分发给WindowInputEventReceiver（ViewRootImpl的内部类），receiver接收到事件后最终会调用上述DecorView的dispatchTouchEvent方法，并在dispatch中通过上述传过来的Activity实例回调到Activity的dispatch中。</li>
-</ol>
-</blockquote>
-<h3 id="View-ViewGroup的事件传递"><a href="#View-ViewGroup的事件传递" class="headerlink" title="View / ViewGroup的事件传递"></a>View / ViewGroup的事件传递</h3><blockquote>
-<ol>
-<li>在Activity的dispatch中会直接调用Window的superDispatch，然后调DecorView的superDispatch，最终走到ViewGroup的dispatch中（这个过程都是直接调用，没有任何逻辑，我的理解这里就是为了能把Activity接收的事件丢出来，丢给Activity自己的contentView），在VG中先判断onIntrcept是否拦截：</li>
-</ol>
-<ul>
-<li>拦截的话会直接执行View的dispatch方法，并且在dispatch中判断是否有touch事件，以及touch事件的返回值—如果为true则直接view的dispatch直接返回true，否则执行onTouchEvent，并执行onClick，dispatch最终的返回值由onTouchEvent决定。</li>
-<li>不拦截的话，会先判断当前事件是不是down，不是的话说明已经有消费事件的目标view了，也就是mFirstTouchTarget，直接执行target的dispatch方法。是down事件的话会遍历其子view，找到消费事件的目标view，赋值为mFirstTouchTarget，最终执行mFirstTouchTarget的dispatch方法。</li>
-</ul>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/24/android/事件如何分发到Activity/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -766,6 +385,200 @@
 <h5 id="6-最终会调用decorView的dispatchPointerEvent分发"><a href="#6-最终会调用decorView的dispatchPointerEvent分发" class="headerlink" title="6. 最终会调用decorView的dispatchPointerEvent分发"></a>6. 最终会调用decorView的dispatchPointerEvent分发</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ViewRootImpl.java</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">processPointerEvent</span><span class="params">(QueuedInputEvent q)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">final</span> MotionEvent event = (MotionEvent)q.mEvent;</span><br><span class="line">	<span class="comment">//这个mView就是上边ViewRootImpl.setView设置的</span></span><br><span class="line">	<span class="keyword">boolean</span> handled = mView.dispatchPointerEvent(event);</span><br><span class="line">	<span class="keyword">return</span> handled ? FINISH_HANDLED : FORWARD;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h5 id="7-dispatchPointerEvent又会调用自己的dispatchTouchEvent，也就是decorview的dispatchTouchEvent"><a href="#7-dispatchPointerEvent又会调用自己的dispatchTouchEvent，也就是decorview的dispatchTouchEvent" class="headerlink" title="7. dispatchPointerEvent又会调用自己的dispatchTouchEvent，也就是decorview的dispatchTouchEvent"></a>7. dispatchPointerEvent又会调用自己的dispatchTouchEvent，也就是decorview的dispatchTouchEvent</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//View.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">dispatchPointerEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (event.isTouchEvent()) &#123;</span><br><span class="line">		<span class="comment">//执行DecorView的dispatchTouchEvent方法</span></span><br><span class="line">		<span class="keyword">return</span> dispatchTouchEvent(event);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h5 id="8-终于，在decorView的dispatch中拿到上边构造window时传的Activity实例回调其dispatch"><a href="#8-终于，在decorView的dispatch中拿到上边构造window时传的Activity实例回调其dispatch" class="headerlink" title="8. 终于，在decorView的dispatch中拿到上边构造window时传的Activity实例回调其dispatch"></a>8. 终于，在decorView的dispatch中拿到上边构造window时传的Activity实例回调其dispatch</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//这个cb就是Activity实例</span></span><br><span class="line">	<span class="keyword">final</span> Window.Callback cb = mWindow.getCallback();</span><br><span class="line">	<span class="comment">//调用activity的dispatchTouchEvent方法</span></span><br><span class="line">	<span class="keyword">return</span> cb != <span class="keyword">null</span> &amp;&amp; !mWindow.isDestroyed() &amp;&amp; mFeatureId &lt; <span class="number">0</span>? cb.dispatchTouchEvent(ev) : <span class="keyword">super</span>.dispatchTouchEvent(ev);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/24/android/View-ViewGroup的事件分发/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/24/android/View-ViewGroup的事件分发/" itemprop="url">View/ViewGroup的事件分发</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-24T11:37:17+08:00">
+                2018-03-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="先看一张大致的流程图"><a href="#先看一张大致的流程图" class="headerlink" title="先看一张大致的流程图"></a>先看一张大致的流程图</h2><p><img src="/2018/03/24/android/View-ViewGroup的事件分发/./1564283863879.png" alt="Alt text"></p>
+<blockquote>
+<p>onIntercept、onTouchEvent都是在dispatch中调用的，以dispatch为入口在不同的情况下调用intercept、onTouchEvent，最终Activity根据其返回结果判断是否执行自己的Activity。</p>
+</blockquote>
+<h2 id="执行流程分析"><a href="#执行流程分析" class="headerlink" title="执行流程分析"></a>执行流程分析</h2><blockquote>
+<p>事件从进入Activity的dispatch方法开始，到出了Activity的dispatch方法结束。</p>
+</blockquote>
+<h3 id="事件交给Activity处理"><a href="#事件交给Activity处理" class="headerlink" title="事件交给Activity处理"></a>事件交给Activity处理</h3><blockquote>
+<p>Activity会先交给自己的view来处理，如果它们都不处理，Activity自己才处理。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Activity.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (ev.getAction() == MotionEvent.ACTION_DOWN) &#123;</span><br><span class="line">		<span class="comment">//我的理解：这个方法就是做一些类似beforeDone的事</span></span><br><span class="line">		onUserInteraction();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//直接调用window的superdispatch，经历一系列的转发，丢给Decorview，让它开始分发给自己的View，看谁消费。</span></span><br><span class="line">	<span class="keyword">if</span> (getWindow().superDispatchTouchEvent(ev)) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//如果没有View进行消费，那么就交给Activity自己处理！</span></span><br><span class="line">	<span class="keyword">return</span> onTouchEvent(ev);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h6 id="phoneWondow"><a href="#phoneWondow" class="headerlink" title="phoneWondow"></a>phoneWondow</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//PhoneWindow.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">superDispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//在attach阶段已经实例化了一个DecorView了，这里调用decorview的superdispatch</span></span><br><span class="line">	<span class="keyword">return</span> mDecor.superDispatchTouchEvent(event);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="decorView"><a href="#decorView" class="headerlink" title="decorView"></a>decorView</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//DecorView.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">superDispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//DecorView是一个ViewGroup，这里会调用VG的dispatch</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">super</span>.dispatchTouchEvent(event);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>前边墨迹了这么长时间（没有一点业务逻辑的调用），我的理解就是为了把事件传给DecorView，然后让decorView分发给自己的子view。</p>
+</blockquote>
+<h3 id="事件分发到ViewGroup中"><a href="#事件分发到ViewGroup中" class="headerlink" title="事件分发到ViewGroup中"></a>事件分发到ViewGroup中</h3><blockquote>
+<p>ViewGroup的dispatch里有很多逻辑，同时它会和View的dispatch进行交互，它调用View的dispatch的原因是：</p>
+<ol>
+<li>当前ViewGroup要消费事件</li>
+<li>看子View是否消费事件<br>具体逻辑可以看下边的<code>dispatchTransformedTouchEvent</code>方法</li>
+</ol>
+</blockquote>
+<h4 id="dispatchTouchEvent方法"><a href="#dispatchTouchEvent方法" class="headerlink" title="dispatchTouchEvent方法"></a>dispatchTouchEvent方法</h4><blockquote>
+<p>ViewGroup的dispatch方法太长了，我分为了三步进行讲解<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">boolean</span> handled = <span class="keyword">false</span>;</span><br><span class="line">	<span class="comment">//第一步：处理down事件，并且得到当前ViewGroup是否拦截的结论</span></span><br><span class="line">	<span class="comment">//第二步：父ViewGroup不拦截，遍历子View，如果子View消费了，就把子View复制给mFirstTouchTarget（这些逻辑也只是在down时才会执行）</span></span><br><span class="line">	<span class="comment">//第三步：根据mFirstTouchTarget是否为null，事件交给当前ViewGroup处理还是子View处理</span></span><br><span class="line">	<span class="keyword">return</span> handled;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h5 id="第一步：对down事件进行处理"><a href="#第一步：对down事件进行处理" class="headerlink" title="第一步：对down事件进行处理"></a>第一步：对down事件进行处理</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">int</span> action = ev.getAction();</span><br><span class="line"><span class="keyword">final</span> <span class="keyword">int</span> actionMasked = action &amp; MotionEvent.ACTION_MASK;</span><br><span class="line"><span class="comment">// Handle an initial down.</span></span><br><span class="line"><span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN) &#123;</span><br><span class="line">	<span class="comment">//如果是down事件的话，说明是新一轮的触摸事件来了，清除所有之前的标识。</span></span><br><span class="line">	<span class="comment">//重要的一点：置空mFirstTouchTarget</span></span><br><span class="line">	cancelAndClearTouchTargets(ev);</span><br><span class="line">	resetTouchState();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Check for interception.</span></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">boolean</span> intercepted;</span><br><span class="line"><span class="comment">//如果当前不是down事件，若mFirstTouchTarget==null，说明是ViewGroup自己消费down事件了，如果!=null，说明子view消费down事件了</span></span><br><span class="line"><span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN || mFirstTouchTarget != <span class="keyword">null</span>) &#123;</span><br><span class="line">	<span class="comment">//看下当前ViewGroup是否拦截事件</span></span><br><span class="line">	intercepted = onInterceptTouchEvent(ev);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	intercepted = <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="第二步：看子View是否消费事件"><a href="#第二步：看子View是否消费事件" class="headerlink" title="第二步：看子View是否消费事件"></a>第二步：看子View是否消费事件</h5><blockquote>
+<p>如果子View消费事件的话，在这里只会消费down事件，其它如move、up事件，在第三步消费<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">TouchTarget newTouchTarget = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">boolean</span> alreadyDispatchedToNewTouchTarget = <span class="keyword">false</span>;</span><br><span class="line"><span class="keyword">if</span> (!canceled &amp;&amp; !intercepted) &#123;</span><br><span class="line">	<span class="comment">//如果不进行拦截</span></span><br><span class="line">	View childWithAccessibilityFocus = ev.isTargetAccessibilityFocus() ? findChildWithAccessibilityFocus() : <span class="keyword">null</span>;</span><br><span class="line">	<span class="comment">//【注意1】这里ACTION_DOWN、ACTION_POINTER_DOWN、ACTION_HOVER_MOVE都会走到这里</span></span><br><span class="line">	<span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN || (split &amp;&amp; actionMasked == MotionEvent.ACTION_POINTER_DOWN) || actionMasked == MotionEvent.ACTION_HOVER_MOVE) &#123;</span><br><span class="line">		<span class="comment">//如果当前是down事件，说明这是第一次进入dispatch</span></span><br><span class="line">		<span class="keyword">final</span> <span class="keyword">int</span> childrenCount = mChildrenCount;</span><br><span class="line">		<span class="keyword">if</span> (newTouchTarget == <span class="keyword">null</span> &amp;&amp; childrenCount != <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = childrenCount - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">				<span class="keyword">final</span> <span class="keyword">int</span> childIndex = getAndVerifyPreorderedIndex(childrenCount, i, customOrder);</span><br><span class="line">				<span class="keyword">final</span> View child = getAndVerifyPreorderedView(preorderedList, children, childIndex);</span><br><span class="line">				<span class="comment">//第一次进来时newTouchTarget为null</span></span><br><span class="line">				newTouchTarget = getTouchTarget(child);</span><br><span class="line">				<span class="keyword">if</span> (newTouchTarget != <span class="keyword">null</span>) &#123;</span><br><span class="line">					newTouchTarget.pointerIdBits |= idBitsToAssign;</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line">				resetCancelNextUpFlag(child);</span><br><span class="line">				<span class="comment">//事件交由当前的child，看其是否处理</span></span><br><span class="line">				<span class="keyword">if</span> (dispatchTransformedTouchEvent(ev, <span class="keyword">false</span>, child, idBitsToAssign)) &#123;</span><br><span class="line">					<span class="comment">//如果当前的child消费了事件，就保存mFirstTouchTarget=child，并且此时newTouchTarget也是child</span></span><br><span class="line">					<span class="comment">//【注意2】这里会在mFirstTouchTarget前边（first是一个链表结构）添加一个child</span></span><br><span class="line">					<span class="comment">//只有down、ACTION_POINTER_DOWN、ACTION_HOVER_MOVE事件，这里的newTouchTarget才=null</span></span><br><span class="line">					newTouchTarget = addTouchTarget(child, idBitsToAssign);</span><br><span class="line">					alreadyDispatchedToNewTouchTarget = <span class="keyword">true</span>;</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h5 id="第三步：决定是谁消费事件"><a href="#第三步：决定是谁消费事件" class="headerlink" title="第三步：决定是谁消费事件"></a>第三步：决定是谁消费事件</h5><blockquote>
+<p>注意：</p>
+<ul>
+<li>如果是子View消费事件的话，走到这里的时候，down事件已经被消费了（因为子View已经执行了<code>dispatchTransformedTouchEvent</code>方法），在这里只会再消费move、up等事件</li>
+<li>如果是ViewGroup自己消费的话，down、move、up都是第三步执行<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (mFirstTouchTarget == <span class="keyword">null</span>) &#123;</span><br><span class="line">	<span class="comment">// No touch targets so treat this as an ordinary view.</span></span><br><span class="line">	<span class="comment">//走到这里说明上述进行拦截了（如果不拦截的话，mFirstTouchTarget就不为空）</span></span><br><span class="line">	<span class="comment">//可以看到这里的child对象是null，也就是接下来会调用super.dispatch，而不是child.dispatch</span></span><br><span class="line">	<span class="comment">//handled = 当前viewgroup的onTouch或者onTouchEvent的返回值</span></span><br><span class="line">	handled = dispatchTransformedTouchEvent(ev, canceled, <span class="keyword">null</span>, TouchTarget.ALL_POINTER_IDS);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	<span class="comment">//走到这里说明上边是子View消费事件了，子View消费down事件后，move、up都会走到这里</span></span><br><span class="line">	TouchTarget predecessor = <span class="keyword">null</span>;</span><br><span class="line">	TouchTarget target = mFirstTouchTarget;</span><br><span class="line">	<span class="comment">//下边的循环不是很清楚，mFirstTouchTarget就是目标view，为什么还要循环查找呢？</span></span><br><span class="line">	<span class="comment">//难道是因为上述【注意1】的原因？除了DOWN之外的那俩事件也会走到【注意2】中，添加到mFirstTouchTarget，所以这里要循环查找真正消费事件的View？</span></span><br><span class="line">	<span class="keyword">while</span> (target != <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">final</span> TouchTarget next = target.next;</span><br><span class="line">		<span class="keyword">if</span> (alreadyDispatchedToNewTouchTarget &amp;&amp; target == newTouchTarget) &#123;</span><br><span class="line">			<span class="comment">//只有down时newTouchTarget才不为null，所以走到这里的应该是down事件</span></span><br><span class="line">			handled = <span class="keyword">true</span>;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">final</span> <span class="keyword">boolean</span> cancelChild = resetCancelNextUpFlag(target.child) || intercepted;</span><br><span class="line">			<span class="keyword">if</span> (dispatchTransformedTouchEvent(ev, cancelChild, target.child, target.pointerIdBits)) &#123;</span><br><span class="line">				handled = <span class="keyword">true</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (cancelChild) &#123;</span><br><span class="line">				<span class="keyword">if</span> (predecessor == <span class="keyword">null</span>) &#123;</span><br><span class="line">					mFirstTouchTarget = next;</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">					predecessor.next = next;</span><br><span class="line">				&#125;</span><br><span class="line">				target.recycle();</span><br><span class="line">				target = next;</span><br><span class="line">				<span class="keyword">continue</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		predecessor = target;</span><br><span class="line">		target = next;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</blockquote>
+<h4 id="onInterceptTouchEvent方法"><a href="#onInterceptTouchEvent方法" class="headerlink" title="onInterceptTouchEvent方法"></a>onInterceptTouchEvent方法</h4><blockquote>
+<p>只有ViewGroup才有intercept方法，View无法对时间进行拦截。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onInterceptTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (ev.isFromSource(InputDevice.SOURCE_MOUSE)</span><br><span class="line">			&amp;&amp; ev.getAction() == MotionEvent.ACTION_DOWN</span><br><span class="line">			&amp;&amp; ev.isButtonPressed(MotionEvent.BUTTON_PRIMARY)</span><br><span class="line">			&amp;&amp; isOnScrollbarThumb(ev.getX(), ev.getY())) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//可以认为，VG的intercept默认返回false</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="dispatchTransformedTouchEvent方法"><a href="#dispatchTransformedTouchEvent方法" class="headerlink" title="dispatchTransformedTouchEvent方法"></a>dispatchTransformedTouchEvent方法</h4><blockquote>
+<p>不管父view拦不拦截事件，都会走到此方法：<br>父VG拦截：传入的child是null<br>父VG不拦截：传入的child是子view<br><strong>这个方法很重要：VG的dispatch通过这个方法来和View的dispatch交互</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">dispatchTransformedTouchEvent</span><span class="params">(MotionEvent event, <span class="keyword">boolean</span> cancel, View child, <span class="keyword">int</span> desiredPointerIdBits)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// Perform any necessary transformations and dispatch.</span></span><br><span class="line">	<span class="comment">//大致的代码就是：子View是null了，说明是ViewGroup拦截了，所以调用父View的dispatch</span></span><br><span class="line">	<span class="keyword">if</span> (child == <span class="keyword">null</span>) &#123;</span><br><span class="line">		handled = <span class="keyword">super</span>.dispatchTouchEvent(transformedEvent);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">//父ViewGroup不拦截，则继续分发，交由子View处理</span></span><br><span class="line">		handled = child.dispatchTouchEvent(transformedEvent);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> handled;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="View的dispatchTouchEvent方法"><a href="#View的dispatchTouchEvent方法" class="headerlink" title="View的dispatchTouchEvent方法"></a>View的dispatchTouchEvent方法</h4><blockquote>
+<p>会在这个方法中检验是否执行onTouch、onTouchEvent、onClick、longClick</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">boolean</span> result = <span class="keyword">false</span>;</span><br><span class="line">	<span class="keyword">final</span> <span class="keyword">int</span> actionMasked = event.getActionMasked();</span><br><span class="line">	<span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN) &#123;</span><br><span class="line">		<span class="comment">//down事件之前如果在滑动，则立马停止</span></span><br><span class="line">		stopNestedScroll();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (onFilterTouchEventForSecurity(event)) &#123;</span><br><span class="line">		...</span><br><span class="line">		<span class="comment">//noinspection SimplifiableIfStatement</span></span><br><span class="line">		ListenerInfo li = mListenerInfo;</span><br><span class="line">		<span class="comment">//1. 这里会判断是否设置了onTouchListener监听</span></span><br><span class="line">		<span class="comment">//执行onTouch方法，如果onTouch返回为true，则不再执行onTouchEvent，并且dispatch的最终结果也是返回true</span></span><br><span class="line">		<span class="keyword">if</span> (li != <span class="keyword">null</span> &amp;&amp; li.mOnTouchListener != <span class="keyword">null</span> &amp;&amp; (mViewFlags &amp; ENABLED_MASK) == ENABLED &amp;&amp; li.mOnTouchListener.onTouch(<span class="keyword">this</span>, event)) &#123;</span><br><span class="line">			result = <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//如果onTouch返回false，则才会执行onTouchevent，并且dispatchTouchEvent的返回值和onTouchEvent一致</span></span><br><span class="line">		<span class="keyword">if</span> (!result &amp;&amp; onTouchEvent(event)) &#123;</span><br><span class="line">			result = <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="onTouchEvent方法"><a href="#onTouchEvent方法" class="headerlink" title="onTouchEvent方法"></a>onTouchEvent方法</h4><blockquote>
+<p>click在up事件中触发，longClick在down事件中触发<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (mTouchDelegate != <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="comment">//如果有代理view的话，交给代理view执行onTouchEvent</span></span><br><span class="line">		<span class="keyword">if</span> (mTouchDelegate.onTouchEvent(event)) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (clickable || (viewFlags &amp; TOOLTIP) == TOOLTIP) &#123;</span><br><span class="line">		<span class="keyword">switch</span> (action) &#123;</span><br><span class="line">			<span class="keyword">case</span> MotionEvent.ACTION_UP:</span><br><span class="line">				<span class="keyword">boolean</span> prepressed = (mPrivateFlags &amp; PFLAG_PREPRESSED) != <span class="number">0</span>;</span><br><span class="line">				<span class="keyword">if</span> ((mPrivateFlags &amp; PFLAG_PRESSED) != <span class="number">0</span> || prepressed) &#123;</span><br><span class="line">					<span class="keyword">boolean</span> focusTaken = <span class="keyword">false</span>;</span><br><span class="line">					<span class="keyword">if</span> (!mHasPerformedLongPress &amp;&amp; !mIgnoreNextUpEvent) &#123;</span><br><span class="line">						<span class="comment">// Only perform take click actions if we were in the pressed state</span></span><br><span class="line">						<span class="keyword">if</span> (!focusTaken) &#123;</span><br><span class="line">							<span class="keyword">if</span> (mPerformClick == <span class="keyword">null</span>) &#123;</span><br><span class="line">								<span class="comment">//PerformClick实现自Runnable接口</span></span><br><span class="line">								mPerformClick = <span class="keyword">new</span> PerformClick();</span><br><span class="line">							&#125;</span><br><span class="line">							<span class="comment">//先通过handler发送消息，失败的话，再通过接口回调</span></span><br><span class="line">							<span class="keyword">if</span> (!post(mPerformClick)) &#123;</span><br><span class="line">								performClick();</span><br><span class="line">							&#125;</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			<span class="keyword">case</span> MotionEvent.ACTION_DOWN:</span><br><span class="line">				<span class="comment">//longClick事件在这里执行</span></span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			<span class="keyword">case</span> MotionEvent.ACTION_MOVE:</span><br><span class="line">				<span class="comment">//从这里我们可以知道为什么点击按钮，但是滑动到其它View上时，click事件不触发的原因。</span></span><br><span class="line">				<span class="keyword">if</span> (!pointInView(x, y, mTouchSlop)) &#123;</span><br><span class="line">					<span class="comment">// Outside button</span></span><br><span class="line">					<span class="comment">// Remove any future long press/tap checks</span></span><br><span class="line">					removeTapCallback();</span><br><span class="line">					removeLongPressCallback();</span><br><span class="line">					<span class="keyword">if</span> ((mPrivateFlags &amp; PFLAG_PRESSED) != <span class="number">0</span>) &#123;</span><br><span class="line">						setPressed(<span class="keyword">false</span>);</span><br><span class="line">					&#125;</span><br><span class="line">					mPrivateFlags3 &amp;= ~PFLAG3_FINGER_DOWN;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="dispatch分发完成"><a href="#dispatch分发完成" class="headerlink" title="dispatch分发完成"></a>dispatch分发完成</h4><blockquote>
+<p>Activity会根据view是否消费了事件来决定是否执行自己的onTouchEvent方法</p>
+</blockquote>
 
           
         
@@ -2062,6 +1875,170 @@
 </li>
 <li><p>使用ViewPropertyAnimator写法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ViewPropertyAnimator animator = textview.animate();</span><br><span class="line"><span class="comment">//有点类似流式写法</span></span><br><span class="line">animator.alpha(<span class="number">1.0f</span>).rotation(<span class="number">1.0f</span>).setDuration(<span class="number">1000</span>).start();</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/06/11/java/java装箱拆箱机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/06/11/java/java装箱拆箱机制/" itemprop="url">java装箱拆箱机制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-11T12:10:16+08:00">
+                2017-06-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>默认情况下我们定义一个包装类型的对象，应该是Integer a = new Integer(10);<br>但是有了装箱机制后，可以直接这么定义：Integer a = 10;</p>
+<blockquote>
+<p>本文只对Integer做一些简单介绍，其它的可以看源码。</p>
+</blockquote>
+<h3 id="装箱"><a href="#装箱" class="headerlink" title="装箱"></a>装箱</h3><blockquote>
+<p>这个过程java会自动实现装箱机制<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Integer num = <span class="number">10</span>;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>可以看下字节码文件，会发现装箱的原理就是<code>Integer.valueOf(...)</code></p>
+</blockquote>
+<h3 id="拆箱"><a href="#拆箱" class="headerlink" title="拆箱"></a>拆箱</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> sum = num;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>拆箱的原理是：<code>Integer.intValue(...)</code></p>
+</blockquote>
+<h3 id="弊端"><a href="#弊端" class="headerlink" title="弊端"></a>弊端</h3><blockquote>
+<p>自动装箱拆箱会耗费一些性能。避免在for循环里使用类似这样的操作:</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Integer i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>()&#123;</span><br><span class="line">	<span class="comment">//这块会先拆箱，再装箱</span></span><br><span class="line">	i+=<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="包装类型与普通类型的比较"><a href="#包装类型与普通类型的比较" class="headerlink" title="包装类型与普通类型的比较"></a>包装类型与普通类型的比较</h3><ul>
+<li>“==”运算符左右两边的操作数都是包装类型时，比较的是对象，否则比较的是数值</li>
+<li><code>equals</code>作比较时会先看左右两边是不是同一类型，只有同一类型才会做比较<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//Long等其它类型类似</span></span><br><span class="line">	<span class="keyword">if</span> (obj <span class="keyword">instanceof</span> Integer) &#123;</span><br><span class="line">		<span class="keyword">return</span> value == ((Integer)obj).intValue();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 
           
