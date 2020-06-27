@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Https,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Https加密流程加密方式 加密方式大体分为对称加密、非对称加密两种（简单的摘录一下网上的介绍，便于理解上下文）   对称加密算法的优点是算法公开、计算量小、加密速度快、加密效率高。对称加密算法的缺点是在数据传送前，发送方和接收方必须商定好秘钥，然后使双方都能保存好秘钥。其次如果一方的秘钥被泄露，那么加密信息也就不安全了。另外，每对用户每次使用对称加密算法时，都需要使用其他人不知道的唯一秘钥，这会">
+<meta name="keywords" content="Https">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Https加密流程">
+<meta property="og:url" content="http://yoursite.com/2017/09/14/协议/Https加密流程/index.html">
+<meta property="og:site_name" content="changePosition">
+<meta property="og:description" content="Https加密流程加密方式 加密方式大体分为对称加密、非对称加密两种（简单的摘录一下网上的介绍，便于理解上下文）   对称加密算法的优点是算法公开、计算量小、加密速度快、加密效率高。对称加密算法的缺点是在数据传送前，发送方和接收方必须商定好秘钥，然后使双方都能保存好秘钥。其次如果一方的秘钥被泄露，那么加密信息也就不安全了。另外，每对用户每次使用对称加密算法时，都需要使用其他人不知道的唯一秘钥，这会">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2017/09/14/协议/Https加密流程/1531019257645.png">
+<meta property="og:image" content="http://yoursite.com/2017/09/14/协议/Https加密流程/1531019240418.png">
+<meta property="og:image" content="http://yoursite.com/2017/09/14/协议/Https加密流程/1531021694804.png">
+<meta property="og:image" content="http://yoursite.com/2017/09/14/协议/Https加密流程/1563795189720.png">
+<meta property="og:image" content="http://yoursite.com/2017/09/14/协议/Https加密流程/1563794147322.png">
+<meta property="og:updated_time" content="2019-07-28T05:33:45.906Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Https加密流程">
+<meta name="twitter:description" content="Https加密流程加密方式 加密方式大体分为对称加密、非对称加密两种（简单的摘录一下网上的介绍，便于理解上下文）   对称加密算法的优点是算法公开、计算量小、加密速度快、加密效率高。对称加密算法的缺点是在数据传送前，发送方和接收方必须商定好秘钥，然后使双方都能保存好秘钥。其次如果一方的秘钥被泄露，那么加密信息也就不安全了。另外，每对用户每次使用对称加密算法时，都需要使用其他人不知道的唯一秘钥，这会">
+<meta name="twitter:image" content="http://yoursite.com/2017/09/14/协议/Https加密流程/1531019257645.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/09/14/协议/Https加密流程/">
+
+
+
+
+
+  <title>Https加密流程 | changePosition</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">changePosition</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/14/协议/Https加密流程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Https加密流程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-14T23:43:05+08:00">
+                2017-09-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/协议/" itemprop="url" rel="index">
+                    <span itemprop="name">协议</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Https加密流程"><a href="#Https加密流程" class="headerlink" title="Https加密流程"></a>Https加密流程</h1><h2 id="加密方式"><a href="#加密方式" class="headerlink" title="加密方式"></a>加密方式</h2><blockquote>
+<p>加密方式大体分为对称加密、非对称加密两种（简单的摘录一下网上的介绍，便于理解上下文）</p>
+</blockquote>
+<ol>
+<li><p>对称加密算法的优点是<strong>算法公开、计算量小、加密速度快、加密效率高</strong>。对称加密算法的缺点是在数据传送前，发送方和接收方必须商定好秘钥，然后使双方都能保存好秘钥。其次如果一方的秘钥被泄露，那么加密信息也就不安全了。另外，每对用户每次使用对称加密算法时，都需要使用其他人不知道的唯一秘钥，这会使得收、发双方所拥有的钥匙数量巨大，密钥管理成为双方的负担。</p>
+</li>
+<li><p>非对称加密与对称加密相比，其安全性更好：对称加密的通信双方使用相同的秘钥，如果一方的秘钥遭泄露，那么整个通信就会被破解。而非对称加密使用一对秘钥，一个用来加密，一个用来解密，而且公钥是公开的，私钥是自己保存的，不需要像对称加密那样在通信之前要先同步秘钥。非对称加密的<strong>缺点是加密和解密花费时间长、速度慢，只适合对少量数据进行加密</strong>。</p>
+</li>
+</ol>
+<h2 id="Https采用的加密方式"><a href="#Https采用的加密方式" class="headerlink" title="Https采用的加密方式"></a>Https采用的加密方式</h2><blockquote>
+<p>根据上述的优缺点，Https采用了两者结合的方式进行加密。</p>
+</blockquote>
+<h3 id="只使用非对称加密"><a href="#只使用非对称加密" class="headerlink" title="只使用非对称加密"></a>只使用非对称加密</h3><ul>
+<li><p>如何验证server是真的server？<br><img src="/2017/09/14/协议/Https加密流程/./1531019257645.png" alt="Alt text"></p>
+</li>
+<li><p>上述的单项<strong>认证过程</strong>过程最起码是安全的。</p>
+</li>
+<li>那么开始正常的数据传输<br><img src="/2017/09/14/协议/Https加密流程/./1531019240418.png" alt="Alt text"></li>
+<li>注意上述的传输过程，client和server的身份都确定了，但是存在一个问题就是：server回复的信息可能被第三者截获，虽然第三者无法修改信息（即使修改了也没用，因为没有私钥，无法对修改后的数据进行加密），但它可以解密（因为公钥是公开的）看到信息，这样数据就无法保密了。<blockquote>
+<p><strong>实验证明：只用非对称加密是不可靠的，同样从上述非对称加密的缺点来看，它并不适合对大批明文进行加密。</strong></p>
+</blockquote>
+</li>
+</ul>
+<h3 id="只使用对称加密"><a href="#只使用对称加密" class="headerlink" title="只使用对称加密"></a>只使用对称加密</h3><blockquote>
+<ol>
+<li>对称的话，秘钥是保密的，所以（只要不泄露）肯定能保证安全。</li>
+<li>那么问题来了：server如何把秘钥给client？这岂不又是一个发送信息而又要信息保密的过程？</li>
+<li>想一下非对称加密：<br>server—&gt;client不是安全的（信息无法保密）<br>client—&gt;server是安全的（即使被窃取到了，没有私钥也无法解密）</li>
+<li>所以可以让<strong>client</strong>生成一个对称秘钥Key，这个Key经非对称加密由client—&gt;server，这样不就行了？<br><img src="/2017/09/14/协议/Https加密流程/./1531021694804.png" alt="Alt text"></li>
+</ol>
+</blockquote>
+<blockquote>
+<ol>
+<li>因为私钥只有server拥有，因此client可以通过判断对方是否有私钥来判断对方是否是server。</li>
+<li>client通过非对称加密的掩护，安全的和server商量好一个对称加密算法和密钥来保证后面通信过程内容的安全。</li>
+</ol>
+</blockquote>
+<hr>
+<p>上述看起来已经安全了，但有个问题：非对称加密确实保证了对称加密的秘钥的安全传输，那么谁来保证非对称加密的公钥的安全传输呢？</p>
+<ol>
+<li>？？？非对称加密的公钥不是公开的吗？<br>公钥是公开的，那么server如何把公钥发给client呢？</li>
+</ol>
+<ul>
+<li>把公钥放到互联网的某个地方的一个下载地址，事先给client去下载。</li>
+<li>每次和client开始通信时，“服务器”把公钥发给server。</li>
+</ul>
+<ol start="2">
+<li>对于方法1，client无法确定这个下载地址是不是server发布的，可能是第三者自己生成的Public，然后伪造的假的地址。<br>对于方法2，也有问题，因为第三者也可以自己生成一对Public和Private，他只要向client发送他自己的Public就可以冒充Server了（<strong>这样的话，相当于后期的所有操作都是在和假的server做交互</strong>）。</li>
+</ol>
+<h3 id="使用数字证书保证公钥的安全"><a href="#使用数字证书保证公钥的安全" class="headerlink" title="使用数字证书保证公钥的安全"></a>使用数字证书保证公钥的安全</h3><blockquote>
+<ol>
+<li>为了解决上述【大家都可以生成公钥、私钥对，无法确认公钥对到底是谁的】的这个问题，出现了数字证书。</li>
+<li>那也就是说：数字证书可以保证数字证书里的公钥确实是这个证书的所有者(Subject)的，或者证书可以用来确认对方的身份。</li>
+</ol>
+</blockquote>
+<p><img src="/2017/09/14/协议/Https加密流程/./1563795189720.png" alt="Alt text"></p>
+<blockquote>
+<p>上述的数字证书发给client后：</p>
+<ol>
+<li>client根据本地<strong>CA的公钥</strong>对数字签名解密，得到A</li>
+<li>把公钥等信息进行hash得到B</li>
+<li>对比A和B是否相等，相等说明没人篡改。</li>
+</ol>
+</blockquote>
+<h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><p><img src="/2017/09/14/协议/Https加密流程/./1563794147322.png" alt="Alt text"></p>
+<ul>
+<li>为什么是三个随机数？<blockquote>
+<p>客户端产生一个Random1、服务端产生一个Random2，但1、2可能是伪随机数，这样的话可能就能猜出加密算法，所以再给一个随机数Premaster secret，这次是真正的”随机数”，是由SSL协议自己产生的。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://www.cnblogs.com/JeffreySun/archive/2010/06/24/1627247.html" target="_blank" rel="noopener">数字证书原理</a><br><a href="https://mp.weixin.qq.com/s?__biz=MzA5MzI3NjE2MA==&amp;mid=2650242840&amp;idx=1&amp;sn=8c0baf32761c3caca218a5b33b07a1c1&amp;chksm=88638e77bf140761aa0e63a4be3429a017317e700743ccd8e498ef959bb71265bd95a7500398&amp;mpshare=1&amp;scene=1&amp;srcid=0707HrykBg05naCQGiwIaARl#rd" target="_blank" rel="noopener">关于Https那些事</a><br><a href="https://mp.weixin.qq.com/s?__biz=MzI0MjE3OTYwMg==&amp;mid=2649551508&amp;idx=1&amp;sn=74400e80ac0aa575b11604876bd70b1a&amp;chksm=f11819e9c66f90ffc5dfa9c3e7ed761a94a3fcd1b3a20906818f05e5c888fe7211343cb53232&amp;mpshare=1&amp;scene=1&amp;srcid=0503BGQGXsNLVUwAMuJRLL3z#" target="_blank" rel="noopener">也许，这样理解HTTPS更容易</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Https/" rel="tag"># Https</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/08/java/基于JDK8的LinkedHashMap分析/" rel="next" title="基于JDK8的LinkedHashMap分析">
+                <i class="fa fa-chevron-left"></i> 基于JDK8的LinkedHashMap分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/15/设计模式/观察者模式/" rel="prev" title="观察者模式">
+                观察者模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">changePosition</p>
+              <p class="site-description motion-element" itemprop="description">知识体系树</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Https加密流程"><span class="nav-number">1.</span> <span class="nav-text">Https加密流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#加密方式"><span class="nav-number">1.1.</span> <span class="nav-text">加密方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Https采用的加密方式"><span class="nav-number">1.2.</span> <span class="nav-text">Https采用的加密方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#只使用非对称加密"><span class="nav-number">1.2.1.</span> <span class="nav-text">只使用非对称加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#只使用对称加密"><span class="nav-number">1.2.2.</span> <span class="nav-text">只使用对称加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用数字证书保证公钥的安全"><span class="nav-number">1.2.3.</span> <span class="nav-text">使用数字证书保证公钥的安全</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流程"><span class="nav-number">1.3.</span> <span class="nav-text">流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">1.4.</span> <span class="nav-text">参考文章</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">changePosition</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="TCP/IP,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="先介绍一下其中的TCP、UDP TCP/IP协议中包含多种协议，这里只介绍下TCP/UDP，后期再把ARP、IP等协议补充进来。  TCP与UDP的区别 这些参考自计算机网络教材-谢希仁版  TCP的连接、断开 下面为传输时会用到的一些状态  三次握手   第一次握手时客户端发送一个随机的序号seq=i、确认号SYN=1 第二次握手时服务端发送一个随机的序号j、确认号为上次的确认号+1，即i+1、">
+<meta name="keywords" content="TCP&#x2F;IP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP&#x2F;IP协议">
+<meta property="og:url" content="http://yoursite.com/2018/07/23/协议/TCP-IP协议/index.html">
+<meta property="og:site_name" content="changePosition">
+<meta property="og:description" content="先介绍一下其中的TCP、UDP TCP/IP协议中包含多种协议，这里只介绍下TCP/UDP，后期再把ARP、IP等协议补充进来。  TCP与UDP的区别 这些参考自计算机网络教材-谢希仁版  TCP的连接、断开 下面为传输时会用到的一些状态  三次握手   第一次握手时客户端发送一个随机的序号seq=i、确认号SYN=1 第二次握手时服务端发送一个随机的序号j、确认号为上次的确认号+1，即i+1、">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2018/07/23/协议/TCP-IP协议/1563859396682.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/23/协议/TCP-IP协议/1563849314546.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/23/协议/TCP-IP协议/1563859011501.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/23/协议/TCP-IP协议/1563879213309.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/23/协议/TCP-IP协议/1563881598390.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/23/协议/TCP-IP协议/1563852853811.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/23/协议/TCP-IP协议/1563853023405.png">
+<meta property="og:updated_time" content="2019-08-07T02:11:13.756Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TCP&#x2F;IP协议">
+<meta name="twitter:description" content="先介绍一下其中的TCP、UDP TCP/IP协议中包含多种协议，这里只介绍下TCP/UDP，后期再把ARP、IP等协议补充进来。  TCP与UDP的区别 这些参考自计算机网络教材-谢希仁版  TCP的连接、断开 下面为传输时会用到的一些状态  三次握手   第一次握手时客户端发送一个随机的序号seq=i、确认号SYN=1 第二次握手时服务端发送一个随机的序号j、确认号为上次的确认号+1，即i+1、">
+<meta name="twitter:image" content="http://yoursite.com/2018/07/23/协议/TCP-IP协议/1563859396682.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/07/23/协议/TCP-IP协议/">
+
+
+
+
+
+  <title>TCP/IP协议 | changePosition</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">changePosition</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/23/协议/TCP-IP协议/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="changePosition">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="changePosition">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">TCP/IP协议</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-23T09:06:47+08:00">
+                2018-07-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/协议/" itemprop="url" rel="index">
+                    <span itemprop="name">协议</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="先介绍一下其中的TCP、UDP"><a href="#先介绍一下其中的TCP、UDP" class="headerlink" title="先介绍一下其中的TCP、UDP"></a>先介绍一下其中的TCP、UDP</h2><blockquote>
+<p>TCP/IP协议中包含多种协议，这里只介绍下TCP/UDP，后期再把ARP、IP等协议补充进来。</p>
+</blockquote>
+<h3 id="TCP与UDP的区别"><a href="#TCP与UDP的区别" class="headerlink" title="TCP与UDP的区别"></a>TCP与UDP的区别</h3><blockquote>
+<p>这些参考自计算机网络教材-谢希仁版</p>
+</blockquote>
+<h3 id="TCP的连接、断开"><a href="#TCP的连接、断开" class="headerlink" title="TCP的连接、断开"></a>TCP的连接、断开</h3><blockquote>
+<p>下面为传输时会用到的一些状态<br><img src="/2018/07/23/协议/TCP-IP协议/./1563859396682.png" alt="@摘自TCP/IP详解"></p>
+</blockquote>
+<h4 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h4><p><img src="/2018/07/23/协议/TCP-IP协议/./1563849314546.png" alt="Alt text"></p>
+<blockquote>
+<ul>
+<li>第一次握手时客户端发送一个随机的序号seq=i、确认号SYN=1</li>
+<li>第二次握手时服务端发送一个随机的序号j、确认号为上次的确认号+1，即i+1、ACK表示应答信号、SYN表示同步信号</li>
+<li>第三次握手时客户端发送一个序号（这个序号是客户端第一次发的序号i+1）、一个确认号：上边的序号+1</li>
+</ul>
+</blockquote>
+<h5 id="为什么要三次？"><a href="#为什么要三次？" class="headerlink" title="为什么要三次？"></a>为什么要三次？</h5><blockquote>
+<p>下面分几种情况来分析。</p>
+</blockquote>
+<h6 id="一种情况"><a href="#一种情况" class="headerlink" title="一种情况"></a>一种情况</h6><ul>
+<li>服务端收到第一次握手：客户端发送能力、服务端接收能力都OK</li>
+<li>客户端收到第二次握手：<strong>客户端自己发送能力、客户端自己接收能力、服务端接收能力、服务端发送能力OK</strong></li>
+<li>服务端收到第三次握手：<strong>客户端发送能力、客户端接收能力、服务端发送能力、服务端接收能力都OK</strong><blockquote>
+<p>可以看到在第二次握手后，客户端已经完全知道大家都OK了，但是还需要再发送一个让服务端知道他的发送能力也OK。</p>
+</blockquote>
+</li>
+</ul>
+<h6 id="另一种情况"><a href="#另一种情况" class="headerlink" title="另一种情况"></a>另一种情况</h6><blockquote>
+<p>关于握手时消息超时的，这块儿需要再捋一下。</p>
+</blockquote>
+<h5 id="握手失败怎么办？"><a href="#握手失败怎么办？" class="headerlink" title="握手失败怎么办？"></a>握手失败怎么办？</h5><h6 id="假设第三次握手失败"><a href="#假设第三次握手失败" class="headerlink" title="假设第三次握手失败"></a>假设第三次握手失败</h6><blockquote>
+<p>当客户端第三次握手发的消息丢了之后会导致握手失败，我们要做的就是在服务端设置一个<strong>超时计时器</strong>，在服务端发出消息之后，如果在超时时间到了之后还没接收到客户端的反馈消息，则服务端会重新发出一个消息，<strong>重传次数</strong>默认是5，如果重传次数到了之后还没响应，则服务端主动断开连接，由上图所知，此时客户端已经是ESTABLISHED状态。此时客户端如果给服务端发消息。服务端<strong>会响应RST-重新连接</strong>。<br><img src="/2018/07/23/协议/TCP-IP协议/./1563859011501.png" alt="@我们的服务器默认重传次数是2"></p>
+</blockquote>
+<h4 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h4><blockquote>
+<p>建立一个连接需要三次握手，而终止一个连接要经过4次握手。这由TCP的半关闭（half-close）造成的。既然一个TCP连接是全双工（即数据在两个方向上能同时传递），因此每个方向必须单独地进行关闭。这原则就是当一方完成它的数据发送任务后就能发送一个FIN来终止这个方向连接。当一端收到一个FIN，它必须通知应用层另一端几经终止了那个方向的数据传送。发送FIN通常是应用层进行关闭的结果。</p>
+</blockquote>
+<p><img src="/2018/07/23/协议/TCP-IP协议/./1563879213309.png" alt="Alt text"></p>
+<ul>
+<li>连接时：双方只是对握手信号做个响应，不发送有用的数据包</li>
+<li>断开时：因为是在传输的过程中，突然有一端要断开了（假设客户端请求断开），此时服务端应该怎么办？因为可能有一些数据包还没给客户端发送完毕，但是又要立即反馈客户端的断开请求，怎么办？先回复一个消息：我收到了你的断开请求。继续发送数据包（<strong>此时客户端处于半关闭状态，不会发消息，但可以接收并响应消息</strong>），发送完毕后，发送一个断开请求，收到客户端响应后关闭连接。<blockquote>
+<p>收到一个FIN只意味着在这一方向上没有数据流动。一个TCP连接在收到一个FIN后仍能发送数据。这也就是为什么要四次挥手的原因。</p>
+</blockquote>
+</li>
+</ul>
+<h5 id="TIME-WAIT状态有什么用？"><a href="#TIME-WAIT状态有什么用？" class="headerlink" title="TIME_WAIT状态有什么用？"></a>TIME_WAIT状态有什么用？</h5><blockquote>
+<p>个人的理解+网上的各种资料查找。不一定对</p>
+</blockquote>
+<ul>
+<li>接收FIN之前传入的消息（有可能那些消息传输太慢，或者超时重传什么的）。</li>
+<li>假如没有TIME_WAIT，一旦接收到服务端的FIN后，又立马与其它服务连接上了，那如果上个服务现在才到，岂不是：上个连接的数据包发到了这个连接上？（这种情况感觉不大可能，它肯定知道是不是自己的数据包吧）</li>
+</ul>
+<h4 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h4><blockquote>
+<p>出现滑动窗口的原因是：提高TCP的吞吐量，不要接收一个响应一个。更快传输无外乎每次传的多一点，但这里又产生了一个问题：传的多了，次序怎么保证？有包丢失了怎么整？</p>
+</blockquote>
+<p>滑动窗口分为接收窗口和发送窗口。它是传输层进行流控的一种协议，服务端的一次ACK至少包含两个信息：</p>
+<ul>
+<li>期望得到的下一个包的序号（滑动窗口传输需要对所有的包排好顺序）。</li>
+<li>自己还能接收多少个包。</li>
+</ul>
+<h6 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h6><p>假设发送了8个，ACK了3个，期望再发3个，那么发送窗口会向右滑动3个，此时窗口里有5个已发送未ACK+3个待发送，此时客户端会继续等待服务端的ACK，直到得到ACK，如果超时则会把窗口中的数据全部重新发送一下。</p>
+<p><img src="/2018/07/23/协议/TCP-IP协议/./1563881598390.png" alt="@计算机网络-谢希仁"></p>
+<h4 id="拥塞控制"><a href="#拥塞控制" class="headerlink" title="拥塞控制"></a>拥塞控制</h4><h5 id="产生拥塞的原因"><a href="#产生拥塞的原因" class="headerlink" title="产生拥塞的原因"></a>产生拥塞的原因</h5><blockquote>
+<p>拥塞的本质原因是<strong>整个系统的各个部分性能不匹配，只有所有部分都平衡了，拥塞问题才会解决。</strong>所以简单的提高处理速度，增大输出链路的容量，增大系统之间的缓存大小，这些都是暂时的解决办法，一段时间后仍会出现拥塞。</p>
+</blockquote>
+<h5 id="拥塞控制和流量控制的区别"><a href="#拥塞控制和流量控制的区别" class="headerlink" title="拥塞控制和流量控制的区别"></a>拥塞控制和流量控制的区别</h5><blockquote>
+<p>个人的一些理解。</p>
+<ul>
+<li>拥塞: 链路的带宽太小，导致发送方发的太多，把链路撑爆。</li>
+<li>流量控制：发送方发的数据可以在链路上传输，但是接收方处理不过来，所以接收方需要告诉发送方传的慢点。</li>
+</ul>
+</blockquote>
+<h5 id="如何检测到发生了拥塞"><a href="#如何检测到发生了拥塞" class="headerlink" title="如何检测到发生了拥塞"></a>如何检测到发生了拥塞</h5><ul>
+<li>丢弃的分组数</li>
+<li>超时重传的分组数</li>
+<li>发送方未按时收到应当到达的确认报文</li>
+<li>…</li>
+</ul>
+<h5 id="拥塞控制的几种算法"><a href="#拥塞控制的几种算法" class="headerlink" title="拥塞控制的几种算法"></a>拥塞控制的几种算法</h5><h6 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h6><blockquote>
+<p>发送方维持一个拥塞窗口状态变量cwnd，窗口的大小取决于网络的拥塞度。发送方控制拥塞窗口的原则是：网络未发生拥塞，窗口就增大一些，发生拥塞，减小一些。</p>
+</blockquote>
+<h6 id="慢开始"><a href="#慢开始" class="headerlink" title="慢开始"></a>慢开始</h6><blockquote>
+<p>在开始发送数据时并不是立即把大量数据注入到网络，因为并不清楚网络的负荷。较好的方式是由小到大，依次提高数据注入量，这样就可以探测到网络的负荷。<br>具体的实现方式：刚开始发送报文时先把拥塞窗口cwnd设置为一个报文段MSS的数值，然后每收到一对新的报文段的确认后，拥塞窗口就增加一个MSS的数值。</p>
+</blockquote>
+<ol>
+<li>第一次发送一个，接收一个ACK，窗口1-&gt;2。</li>
+<li>第二次发送两个，接受两个ACK，窗口2-&gt;3-&gt;4</li>
+<li>第三次发送4个，接收四个ACK，窗口4-&gt;5-&gt;6-&gt;7-&gt;8</li>
+</ol>
+<blockquote>
+<p>所以每经过一个传输轮次，窗口cwnd大小就加倍。</p>
+</blockquote>
+<h6 id="拥塞避免"><a href="#拥塞避免" class="headerlink" title="拥塞避免"></a>拥塞避免</h6><blockquote>
+<p>上边的满开始其实也是有问题的，毕竟是指数递增。所以为防止它增长过快，有设置了一个慢开始门限ssthresh状态变量。<br>cwnd &lt; ssthresh时，使用慢开始<br>cwnd &gt; ssthresh时，使用拥塞避免<br>cwnd = ssthresh时，二者都可使用</p>
+</blockquote>
+<p>拥塞避免的思路是让拥塞窗口cwnd缓慢增大：</p>
+<ul>
+<li>每经过一个轮回，让cwnd+1而不是加倍，这样增长速度就慢很多了。</li>
+<li>当网络出现拥塞时，就要把ssthresh设为发生拥塞时的窗口cwnd的一半（不能小于2），cwnd设置为1，然后重新执行慢开始算法。</li>
+</ul>
+<h6 id="快重传"><a href="#快重传" class="headerlink" title="快重传"></a>快重传</h6><h6 id="快恢复"><a href="#快恢复" class="headerlink" title="快恢复"></a>快恢复</h6><h4 id="同时打开"><a href="#同时打开" class="headerlink" title="同时打开"></a>同时打开</h4><p><img src="/2018/07/23/协议/TCP-IP协议/./1563852853811.png" alt="@出自TCP/IP详解第一卷"></p>
+<blockquote>
+<p>此时双方没有明确的客户端、服务端之分，双方都是主动建立连接、又被动接收连接，<strong>此时比正常的三次握手多了一次握手</strong>。</p>
+</blockquote>
+<h4 id="同时关闭"><a href="#同时关闭" class="headerlink" title="同时关闭"></a>同时关闭</h4><p><img src="/2018/07/23/协议/TCP-IP协议/./1563853023405.png" alt="@出自TCP/IP详解第一卷"></p>
+<blockquote>
+<p>此时一方收到Fin信号后，直接发送一个响应，并断开。（同时关闭说明双方都没有要发送的消息了）</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/TCP-IP/" rel="tag"># TCP/IP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/17/android/Launcher是如何启动Activity的/" rel="next" title="Launcher是如何启动Activity的">
+                <i class="fa fa-chevron-left"></i> Launcher是如何启动Activity的
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/28/android/Activity的setContentView加载机制/" rel="prev" title="Activity的setContentView加载机制">
+                Activity的setContentView加载机制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">changePosition</p>
+              <p class="site-description motion-element" itemprop="description">知识体系树</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#先介绍一下其中的TCP、UDP"><span class="nav-number">1.</span> <span class="nav-text">先介绍一下其中的TCP、UDP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP与UDP的区别"><span class="nav-number">1.1.</span> <span class="nav-text">TCP与UDP的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP的连接、断开"><span class="nav-number">1.2.</span> <span class="nav-text">TCP的连接、断开</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#三次握手"><span class="nav-number">1.2.1.</span> <span class="nav-text">三次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#为什么要三次？"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">为什么要三次？</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#一种情况"><span class="nav-number">1.2.1.1.1.</span> <span class="nav-text">一种情况</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#另一种情况"><span class="nav-number">1.2.1.1.2.</span> <span class="nav-text">另一种情况</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#握手失败怎么办？"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">握手失败怎么办？</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#假设第三次握手失败"><span class="nav-number">1.2.1.2.1.</span> <span class="nav-text">假设第三次握手失败</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四次挥手"><span class="nav-number">1.2.2.</span> <span class="nav-text">四次挥手</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#TIME-WAIT状态有什么用？"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">TIME_WAIT状态有什么用？</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#滑动窗口"><span class="nav-number">1.2.3.</span> <span class="nav-text">滑动窗口</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#举个例子"><span class="nav-number">1.2.3.0.1.</span> <span class="nav-text">举个例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拥塞控制"><span class="nav-number">1.2.4.</span> <span class="nav-text">拥塞控制</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#产生拥塞的原因"><span class="nav-number">1.2.4.1.</span> <span class="nav-text">产生拥塞的原因</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#拥塞控制和流量控制的区别"><span class="nav-number">1.2.4.2.</span> <span class="nav-text">拥塞控制和流量控制的区别</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#如何检测到发生了拥塞"><span class="nav-number">1.2.4.3.</span> <span class="nav-text">如何检测到发生了拥塞</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#拥塞控制的几种算法"><span class="nav-number">1.2.4.4.</span> <span class="nav-text">拥塞控制的几种算法</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#基本概念"><span class="nav-number">1.2.4.4.1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#慢开始"><span class="nav-number">1.2.4.4.2.</span> <span class="nav-text">慢开始</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#拥塞避免"><span class="nav-number">1.2.4.4.3.</span> <span class="nav-text">拥塞避免</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#快重传"><span class="nav-number">1.2.4.4.4.</span> <span class="nav-text">快重传</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#快恢复"><span class="nav-number">1.2.4.4.5.</span> <span class="nav-text">快恢复</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#同时打开"><span class="nav-number">1.2.5.</span> <span class="nav-text">同时打开</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#同时关闭"><span class="nav-number">1.2.6.</span> <span class="nav-text">同时关闭</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">changePosition</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
